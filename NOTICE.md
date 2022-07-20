@@ -18,3 +18,14 @@ Unless required by applicable law or agreed to in writing, software distributed 
 the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
 KIND, either express or implied. See the License for the specific language governing
 permissions and limitations under the License.
+
+## Third-Party Software
+
+This project depends on a number of third-party open source Python libraries. The
+following table includes links to their respective GitHub repositories, PyPI
+distribution pages, and full license text:
+
+| Project                                              | Release                                                                                          | License                                                                                                           |
+| ---------------------------------------------------- | ------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------- |
+| [colorama](https://github.com/tartley/colorama)      | [![Release](https://img.shields.io/pypi/v/colorama)](https://pypi.org/project/colorama/)         | [![License](https://img.shields.io/pypi/l/colorama)](https://github.com/tartley/colorama/blob/master/LICENSE.txt) |
+| [cryptography](https://github.com/pyca/cryptography) | [![Release](https://img.shields.io/pypi/v/cryptography)](https://pypi.org/project/cryptography/) | [![License](https://img.shields.io/pypi/l/cryptography)](https://github.com/pyca/cryptography/blob/main/LICENSE)  |
