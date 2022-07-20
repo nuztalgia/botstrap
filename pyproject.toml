@@ -1,0 +1,40 @@
+[build-system]
+requires = ["setuptools>=61.0.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "botstrap"
+description = "Utilities for Discord bots. WIP."
+requires-python = ">=3.10"
+authors = [
+    { name = "Nuztalgia" },
+    { email = "nuztalgia@gmail.com" }
+]
+readme = "README.md"
+license = { text = "Apache-2.0" }
+classifiers = [
+    "Development Status :: 2 - Pre-Alpha",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+]
+dynamic = ["dependencies", "optional-dependencies", "urls", "version"]
+
+[project.scripts]
+qibot = "botstrap.cli:main"
+
+[tool.black]
+target-version = ["py310"]
+
+[tool.isort]
+profile = "black"
+
+[tool.pydocstyle]
+convention = "google"
+add-ignore = "D1"
+
+[tool.setuptools.dynamic]
+version = { attr = "botstrap.version.VERSION" }
