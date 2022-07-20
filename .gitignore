@@ -1,0 +1,14 @@
+*.bak
+*.egg-info/
+*.key
+*.py[cdo]
+*.sw[a-p]
+.DS_Store
+.idea/
+.keys/
+.mypy_cache/
+.vscode/
+__pycache__/
+config.json
+dist/
+venv/
