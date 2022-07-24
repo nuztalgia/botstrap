@@ -1,5 +1,6 @@
 import os
 import re
+import sys
 from base64 import urlsafe_b64encode
 from functools import partial
 from pathlib import Path
@@ -68,8 +69,9 @@ def _get_validator(
 
 def _get_storage_dir(path: str | Path | None) -> Path:
     if not path:
+        main = sys.modules["__main__"].__file__
         try:
-            path = Path.home() / ".botstrap_keys"
+            path = (Path(main).parent if main else Path.home()) / ".botstrap_keys"
         except RuntimeError as e:
             raise ValueError("Could not resolve default key storage directory.") from e
     elif isinstance(path, str):
