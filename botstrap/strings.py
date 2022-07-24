@@ -20,8 +20,8 @@ class Strings:
     bot_token_creation_cue: str = (
         "\nPlease enter your bot token now. It'll be invisible for security reasons."
     )
-    bot_token_creation_hint: Template = Template(
-        "\nThat doesn't seem like a valid bot token. It should look like this:\n$format"
+    bot_token_creation_hint: str = (
+        "\nThat doesn't seem like a valid bot token. It should look like this:"
     )
     bot_token_creation_mismatch: str = (
         "Please make sure you have the correct token, then try again."
@@ -56,6 +56,7 @@ class Strings:
         "\nThat password doesn't match your original password."
     )
     password_confirmation_retry: str = "Would you like to try again?"
+    exit_user_choice: str = "Received a non-affirmative response."
 
     @classmethod
     def default(cls) -> Strings:

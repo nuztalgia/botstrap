@@ -34,20 +34,24 @@ class Secret:
     def __str__(self) -> str:
         return self.display_name
 
+    @property
+    def file_path(self) -> Path:
+        return _get_key_file(self.uid, self.storage_directory, "content")
+
     def read(self, password: Optional[str] = None) -> Optional[str]:
-        content_file, fernet = _get_encryption_tools(
+        fernet = _get_fernet(
             self.uid, self.storage_directory, self.requires_password, password
         )
-        data = fernet.decrypt(content_file.read_bytes()).decode()
+        data = fernet.decrypt(self.file_path.read_bytes()).decode()
         return data if self.validate(data) else None
 
     def write(self, data: str, password: Optional[str] = None) -> None:
         if not self.validate(data):
             raise ValueError(f'Attempted to write invalid data for "{self.uid}".')
-        content_file, fernet = _get_encryption_tools(
+        fernet = _get_fernet(
             self.uid, self.storage_directory, self.requires_password, password
         )
-        content_file.write_bytes(fernet.encrypt(data.encode()))
+        self.file_path.write_bytes(fernet.encrypt(data.encode()))
 
 
 def _get_validator(
@@ -84,9 +88,16 @@ def _get_storage_dir(path: str | Path | None) -> Path:
     return path
 
 
-def _get_encryption_tools(
+def _get_key_file(uid: str, storage_dir: Path, qualifier: str) -> Path:
+    if (key_file := storage_dir / f".{uid}.{qualifier}.key").is_dir():
+        dir_path = key_file.resolve()
+        raise ValueError(f'Expected a file, but found a directory: "{dir_path}"')
+    return key_file
+
+
+def _get_fernet(
     uid: str, storage_dir: Path, requires_password: bool, password: Optional[str]
-) -> tuple[Path, Fernet]:
+) -> Fernet:
     if requires_password:
         if not password:
             raise ValueError(f'Password is required in order to read/write "{uid}".')
@@ -95,20 +106,11 @@ def _get_encryption_tools(
         elif len(password) < (min_length := Secret.MINIMUM_PASSWORD_LENGTH):
             raise ValueError(f"Password must be at least {min_length} characters long.")
 
-    def get_key_file(qualifier: str) -> Path:
-        if (key_file := storage_dir / f".{uid}.{qualifier}.key").is_dir():
-            dir_path = key_file.resolve()
-            raise ValueError(f'Expected a file, but found a directory: "{dir_path}"')
-        return key_file
-
-    return get_key_file("content"), _get_fernet(get_key_file("fernet"), password)
-
-
-def _get_fernet(key_file: Path, password: Optional[str]) -> Fernet:
     def get_extra_bytes(get_initial_bytes: Callable[[], bytes]) -> bytes:
-        if not key_file.is_file():
-            key_file.write_bytes(get_initial_bytes())
-        return key_file.read_bytes()
+        fernet_file = _get_key_file(uid, storage_dir, "fernet")
+        if not fernet_file.is_file():
+            fernet_file.write_bytes(get_initial_bytes())
+        return fernet_file.read_bytes()
 
     if password:
         kdf = PBKDF2HMAC(
