@@ -1,35 +1,41 @@
 from getpass import getpass
 from typing import Callable, Final, Optional
 
+from botstrap.colors import Colors
 from botstrap.strings import Strings
-from botstrap.utils import cyan, grey, red
 
 _YES_RESPONSES: Final[tuple[str, str]] = ("yes", "y")
 
 
-def confirm_or_exit(question: str, strs: Strings) -> None:
-    if not get_bool_input(question):
-        exit_process(strs.exit_user_choice, is_error=False)
+def confirm_or_exit(strings: Strings, colors: Colors, question: str) -> None:
+    if not get_bool_input(colors, question):
+        exit_process(strings, colors, strings.exit_user_choice, is_error=False)
 
 
-def exit_process(reason: str, is_error: bool = True) -> None:
-    colored_reason = red(reason) if is_error else grey(reason)
-    print(f"\n{colored_reason} {grey('Exiting process.')}\n")
+def exit_process(
+    strings: Strings,
+    colors: Colors,
+    reason: str,
+    is_error: bool = True,
+) -> None:
+    colored_reason = colors.error(reason) if is_error else Colors.lowlight(reason)
+    print(f"{colored_reason} {colors.lowlight(strings.exit_notice)}")
     raise SystemExit(1 if is_error else 0)
 
 
-def get_bool_input(question: str) -> bool:
-    colored_prompt = '" or "'.join(cyan(response) for response in _YES_RESPONSES)
+def get_bool_input(colors: Colors, question: str) -> bool:
+    colored_prompt = '" or "'.join(colors.highlight(resp) for resp in _YES_RESPONSES)
     result = get_input(f'{question} If so, type "{colored_prompt}":')
     return result.strip("'\"").lower() in _YES_RESPONSES
 
 
 def get_hidden_input(
+    colors: Colors,
     prompt: str,
     format_text: Optional[Callable[[str], str]] = None,
 ) -> str:
-    result = get_input(colored_prompt := cyan(f"{prompt}:"), hidden=True)
-    output = grey((format_text and format_text(result)) or "*" * len(result))
+    result = get_input(colored_prompt := colors.highlight(f"{prompt}:"), hidden=True)
+    output = colors.lowlight((format_text and format_text(result)) or "*" * len(result))
     print(f"\033[F\033[1A{colored_prompt} {output}")  # Overwrites the previous line.
     return result
 

@@ -24,7 +24,7 @@ class Strings:
         "\nThat doesn't seem like a valid bot token. It should look like this:"
     )
     bot_token_creation_mismatch: str = (
-        "Please make sure you have the correct token, then try again."
+        "\nPlease make sure you have the correct token, then try again."
     )
     bot_token_creation_success: str = (
         "\nYour token has been successfully encrypted and saved."
@@ -57,6 +57,7 @@ class Strings:
     )
     password_confirmation_retry: str = "Would you like to try again?"
     exit_user_choice: str = "Received a non-affirmative response."
+    exit_notice: str = "Exiting process.\n"
 
     @classmethod
     def default(cls) -> Strings:
