@@ -75,3 +75,6 @@ class Strings:
                 for key, value in asdict(cls.default()).items()
             }
         )
+
+
+_strings: Strings = Strings.default()

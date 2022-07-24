@@ -15,6 +15,10 @@ def _color(fore_color_code: str) -> _FormatText:
     return color_text
 
 
+def _no_op(text: str) -> str:
+    return text
+
+
 @dataclass(eq=False, frozen=True, kw_only=True)
 class Colors:
     cyan: _FormatText = _color(Fore.CYAN)
@@ -40,5 +44,4 @@ class Colors:
         return cls(**{key: _no_op for key in asdict(cls.default())})
 
 
-def _no_op(text: str) -> str:
-    return text
+_colors: Colors = Colors.default()
