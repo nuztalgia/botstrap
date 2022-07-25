@@ -10,11 +10,13 @@ from cryptography.fernet import InvalidToken
 from botstrap.colors import _colors as _c
 from botstrap.secrets import Secret
 from botstrap.strings import _strings as _s
-from botstrap.userflow import confirm_or_exit, exit_process, get_hidden_input
+from botstrap.userflow import confirm_or_exit, exit_process, get_hidden_input, get_input
 
 _LENGTHS: Final[tuple[int, ...]] = (24, 6, 27)
 _PATTERN: Final[re.Pattern] = re.compile(r"\.".join(r"[\w-]{%i}" % i for i in _LENGTHS))
 _PLACEHOLDER: Final[str] = ".".join("*" * i for i in _LENGTHS)
+
+_tokens: tuple[Token, ...] = ()
 
 
 class Token(Secret):
@@ -84,6 +86,26 @@ class Token(Secret):
         confirm_or_exit(_s.bot_token_creation_run)
 
         return bot_token
+
+
+def manage_tokens() -> None:
+    while saved_tokens := [t for t in _tokens if t.file_path.is_file()]:
+        print(_s.bot_token_mgmt_list)
+        for token in saved_tokens:
+            print(f"  * {_c.highlight(token.uid)} -> {token.file_path}")
+
+        confirm_or_exit(_s.bot_token_mgmt_delete)
+        uids = [t.uid for t in saved_tokens]
+
+        while (uid := get_input(_s.bot_token_deletion_cue)) not in uids:
+            print(_c.warning(_s.bot_token_deletion_mismatch))
+            print(_s.bot_token_deletion_hint.substitute(examples=uids))
+            confirm_or_exit(_s.bot_token_deletion_retry)
+
+        next(t for t in _tokens if t.uid == uid).clear()
+        print(_c.success(_s.bot_token_deletion_success))
+
+    print(_s.bot_token_mgmt_none)
 
 
 def _matches_token_pattern(text: str) -> bool:

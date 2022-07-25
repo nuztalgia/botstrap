@@ -10,6 +10,10 @@ from cryptography.fernet import Fernet
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 
+_CONTENT_FILE: Final[str] = "content"
+_FERNET_FILE: Final[str] = "fernet"
+_KEY_FILES: Final[tuple[str, ...]] = (_CONTENT_FILE, _FERNET_FILE)
+
 
 class Secret:
     MINIMUM_PASSWORD_LENGTH: Final[int] = 8
@@ -36,7 +40,7 @@ class Secret:
 
     @property
     def file_path(self) -> Path:
-        return _get_key_file(self.uid, self.storage_directory, "content")
+        return _get_key_file(self.uid, self.storage_directory, _CONTENT_FILE)
 
     def read(self, password: Optional[str] = None) -> Optional[str]:
         fernet = _get_fernet(
@@ -52,6 +56,11 @@ class Secret:
             self.uid, self.storage_directory, self.requires_password, password
         )
         self.file_path.write_bytes(fernet.encrypt(data.encode()))
+
+    def clear(self) -> None:
+        for qualifier in _KEY_FILES:
+            key_file = _get_key_file(self.uid, self.storage_directory, qualifier)
+            key_file.unlink(missing_ok=True)
 
 
 def _get_validator(
@@ -89,9 +98,13 @@ def _get_storage_dir(path: str | Path | None) -> Path:
 
 
 def _get_key_file(uid: str, storage_dir: Path, qualifier: str) -> Path:
+    if qualifier not in _KEY_FILES:
+        raise ValueError(f'Invalid key file qualifier: "{qualifier}"')
+
     if (key_file := storage_dir / f".{uid}.{qualifier}.key").is_dir():
         dir_path = key_file.resolve()
         raise ValueError(f'Expected a file, but found a directory: "{dir_path}"')
+
     return key_file
 
 
@@ -107,7 +120,7 @@ def _get_fernet(
             raise ValueError(f"Password must be at least {min_length} characters long.")
 
     def get_extra_bytes(get_initial_bytes: Callable[[], bytes]) -> bytes:
-        fernet_file = _get_key_file(uid, storage_dir, "fernet")
+        fernet_file = _get_key_file(uid, storage_dir, _FERNET_FILE)
         if not fernet_file.is_file():
             fernet_file.write_bytes(get_initial_bytes())
         return fernet_file.read_bytes()

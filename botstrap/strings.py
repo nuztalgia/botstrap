@@ -30,6 +30,16 @@ class Strings:
         "\nYour token has been successfully encrypted and saved."
     )
     bot_token_creation_run: str = "\nDo you want to use this token to run your bot now?"
+    bot_token_mgmt_none: str = "You currently don't have any saved bot tokens.\n"
+    bot_token_mgmt_list: str = "You currently have the following bot tokens saved:"
+    bot_token_mgmt_delete: str = (
+        "\nWould you like to permanently delete any of these tokens?"
+    )
+    bot_token_deletion_cue: str = "Please enter the ID of the token to delete:"
+    bot_token_deletion_mismatch: str = "\nThat doesn't match any of your saved tokens."
+    bot_token_deletion_hint: Template = Template("Expected one of: $examples")
+    bot_token_deletion_retry: str = "\nWould you like to try again?"
+    bot_token_deletion_success: str = "\nToken successfully deleted."
     password_prompt: str = "PASSWORD"
     password_cue: Template = Template(
         "Please enter the password to decrypt your $token_label bot token."
@@ -56,7 +66,7 @@ class Strings:
         "\nThat password doesn't match your original password."
     )
     password_confirmation_retry: str = "Would you like to try again?"
-    exit_user_choice: str = "Received a non-affirmative response."
+    exit_user_choice: str = "\nReceived a non-affirmative response."
     exit_notice: str = "Exiting process.\n"
 
     @classmethod
