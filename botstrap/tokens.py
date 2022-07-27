@@ -68,7 +68,7 @@ class Token(Secret):
             except (InvalidToken, ValueError):
                 print(error_msg_prefix + _sub_token(_s.bot_token_mismatch, self))
                 if self.requires_password:
-                    print(_s.password_mismatch)
+                    print(_c.lowlight(_s.password_mismatch))
                 return None
 
         if not create_if_missing:
@@ -141,7 +141,7 @@ def _get_new_password(token: Token) -> str:
         print(_c.warning(_s.password_creation_hint.substitute(min_length=min_length)))
         confirm_or_exit(_s.password_creation_retry)
 
-    print(_s.password_confirmation_cue)
+    print(_s.password_confirmation_cue)  # lgtm[py/clear-text-logging-sensitive-data]
     while get_hidden_input(_s.password_prompt) != password:
         print(_c.warning(_s.password_confirmation_hint))
         confirm_or_exit(_s.password_confirmation_retry)
