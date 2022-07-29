@@ -1,6 +1,5 @@
 import os
 import re
-import sys
 from base64 import urlsafe_b64encode
 from functools import partial
 from pathlib import Path
@@ -9,6 +8,8 @@ from typing import Any, Callable, Final, Optional, cast
 from cryptography.fernet import Fernet
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
+
+from botstrap.metadata import Metadata
 
 _CONTENT_FILE: Final[str] = "content"
 _FERNET_FILE: Final[str] = "fernet"
@@ -32,7 +33,7 @@ class Secret:
         self.uid: Final[str] = str(uid)
         self.requires_password: Final[bool] = requires_password
         self.display_name: Final[str] = display_name or uid
-        self.storage_directory: Final[Path] = _get_storage_dir(storage_directory)
+        self.storage_directory: Final[Path] = _get_storage_directory(storage_directory)
         self.validate: Final[Callable[[str], bool]] = _get_validator(valid_pattern)
 
     def __str__(self) -> str:
@@ -80,21 +81,20 @@ def _get_validator(
     return validate_pattern
 
 
-def _get_storage_dir(path: str | Path | None) -> Path:
-    if not path:
-        main = sys.modules["__main__"].__file__
+def _get_storage_directory(directory_path: str | Path | None) -> Path:
+    if not directory_path:
         try:
-            path = (Path(main).parent if main else Path.home()) / ".botstrap_keys"
-        except RuntimeError as e:
+            directory_path = Metadata.get_main_file_path() / ".." / ".botstrap_keys"
+        except OSError as e:
             raise ValueError("Could not resolve default key storage directory.") from e
-    elif isinstance(path, str):
-        path = Path(path)
+    elif isinstance(directory_path, str):
+        directory_path = Path(directory_path)
 
-    if path.is_file():
-        raise ValueError(f'Expected a directory, but found a file: "{path.resolve()}"')
+    if (directory_path := directory_path.resolve()).is_file():
+        raise ValueError(f'Expected a directory, but found a file: "{directory_path}"')
 
-    path.mkdir(exist_ok=True)
-    return path
+    directory_path.mkdir(exist_ok=True)
+    return directory_path
 
 
 def _get_key_file(uid: str, storage_dir: Path, qualifier: str) -> Path:

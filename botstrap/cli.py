@@ -8,10 +8,15 @@ from botstrap.strings import Strings
 
 
 class Manager:
-    def __init__(self, colors: Colors, strings: Strings) -> None:
+    def __init__(self, name: str, colors: Colors, strings: Strings) -> None:
+        self._name: Final[str] = name
         self._colors: Final[Colors] = colors
         self._strings: Final[Strings] = strings
         self._cli: Final[CLI] = CLI(self)
+
+    @property
+    def name(self) -> str:
+        return self._name
 
     @property
     def cli(self) -> CLI:
