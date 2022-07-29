@@ -1,48 +1,62 @@
 from __future__ import annotations
 
-from dataclasses import asdict, dataclass
-from typing import Callable, TypeAlias
+from dataclasses import KW_ONLY, asdict, dataclass
+from typing import Callable
 
 from colorama import Fore, Style, init
 
-_FormatText: TypeAlias = Callable[[str], str]
+# Initialize colorama the first time this module is imported anywhere.
+init(autoreset=True)
 
 
-def _color(fore_color_code: str) -> _FormatText:
-    def color_text(text: str) -> str:
+class Color:
+    @classmethod
+    def _color_text(cls, fore_color_code: str, text: str) -> str:
         return f"{fore_color_code}{Style.BRIGHT}{text}{Style.NORMAL}{Fore.RESET}"
 
-    return color_text
-
-
-def _no_op(text: str) -> str:
-    return text
-
-
-@dataclass(eq=False, frozen=True, kw_only=True)
-class Colors:
-    cyan: _FormatText = _color(Fore.CYAN)
-    green: _FormatText = _color(Fore.GREEN)
-    grey: _FormatText = _color(Fore.BLACK)  # "Bright black" is displayed as grey.
-    magenta: _FormatText = _color(Fore.MAGENTA)
-    red: _FormatText = _color(Fore.RED)
-    yellow: _FormatText = _color(Fore.YELLOW)
-
-    alert: _FormatText = magenta
-    error: _FormatText = red
-    highlight: _FormatText = cyan
-    lowlight: _FormatText = grey
-    success: _FormatText = green
-    warning: _FormatText = yellow
+    @classmethod
+    def blue(cls, text: str) -> str:
+        return cls._color_text(Fore.BLUE, text)
 
     @classmethod
-    def default(cls) -> Colors:
+    def cyan(cls, text: str) -> str:
+        return cls._color_text(Fore.CYAN, text)
+
+    @classmethod
+    def green(cls, text: str) -> str:
+        return cls._color_text(Fore.GREEN, text)
+
+    @classmethod
+    def grey(cls, text: str) -> str:
+        return cls._color_text(Fore.BLACK, text)  # "Bright black" is displayed as grey.
+
+    @classmethod
+    def magenta(cls, text: str) -> str:
+        return cls._color_text(Fore.MAGENTA, text)
+
+    @classmethod
+    def red(cls, text: str) -> str:
+        return cls._color_text(Fore.RED, text)
+
+    @classmethod
+    def yellow(cls, text: str) -> str:
+        return cls._color_text(Fore.YELLOW, text)
+
+
+@dataclass(eq=False, frozen=True)
+class ThemeColors:
+    primary: Callable[[str], str] = str
+    _: KW_ONLY = None  # type: ignore[assignment]
+    error: Callable[[str], str] = Color.red
+    highlight: Callable[[str], str] = Color.cyan
+    lowlight: Callable[[str], str] = Color.grey
+    success: Callable[[str], str] = Color.green
+    warning: Callable[[str], str] = Color.yellow
+
+    @classmethod
+    def default(cls) -> ThemeColors:
         return cls()
 
     @classmethod
-    def off(cls) -> Colors:
-        return cls(**{key: _no_op for key in asdict(cls.default())})
-
-
-# Initialize colorama the first time this module is imported anywhere.
-init(autoreset=True)
+    def off(cls) -> ThemeColors:
+        return cls(**{key: str for key in asdict(cls.default())})

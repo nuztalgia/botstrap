@@ -3,14 +3,14 @@ from __future__ import annotations
 from getpass import getpass
 from typing import Callable, Final
 
-from botstrap.colors import Colors
+from botstrap.colors import ThemeColors
 from botstrap.strings import Strings
 
 
 class Manager:
-    def __init__(self, name: str, colors: Colors, strings: Strings) -> None:
+    def __init__(self, name: str, colors: ThemeColors, strings: Strings) -> None:
         self._name: Final[str] = name
-        self._colors: Final[Colors] = colors
+        self._colors: Final[ThemeColors] = colors
         self._strings: Final[Strings] = strings
         self._cli: Final[CLI] = CLI(self)
 
@@ -23,7 +23,7 @@ class Manager:
         return self._cli
 
     @property
-    def colors(self) -> Colors:
+    def colors(self) -> ThemeColors:
         return self._colors
 
     @property
