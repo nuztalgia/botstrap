@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import asdict, dataclass
 from typing import Callable, TypeAlias
 
-from colorama import Fore, Style
+from colorama import Fore, Style, init
 
 _FormatText: TypeAlias = Callable[[str], str]
 
@@ -44,4 +44,5 @@ class Colors:
         return cls(**{key: _no_op for key in asdict(cls.default())})
 
 
-_colors: Colors = Colors.default()
+# Initialize colorama the first time this module is imported anywhere.
+init(autoreset=True)

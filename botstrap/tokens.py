@@ -3,25 +3,22 @@ from __future__ import annotations
 import re
 from pathlib import Path
 from string import Template
-from typing import Final
+from typing import Final, Iterable
 
 from cryptography.fernet import InvalidToken
 
-from botstrap.colors import _colors as _c
+from botstrap.cli import Manager
 from botstrap.secrets import Secret
-from botstrap.strings import _strings as _s
-from botstrap.userflow import confirm_or_exit, exit_process, get_hidden_input, get_input
 
 _LENGTHS: Final[tuple[int, ...]] = (24, 6, 27)
 _PATTERN: Final[re.Pattern] = re.compile(r"\.".join(r"[\w-]{%i}" % i for i in _LENGTHS))
 _PLACEHOLDER: Final[str] = ".".join("*" * i for i in _LENGTHS)
 
-_tokens: tuple[Token, ...] = ()
-
 
 class Token(Secret):
     def __init__(
         self,
+        manager: Manager,
         uid: str,
         requires_password: bool = False,
         display_name: str | None = None,
@@ -34,32 +31,19 @@ class Token(Secret):
             storage_directory=storage_directory,
             valid_pattern=_matches_token_pattern,
         )
-
-    @classmethod
-    def default_dev(cls) -> Token:
-        return cls(
-            uid="dev",
-            requires_password=False,
-            display_name=_c.yellow("development"),
-        )
-
-    @classmethod
-    def default_prod(cls) -> Token:
-        return cls(
-            uid="prod",
-            requires_password=True,
-            display_name=_c.green("production"),
-        )
+        self.manager: Final[Manager] = manager
 
     def resolve(
         self,
         create_if_missing: bool = True,
         error_msg_prefix: str = "\n",
     ) -> str | None:
+        cli, colors, _s = self.manager.cli, self.manager.colors, self.manager.strings
+
         if self.file_path.is_file():
             if self.requires_password:
                 print(_sub_token(_s.password_cue, self))
-                password = get_hidden_input(_s.password_prompt)
+                password = cli.get_hidden_input(_s.password_prompt)
             else:
                 password = None
 
@@ -68,42 +52,44 @@ class Token(Secret):
             except (InvalidToken, ValueError):
                 print(error_msg_prefix + _sub_token(_s.bot_token_mismatch, self))
                 if self.requires_password:
-                    print(_c.lowlight(_s.password_mismatch))
+                    print(colors.lowlight(_s.password_mismatch))
                 return None
 
         if not create_if_missing:
             print(error_msg_prefix + _sub_token(_s.bot_token_missing, self))
             return None
 
-        confirm_or_exit(_sub_token(_s.bot_token_missing_add, self))
+        cli.confirm_or_exit(_sub_token(_s.bot_token_missing_add, self))
 
         self.write(
-            data=(bot_token := _get_new_bot_token()),
+            data=(bot_token := _get_new_bot_token(self)),
             password=_get_new_password(self) if self.requires_password else None,
         )
 
-        print(_c.success(_s.bot_token_creation_success))
-        confirm_or_exit(_s.bot_token_creation_run)
+        print(colors.success(_s.bot_token_creation_success))
+        cli.confirm_or_exit(_s.bot_token_creation_run)
 
         return bot_token
 
 
-def manage_tokens() -> None:
-    while saved_tokens := [t for t in _tokens if t.file_path.is_file()]:
+def manage_tokens(manager: Manager, tokens: Iterable[Token]) -> None:
+    cli, colors, _s = manager.cli, manager.colors, manager.strings
+
+    while saved_tokens := [token for token in tokens if token.file_path.is_file()]:
         print(_s.bot_token_mgmt_list)
         for token in saved_tokens:
-            print(f"  * {_c.highlight(token.uid)} -> {token.file_path}")
+            print(f"  * {colors.highlight(token.uid)} -> {token.file_path}")
 
-        confirm_or_exit(_s.bot_token_mgmt_delete)
-        uids = [t.uid for t in saved_tokens]
+        cli.confirm_or_exit(_s.bot_token_mgmt_delete)
+        uids = [token.uid for token in saved_tokens]
 
-        while (uid := get_input(_s.bot_token_deletion_cue)) not in uids:
-            print(_c.warning(_s.bot_token_deletion_mismatch))
+        while (uid := cli.get_input(_s.bot_token_deletion_cue)) not in uids:
+            print(colors.warning(_s.bot_token_deletion_mismatch))
             print(_s.bot_token_deletion_hint.substitute(examples=uids))
-            confirm_or_exit(_s.bot_token_deletion_retry)
+            cli.confirm_or_exit(_s.bot_token_deletion_retry)
 
-        next(t for t in _tokens if t.uid == uid).clear()
-        print(_c.success(_s.bot_token_deletion_success))
+        next(token for token in tokens if token.uid == uid).clear()
+        print(colors.success(_s.bot_token_deletion_success))
 
     print(_s.bot_token_mgmt_none)
 
@@ -116,34 +102,38 @@ def _sub_token(template: Template, token: Token) -> str:
     return template.substitute(token_label=token.display_name)
 
 
-def _get_new_bot_token() -> str:
+def _get_new_bot_token(token: Token) -> str:
+    cli, colors, _s = token.manager.cli, token.manager.colors, token.manager.strings
+
     def format_bot_token_text(bot_token_text: str) -> str:
         # Let the default formatter handle the string if it doesn't look like a token.
         return _PLACEHOLDER if _matches_token_pattern(bot_token_text) else ""
 
     print(_s.bot_token_creation_cue)
-    bot_token = get_hidden_input(_s.bot_token_prompt, format_bot_token_text)
+    bot_token = cli.get_hidden_input(_s.bot_token_prompt, format_bot_token_text)
 
     if not _matches_token_pattern(bot_token):
         print(_s.bot_token_creation_hint)
-        print(_c.lowlight(f"{_s.bot_token_prompt}: {_PLACEHOLDER}"))
-        exit_process(_s.bot_token_creation_mismatch)
+        print(colors.lowlight(f"{_s.bot_token_prompt}: {_PLACEHOLDER}"))
+        cli.exit_process(_s.bot_token_creation_mismatch)
 
     return bot_token
 
 
 def _get_new_password(token: Token) -> str:
-    print(_sub_token(_s.password_creation_info, token))
-    print(_sub_token(_s.password_creation_cue, token))
+    cli, colors, _s = token.manager.cli, token.manager.colors, token.manager.strings
     min_length = type(token).MINIMUM_PASSWORD_LENGTH
 
-    while len(password := get_hidden_input(_s.password_prompt)) < min_length:
-        print(_c.warning(_s.password_creation_hint.substitute(min_length=min_length)))
-        confirm_or_exit(_s.password_creation_retry)
+    print(_sub_token(_s.password_creation_info, token))
+    print(_sub_token(_s.password_creation_cue, token))
+
+    while len(password := cli.get_hidden_input(_s.password_prompt)) < min_length:
+        hint = _s.password_creation_hint.substitute(min_length=min_length)
+        cli.confirm_or_exit(f"{colors.warning(hint)}\n{_s.password_creation_retry}")
 
     print(_s.password_confirmation_cue)  # lgtm[py/clear-text-logging-sensitive-data]
-    while get_hidden_input(_s.password_prompt) != password:
-        print(_c.warning(_s.password_confirmation_hint))
-        confirm_or_exit(_s.password_confirmation_retry)
+    while cli.get_hidden_input(_s.password_prompt) != password:
+        print(colors.warning(_s.password_confirmation_hint))
+        cli.confirm_or_exit(_s.password_confirmation_retry)
 
     return password

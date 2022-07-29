@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from dataclasses import asdict, dataclass
 from string import Template
+from typing import Any, Callable, Iterable, overload
 
 
 @dataclass(eq=False, frozen=True, kw_only=True)
@@ -66,8 +67,32 @@ class Strings:
         "\nThat password doesn't match your original password."
     )
     password_confirmation_retry: str = "Would you like to try again?"
+    affirmation_instruction: str = "If so, type"
+    affirmation_conjunction: str = "or"
+    affirmation_responses: tuple[str, ...] = ("yes", "y")
     exit_user_choice: str = "\nReceived a non-affirmative response."
     exit_notice: str = "Exiting process.\n"
+
+    def get_affirmation_prompt(
+        self,
+        format_response: Callable[[str], str] | None = None,
+        quote_responses: bool = True,
+    ) -> str:
+        def get_display_response(response: str):
+            if format_response:
+                response = format_response(response)
+            if quote_responses:
+                response = f'"{response.strip()}"'
+            return response
+
+        responses = [get_display_response(resp) for resp in self.affirmation_responses]
+        conj, sep = self.affirmation_conjunction.strip(), ", "
+
+        return f"{self.affirmation_instruction.strip()} " + (
+            f" {conj} ".join(responses)
+            if len(responses) < 3
+            else f"{sep.join(responses[:-1])}{sep}{conj} {responses[-1]}"
+        )
 
     @classmethod
     def default(cls) -> Strings:
@@ -75,16 +100,37 @@ class Strings:
 
     @classmethod
     def compact(cls) -> Strings:
-        return cls(
-            **{
-                key: type(value)(  # Maintain the type of the field.
-                    (value.template if isinstance(value, Template) else value)
-                    .strip("\n")  # First, strip any leading/trailing newlines.
-                    .replace("\n", " ")  # Then, replace remaining newlines with spaces.
-                )
-                for key, value in asdict(cls.default()).items()
-            }
-        )
+        default_items = asdict(cls.default()).items()
+        return cls(**{key: _get_compact_value(value) for key, value in default_items})
 
 
-_strings: Strings = Strings.default()
+@overload
+def _get_compact_value(value: str) -> str:  # type: ignore[misc]
+    ...
+
+
+@overload
+def _get_compact_value(value: Iterable[str]) -> tuple[str, ...]:
+    ...
+
+
+@overload
+def _get_compact_value(value: Template) -> Template:
+    ...
+
+
+def _get_compact_value(value: Any) -> str | Template | tuple[str, ...]:
+    if isinstance(value, str):
+        value = value.strip("\n")  # First, strip any leading and/or trailing newlines.
+        return value.replace("\n", " ")  # Then, replace remaining newlines with spaces.
+    elif isinstance(value, Iterable):
+        # Recursively call this function on each item in the iterable, and use
+        # tuple comprehension to assemble the results into an immutable object.
+        return tuple(_get_compact_value(item) for item in value)
+    elif isinstance(value, Template):
+        # Construct a new Template in which the template string is produced by
+        # recursively calling this function on the original template string.
+        return Template(_get_compact_value(value.template))
+    else:
+        # In theory, there shouldn't be any other value types, but just in case...
+        return _get_compact_value(str(value))

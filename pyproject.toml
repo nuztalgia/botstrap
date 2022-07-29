@@ -23,9 +23,6 @@ classifiers = [
 ]
 dynamic = ["dependencies", "optional-dependencies", "urls", "version"]
 
-[project.scripts]
-qibot = "botstrap.cli:main"
-
 [tool.black]
 target-version = ["py310"]
 
