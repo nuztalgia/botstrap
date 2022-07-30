@@ -9,17 +9,17 @@ from botstrap.metadata import Metadata
 from botstrap.strings import Strings
 from botstrap.tokens import Token
 
-_DEFAULT_NAME: Final[str] = "bot"
+_DEFAULT_PROGRAM_NAME: Final[str] = "bot"
 
 
 class Botstrap(Manager):
     def __init__(
         self,
-        name: str | None = None,
         colors: ThemeColors = ThemeColors.default(),
         strings: Strings = Strings.default(),
+        program_name: str | None = None,
     ) -> None:
-        name = name or Metadata.get_project_name() or _DEFAULT_NAME
+        name = program_name or Metadata.get_program_name() or _DEFAULT_PROGRAM_NAME
         super().__init__(name, colors, strings)
         self._tokens_by_uid: Final[dict[str, Token]] = {}
 

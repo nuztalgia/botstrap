@@ -70,6 +70,8 @@ class Strings:
     affirmation_instruction: str = "If so, type"
     affirmation_conjunction: str = "or"
     affirmation_responses: tuple[str, ...] = ("yes", "y")
+    cli_prefix_main: Template = Template("\n$program_name:")
+    cli_prefix_error: str = "error:"
     exit_user_choice: str = "\nReceived a non-affirmative response."
     exit_notice: str = "Exiting process.\n"
 

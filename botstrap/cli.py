@@ -30,6 +30,18 @@ class Manager:
     def strings(self) -> Strings:
         return self._strings
 
+    def _print_prefixed_message(
+        self,
+        message: str = "",
+        is_error: bool = False,
+        suppress_newline: bool = False,
+    ) -> None:
+        name = self.colors.primary(self.name)
+        program_prefix = self.strings.cli_prefix_main.substitute(program_name=name)
+        error_label = self.strings.cli_prefix_error.strip() if is_error else None
+        end = "\n" if (message and not suppress_newline) else " "
+        print(" ".join(s for s in (program_prefix, error_label, message) if s), end=end)
+
 
 class CLI:
     def __init__(self, manager: Manager) -> None:

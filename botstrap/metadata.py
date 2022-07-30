@@ -23,7 +23,7 @@ class Metadata:
             return {}
 
     @classmethod
-    def get_project_name(cls) -> Optional[str]:
+    def get_program_name(cls) -> Optional[str]:
         if isinstance(package_name := cls.get_package_info().get("name"), str):
             return package_name
 
