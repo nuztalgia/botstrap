@@ -1,5 +1,6 @@
 import sys
 from email.errors import MessageError
+from importlib import import_module
 from importlib.metadata import metadata
 from pathlib import Path
 from typing import Optional
@@ -38,3 +39,9 @@ class Metadata:
                 return path.name
 
         return None
+
+    @classmethod
+    def import_class(cls, qualified_name: str) -> Optional[type]:
+        module_name, _, class_name = qualified_name.rpartition(".")
+        result = getattr(import_module(module_name), class_name, None)
+        return result if result and isinstance(result, type) else None

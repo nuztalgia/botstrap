@@ -72,6 +72,16 @@ class Strings:
     affirmation_responses: tuple[str, ...] = ("yes", "y")
     cli_prefix_main: Template = Template("\n$program_name:")
     cli_prefix_error: str = "error:"
+    discord_login_attempt: Template = Template(
+        "$token_label: Attempting to log in to Discord..."
+    )
+    discord_login_success: Template = Template(
+        '$token_label: Successfully logged in as "$bot_identifier".\n'
+    )
+    discord_login_failure: str = (
+        "Failed to log in. Make sure your bot token is configured properly."
+    )
+    exit_keyboard_interrupt: str = "\nReceived a keyboard interrupt."
     exit_user_choice: str = "\nReceived a non-affirmative response."
     exit_notice: str = "Exiting process.\n"
 
