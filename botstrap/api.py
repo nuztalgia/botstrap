@@ -20,7 +20,7 @@ class Botstrap(Manager):
         strings: Strings = Strings.default(),
         program_name: str | None = None,
     ) -> None:
-        name = program_name or Metadata.get_program_name() or _DEFAULT_PROGRAM_NAME
+        name = program_name or Metadata.guess_program_name() or _DEFAULT_PROGRAM_NAME
         super().__init__(name, colors, strings)
         self._tokens_by_uid: Final[dict[str, Token]] = {}
 
