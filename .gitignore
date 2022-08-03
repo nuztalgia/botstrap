@@ -9,6 +9,6 @@
 .mypy_cache/
 .vscode/
 __pycache__/
-config.json
+build/
 dist/
 venv/
