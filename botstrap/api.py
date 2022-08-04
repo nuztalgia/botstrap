@@ -3,17 +3,13 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Final
 
-from botstrap.cli import Manager
-from botstrap.colors import ThemeColors
-from botstrap.metadata import Metadata
-from botstrap.strings import Strings
-from botstrap.tokens import Token
+from botstrap.internal import CliManager, Metadata, Strings, ThemeColors, Token
 
 _DEFAULT_PROGRAM_NAME: Final[str] = "bot"
 _DEFAULT_TOKEN_NAME: Final[str] = "default"
 
 
-class Botstrap(Manager):
+class Botstrap(CliManager):
     def __init__(
         self,
         colors: ThemeColors = ThemeColors.default(),

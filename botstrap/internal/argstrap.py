@@ -1,11 +1,11 @@
 from argparse import ArgumentParser, RawTextHelpFormatter
 from typing import Final, Optional
 
-from botstrap.cli import Manager
-from botstrap.colors import ThemeColors
-from botstrap.metadata import Metadata
-from botstrap.strings import Strings
-from botstrap.tokens import Token
+from botstrap.internal.cmdline import CliManager
+from botstrap.internal.colors import ThemeColors
+from botstrap.internal.metadata import Metadata
+from botstrap.internal.strings import Strings
+from botstrap.internal.tokens import Token
 
 _HELP_KEY: Final[str] = "help"
 _VERSION_KEY: Final[str] = "version"
@@ -13,10 +13,10 @@ _TOKEN_KEY: Final[str] = "token"
 _TOKEN_METAVAR: Final[str] = "<token id>"
 
 
-class ArgParser(ArgumentParser):
+class Argstrap(ArgumentParser):
     def __init__(
         self,
-        manager: Manager,
+        manager: CliManager,
         description: Optional[str],
         version: Optional[str],
         registered_tokens: list[Token],
@@ -85,7 +85,7 @@ def _build_usage_string(
 
 
 def _build_description_string(
-    manager: Manager,
+    manager: CliManager,
     description: Optional[str],
     default_token: Optional[Token],
     indentation: str = "  ",

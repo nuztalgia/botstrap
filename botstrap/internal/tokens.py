@@ -7,8 +7,8 @@ from typing import Final, Iterable
 
 from cryptography.fernet import InvalidToken
 
-from botstrap.cli import Manager
-from botstrap.secrets import Secret
+from botstrap.internal.cmdline import CliManager
+from botstrap.internal.secrets import Secret
 
 _LENGTHS: Final[tuple[int, ...]] = (24, 6, 27)
 _PATTERN: Final[re.Pattern] = re.compile(r"\.".join(r"[\w-]{%i}" % i for i in _LENGTHS))
@@ -18,7 +18,7 @@ _PLACEHOLDER: Final[str] = ".".join("*" * i for i in _LENGTHS)
 class Token(Secret):
     def __init__(
         self,
-        manager: Manager,
+        manager: CliManager,
         uid: str,
         requires_password: bool = False,
         display_name: str | None = None,
@@ -31,7 +31,7 @@ class Token(Secret):
             storage_directory=storage_directory,
             valid_pattern=_matches_token_pattern,
         )
-        self.manager: Final[Manager] = manager
+        self.manager: Final[CliManager] = manager
 
     def resolve(self, create_if_missing: bool) -> str | None:
         cli, colors, s = self.manager.cli, self.manager.colors, self.manager.strings
@@ -72,7 +72,7 @@ class Token(Secret):
         return bot_token
 
 
-def manage_tokens(manager: Manager, tokens: Iterable[Token]) -> None:
+def manage_tokens(manager: CliManager, tokens: Iterable[Token]) -> None:
     cli, colors, s = manager.cli, manager.colors, manager.strings
 
     while saved_tokens := [token for token in tokens if token.file_path.is_file()]:

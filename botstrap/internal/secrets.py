@@ -9,7 +9,7 @@ from cryptography.fernet import Fernet
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 
-from botstrap.metadata import Metadata
+from botstrap.internal.metadata import Metadata
 
 _CONTENT_FILE: Final[str] = "content"
 _FERNET_FILE: Final[str] = "fernet"

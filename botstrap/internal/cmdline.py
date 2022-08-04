@@ -3,23 +3,23 @@ from __future__ import annotations
 from getpass import getpass
 from typing import Callable, Final
 
-from botstrap.colors import ThemeColors
-from botstrap.strings import Strings
+from botstrap.internal.colors import ThemeColors
+from botstrap.internal.strings import Strings
 
 
-class Manager:
+class CliManager:
     def __init__(self, name: str, colors: ThemeColors, strings: Strings) -> None:
         self._name: Final[str] = name
         self._colors: Final[ThemeColors] = colors
         self._strings: Final[Strings] = strings
-        self._cli: Final[CLI] = CLI(self)
+        self._cli: Final[CliUtils] = CliUtils(self)
 
     @property
     def name(self) -> str:
         return self._name
 
     @property
-    def cli(self) -> CLI:
+    def cli(self) -> CliUtils:
         return self._cli
 
     @property
@@ -43,9 +43,9 @@ class Manager:
         print(" ".join(s for s in (program_prefix, error_label, message) if s), end=end)
 
 
-class CLI:
-    def __init__(self, manager: Manager) -> None:
-        self.manager: Final[Manager] = manager
+class CliUtils:
+    def __init__(self, manager: CliManager) -> None:
+        self.manager: Final[CliManager] = manager
 
     def confirm_or_exit(self, question: str) -> None:
         if not self.get_bool_input(question):
