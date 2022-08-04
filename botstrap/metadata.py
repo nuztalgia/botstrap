@@ -1,7 +1,7 @@
 import sys
 from email.errors import MessageError
 from importlib import import_module
-from importlib.metadata import entry_points, metadata
+from importlib.metadata import PackageNotFoundError, entry_points, metadata
 from pathlib import Path
 from types import ModuleType
 from typing import Final, Iterator, Optional
@@ -25,7 +25,7 @@ class Metadata:
         try:
             # noinspection PyUnresolvedReferences
             return metadata(package_name).json
-        except MessageError:
+        except (MessageError, PackageNotFoundError):
             return {}
 
     @classmethod
@@ -41,7 +41,7 @@ class Metadata:
         if isinstance(package_name := cls.get_package_info().get("name"), str):
             return package_name
 
-        irrelevant_names = ("main", "script", "src")
+        irrelevant_names = ("main", "src")
         dirs_to_climb = 2  # Climbing too many dirs will also yield irrelevant names.
 
         def is_relevant_name(path_name: str) -> bool:
@@ -66,8 +66,12 @@ class Metadata:
             if arg == sys.executable:
                 yield arg_as_path.stem
             elif arg_as_path.exists():
-                yield str(arg_as_path.relative_to("."))
+                try:
+                    yield str(arg_as_path.relative_to("."))
+                except ValueError:
+                    yield arg_as_path.name
+                return
             else:
                 yield arg
                 if not arg.startswith("-"):
-                    return  # Stop after yielding the first non-option arg.
+                    return
