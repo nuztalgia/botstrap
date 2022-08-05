@@ -17,6 +17,30 @@ _DEFAULT_TOKEN_NAME: Final[str] = "default"
 
 
 class Botstrap(CliManager):
+    """The primary API for bot token storage, retrieval, and management.
+
+    This class contains methods that facilitate the simple and secure handling of
+    Discord bot tokens. It maintains a token registry to enable programmatic declaration
+    of expected/allowed tokens, and provides a CLI for interactive addition and deletion
+    of encrypted token data. This class also maintains some state corresponding to its
+    constructor arguments, which collectively ensure a consistent look and feel for the
+    aforementioned CLI.
+
+    Args:
+        colors:
+            A `ThemeColors` instance specifying the colors to be used by the CLI for
+            this Botstrap integration. Defaults to commonly-used colors (e.g. green for
+            success, red for error). Set this to `ThemeColors.off()` to disable colors.
+        strings:
+            A `Strings` instance specifying the strings to be used by the CLI for this
+            Botstrap integration. Defaults to English text with liberal spacing for
+            readability. Set this to `Strings.compact()` to disable superfluous spacing.
+        program_name:
+            An optional string containing the name of your bot. If omitted or empty,
+            Botstrap will try to determine an appropriate name from module and/or file
+            metadata. If unsuccessful, it will simply use the default name: "bot".
+    """
+
     def __init__(
         self,
         colors: ThemeColors = ThemeColors.default(),

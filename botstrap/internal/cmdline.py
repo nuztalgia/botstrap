@@ -8,6 +8,21 @@ from botstrap.internal.strings import Strings
 
 
 class CliManager:
+    """Manages UX state to ensure a consistent look and feel for the CLI.
+
+    Maintains state corresponding to the following constructor arguments, and allows
+    subsequent read-only property access to their values.
+
+    Args:
+        name:
+            The name of the bot or program. Printed as a prefix for high-level CLI
+            messages, and may also be used to look up package metadata (if applicable).
+        colors:
+            A `ThemeColors` instance specifying the colors to be used by the CLI.
+        strings:
+            A `Strings` instance specifying the strings to be used by the CLI.
+    """
+
     def __init__(self, name: str, colors: ThemeColors, strings: Strings) -> None:
         self._name: Final[str] = name
         self._colors: Final[ThemeColors] = colors
@@ -16,22 +31,28 @@ class CliManager:
 
     @property
     def name(self) -> str:
+        """The name of the bot/program that created this instance."""
         return self._name
 
     @property
     def cli(self) -> CliUtils:
+        """A group of CLI utility functions that adhere to this instance's UX state."""
         return self._cli
 
     @property
     def colors(self) -> ThemeColors:
+        """The `ThemeColors` used by the CLI for the lifetime of this instance."""
         return self._colors
 
     @property
     def strings(self) -> Strings:
+        """The `Strings` used by the CLI for the lifetime of this instance."""
         return self._strings
 
 
 class CliUtils:
+    """A collection of CLI utility methods that produce a consistent UX."""
+
     def __init__(self, manager: CliManager) -> None:
         self.manager: Final[CliManager] = manager
 
