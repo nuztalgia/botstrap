@@ -8,9 +8,12 @@ from botstrap.internal.strings import Strings
 from botstrap.internal.tokens import Token
 
 _HELP_KEY: Final[str] = "help"
-_VERSION_KEY: Final[str] = "version"
 _TOKEN_KEY: Final[str] = "token"
+_TOKENS_KEY: Final[str] = "tokens"
+_VERSION_KEY: Final[str] = "version"
+
 _TOKEN_METAVAR: Final[str] = "<token id>"
+_TOKENS_DEST: Final[str] = "manage_tokens"
 
 
 class Argstrap(ArgumentParser):
@@ -20,7 +23,6 @@ class Argstrap(ArgumentParser):
         description: Optional[str],
         version: Optional[str],
         registered_tokens: list[Token],
-        additional_parsers: list[ArgumentParser],
     ) -> None:
         prog = Metadata.get_program_command(manager.name)
         is_multi_token = len(registered_tokens) > 1
@@ -30,13 +32,16 @@ class Argstrap(ArgumentParser):
             prog=manager.colors.primary(prog),
             usage=_build_usage_string(manager.colors, prog, version, is_multi_token),
             description=_build_description_string(manager, description, default_token),
-            parents=additional_parsers,
             formatter_class=RawTextHelpFormatter,
             add_help=False,
         )
 
         if is_multi_token:
             self._add_token_argument(manager.strings, registered_tokens)
+
+        self._add_option_argument(
+            _TOKENS_KEY, manager.strings.cli_desc_manage_tokens, dest=_TOKENS_DEST
+        )
 
         if version:
             self._add_option_argument(_VERSION_KEY, manager.strings.cli_desc_version)
@@ -52,7 +57,9 @@ class Argstrap(ArgumentParser):
             nargs="?",
             choices=(uids := [token.uid for token in valid_tokens]),
             default=uids[0],
-            help=strings.cli_desc_token_id,
+            help=strings.cli_desc_token_id.substitute(
+                token_ids='"' + '" / "'.join(uids) + '"',
+            ),
         )
 
     def _add_option_argument(
@@ -60,8 +67,11 @@ class Argstrap(ArgumentParser):
         name: str,
         help_string: str,
         action: str = "store_true",
+        dest: Optional[str] = None,
     ) -> None:
-        self.add_argument(f"-{name[0]}", f"--{name}", help=help_string, action=action)
+        self.add_argument(
+            f"-{name[0]}", f"--{name}", help=help_string, action=action, dest=dest
+        )
 
 
 def _build_usage_string(
@@ -72,12 +82,21 @@ def _build_usage_string(
 ) -> str:
     usage_components = [colors.primary(prog_name)]
 
-    def add_component(display_name: str, is_option: bool = True) -> None:
-        usage_components.append(f"[{'--' if is_option else ''}{display_name}]")
+    def add_component(
+        display_name: str, *, is_option: bool = True, abbreviate_option: bool = True
+    ) -> None:
+        prefix_chars = 0
+        if is_option:
+            display_name = display_name[0] if abbreviate_option else display_name
+            prefix_chars = 1 if abbreviate_option else 2
+        usage_components.append(f"[{'-' * prefix_chars}{display_name}]")
 
-    add_component(_HELP_KEY)
+    add_component(_HELP_KEY, abbreviate_option=False)
+    add_component(_TOKENS_KEY)
+
     if version:
         add_component(_VERSION_KEY)
+
     if is_multi_token:
         add_component(colors.lowlight(_TOKEN_METAVAR), is_option=False)
 

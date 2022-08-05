@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Final
+from typing import Final, Iterable
 
 from botstrap.internal import CliManager, Metadata, Strings, ThemeColors, Token
 
@@ -83,6 +83,9 @@ class Botstrap(CliManager):
 
         return token, token_value
 
+    def _handle_keyboard_interrupt(self) -> None:
+        self.cli.exit_process(self.strings.exit_keyboard_interrupt, is_error=False)
+
     def _init_bot(
         self, token_label: str, token_value: str, bot_class: type, **bot_options
     ) -> None:
@@ -111,5 +114,26 @@ class Botstrap(CliManager):
             self._print_prefixed_message(is_error=True)  # Print error prefix only.
             self.cli.exit_process(self.strings.discord_login_failure)
 
-    def _handle_keyboard_interrupt(self) -> None:
-        self.cli.exit_process(self.strings.exit_keyboard_interrupt, is_error=False)
+    def _manage_tokens(self, tokens: Iterable[Token]) -> None:
+        while saved_tokens := [token for token in tokens if token.file_path.is_file()]:
+            self._print_prefixed_message(self.strings.bot_token_mgmt_list)
+
+            for count, token in enumerate(saved_tokens, start=1):
+                index = str(token.file_path).rindex(token.uid) + len(token.uid)
+                path = self.colors.lowlight(f"{str(token.file_path)[:index]}.*")
+                print(f"  {count}) {self.colors.highlight(token.uid)} -> {path}")
+
+            self.cli.confirm_or_exit(self.strings.bot_token_mgmt_delete)
+
+            uids = [token.uid for token in saved_tokens]
+            prompt = self.strings.bot_token_deletion_cue
+
+            while (uid := self.cli.get_input(prompt)) not in uids:
+                print(self.colors.warning(self.strings.bot_token_deletion_mismatch))
+                print(self.strings.bot_token_deletion_hint.substitute(examples=uids))
+                self.cli.confirm_or_exit(self.strings.bot_token_deletion_retry)
+
+            next(token for token in tokens if token.uid == uid).clear()
+            print(self.colors.success(self.strings.bot_token_deletion_success))
+
+        self._print_prefixed_message(self.strings.bot_token_mgmt_none)

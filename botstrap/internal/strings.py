@@ -76,7 +76,10 @@ class Strings:
         'Run "$program_name" with no parameters to start the bot$token_specifier.'
     )
     cli_desc_info_specifier: Template = Template("in $token_label mode")
-    cli_desc_token_id: str = "The unique ID of the bot token to use."
+    cli_desc_token_id: Template = Template(
+        "The ID of the bot token to use for log-in: $token_ids"
+    )
+    cli_desc_manage_tokens: str = "View/manage your saved Discord bot tokens."
     cli_desc_version: str = "Display the currently installed version."
     cli_desc_help: str = "Display this help message."
     discord_login_attempt: Template = Template(

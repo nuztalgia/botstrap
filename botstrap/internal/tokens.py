@@ -3,7 +3,7 @@ from __future__ import annotations
 import re
 from pathlib import Path
 from string import Template
-from typing import Final, Iterable
+from typing import Final
 
 from cryptography.fernet import InvalidToken
 
@@ -70,28 +70,6 @@ class Token(Secret):
         cli.confirm_or_exit(s.bot_token_creation_run)
 
         return bot_token
-
-
-def manage_tokens(manager: CliManager, tokens: Iterable[Token]) -> None:
-    cli, colors, s = manager.cli, manager.colors, manager.strings
-
-    while saved_tokens := [token for token in tokens if token.file_path.is_file()]:
-        print(s.bot_token_mgmt_list)
-        for token in saved_tokens:
-            print(f"  * {colors.highlight(token.uid)} -> {token.file_path}")
-
-        cli.confirm_or_exit(s.bot_token_mgmt_delete)
-        uids = [token.uid for token in saved_tokens]
-
-        while (uid := cli.get_input(s.bot_token_deletion_cue)) not in uids:
-            print(colors.warning(s.bot_token_deletion_mismatch))
-            print(s.bot_token_deletion_hint.substitute(examples=uids))
-            cli.confirm_or_exit(s.bot_token_deletion_retry)
-
-        next(token for token in tokens if token.uid == uid).clear()
-        print(colors.success(s.bot_token_deletion_success))
-
-    print(s.bot_token_mgmt_none)
 
 
 def _matches_token_pattern(text: str) -> bool:
