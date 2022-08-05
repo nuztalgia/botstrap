@@ -3,7 +3,14 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Final, Iterable
 
-from botstrap.internal import CliManager, Metadata, Strings, ThemeColors, Token
+from botstrap.internal import (
+    Argstrap,
+    CliManager,
+    Metadata,
+    Strings,
+    ThemeColors,
+    Token,
+)
 
 _DEFAULT_PROGRAM_NAME: Final[str] = "bot"
 _DEFAULT_TOKEN_NAME: Final[str] = "default"
@@ -19,6 +26,7 @@ class Botstrap(CliManager):
         name = program_name or Metadata.guess_program_name() or _DEFAULT_PROGRAM_NAME
         super().__init__(name, colors, strings)
         self._tokens_by_uid: Final[dict[str, Token]] = {}
+        self._active_token: Token | None = None
 
     def register_token(
         self,
@@ -34,62 +42,89 @@ class Botstrap(CliManager):
         self._tokens_by_uid[token.uid] = token
         return self
 
+    def parse_args(
+        self,
+        description: str | None = None,
+        version: str | None = None,
+    ) -> Botstrap:
+        args = Argstrap(
+            manager=self,
+            description=description,
+            version=version,
+            registered_tokens=(tokens := list(self._tokens_by_uid.values())),
+        ).parse_args()
+
+        if version and args.version:
+            print(version)
+        elif tokens and args.manage_tokens:
+            self._manage_tokens(tokens)
+        else:
+            self._active_token = (
+                tokens[0] if (len(tokens) == 1) else self._tokens_by_uid[args.token]
+            )
+            return self  # This is the only path that will continue program execution.
+
+        raise SystemExit(0)  # Exit successfully if another path was taken & completed.
+
     def retrieve_active_token(
         self,
-        create_if_missing: bool = True,
-        silent: bool = False,
+        *,
+        allow_auto_register_token: bool = True,
+        allow_auto_parse_args: bool = True,
+        allow_token_creation: bool = True,
     ) -> str | None:
-        _, token_value = self._process_tokens(create_if_missing, silent)
-        return token_value
+        if not self._tokens_by_uid:
+            if allow_auto_register_token:
+                uid = _DEFAULT_TOKEN_NAME
+                self.register_token(uid=uid, display_name=self.colors.highlight(uid))
+            else:
+                raise RuntimeError(
+                    "There are no registered tokens to retrieve.\nTo fix this, you can "
+                    "allow auto-register and/or explicitly call `register_token()`."
+                )
 
-    def run_bot(
-        self,
-        bot_class: str | type = "discord.Bot",
-        create_token_if_missing: bool = True,
-        **bot_options,
-    ) -> None:
+        if not self._active_token:
+            if allow_auto_parse_args:
+                self.parse_args()
+            else:
+                raise RuntimeError(
+                    "Cannot confirm active token (args were not parsed).\nTo fix this, "
+                    "you can allow auto-parse and/or explicitly call `parse_args()`."
+                )
+
+        if token := self._active_token:
+            try:
+                return token.resolve(create_if_missing=allow_token_creation)
+            except KeyboardInterrupt:
+                self._handle_keyboard_interrupt()
+
+        return None
+
+    def run_bot(self, bot_class: str | type = "discord.Bot", **options) -> None:
+        token_value = self.retrieve_active_token(
+            allow_auto_register_token=options.pop("allow_auto_register_token", True),
+            allow_auto_parse_args=options.pop("allow_auto_parse_args", True),
+            allow_token_creation=options.pop("allow_token_creation", True),
+        )
         original_bot_class = bot_class
+
         if isinstance(bot_class, str):
             bot_class = Metadata.import_class(bot_class) or ""
 
         if not isinstance(bot_class, type):
             raise TypeError(f'Unable to instantiate bot class: "{original_bot_class}"')
 
-        token, token_value = self._process_tokens(create_token_if_missing)
-        if token and token_value:
-            self._init_bot(token.display_name, token_value, bot_class, **bot_options)
-
-    def _process_tokens(
-        self,
-        create_if_missing: bool = True,
-        silent: bool = False,
-    ) -> tuple[Token | None, str | None]:
-        if not self._tokens_by_uid:
-            if create_if_missing:
-                uid = _DEFAULT_TOKEN_NAME
-                self.register_token(uid=uid, display_name=self.colors.highlight(uid))
-            elif silent:
-                return None, None
-            else:
-                raise RuntimeError("There are no registered tokens to read data from.")
-
-        # TODO: Properly select the token to use (i.e. from command-line args).
-        token, token_value = next(iter(self._tokens_by_uid.values())), None
-
-        try:
-            token_value = token.resolve(create_if_missing)
-        except KeyboardInterrupt:
-            self._handle_keyboard_interrupt()
-
-        return token, token_value
+        if token_value:
+            self._init_bot(token_value, bot_class, **options)
 
     def _handle_keyboard_interrupt(self) -> None:
         self.cli.exit_process(self.strings.exit_keyboard_interrupt, is_error=False)
 
-    def _init_bot(
-        self, token_label: str, token_value: str, bot_class: type, **bot_options
-    ) -> None:
-        bot = bot_class(**bot_options)
+    def _init_bot(self, token_value: str, bot_class: type, **options) -> None:
+        bot = bot_class(**options)
+        token_label = (
+            token.display_name if (token := self._active_token) else _DEFAULT_TOKEN_NAME
+        )
 
         @bot.event
         async def on_connect():
