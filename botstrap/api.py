@@ -129,14 +129,14 @@ class Botstrap(CliManager):
         @bot.event
         async def on_connect():
             bot_name = getattr(bot, "user", type(bot).__name__)
-            self._print_prefixed_message(
+            self.cli.print_prefixed_message(
                 self.strings.discord_login_success.substitute(
                     token_label=token_label,
                     bot_identifier=self.colors.highlight(bot_name),
                 )
             )
 
-        self._print_prefixed_message(
+        self.cli.print_prefixed_message(
             self.strings.discord_login_attempt.substitute(token_label=token_label),
             suppress_newline=True,
         )
@@ -146,12 +146,12 @@ class Botstrap(CliManager):
         except KeyboardInterrupt:
             self._handle_keyboard_interrupt()
         except Metadata.import_class("discord.LoginFailure"):  # type: ignore[misc]
-            self._print_prefixed_message(is_error=True)  # Print error prefix only.
+            self.cli.print_prefixed_message(is_error=True)  # Print error prefix only.
             self.cli.exit_process(self.strings.discord_login_failure)
 
     def _manage_tokens(self, tokens: Iterable[Token]) -> None:
         while saved_tokens := [token for token in tokens if token.file_path.is_file()]:
-            self._print_prefixed_message(self.strings.bot_token_mgmt_list)
+            self.cli.print_prefixed_message(self.strings.bot_token_mgmt_list)
 
             for count, token in enumerate(saved_tokens, start=1):
                 index = str(token.file_path).rindex(token.uid) + len(token.uid)
@@ -171,4 +171,4 @@ class Botstrap(CliManager):
             next(token for token in tokens if token.uid == uid).clear()
             print(self.colors.success(self.strings.bot_token_deletion_success))
 
-        self._print_prefixed_message(self.strings.bot_token_mgmt_none)
+        self.cli.print_prefixed_message(self.strings.bot_token_mgmt_none)
