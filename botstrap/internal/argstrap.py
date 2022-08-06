@@ -17,6 +17,26 @@ _TOKENS_DEST: Final[str] = "manage_tokens"
 
 
 class Argstrap(ArgumentParser):
+    """A subclass of `ArgumentParser` with logic to handle Botstrap-specific use cases.
+
+    Args:
+        manager:
+            A `CliManager` instance specifying the `ThemeColors` and `Strings` to be
+            used by the CLI.
+        description:
+            An optional string containing a description/summary of the bot. Will be
+            displayed along with usage instructions when the `-h` option is specified.
+            If omitted, this field will be populated from package metadata (if it is
+            available). Otherwise, only the usage instructions will be displayed.
+        version:
+            An optional string representing the bot version. Will be displayed when the
+            `-v` option is specified. If omitted, the `-v` option will not be available.
+        registered_tokens:
+            A `list` of all the `Token`s that are recognized by the bot. Will be used to
+            determine the available command-line arguments (e.g. if multiple tokens are
+            supported, a "token id" argument may be passed to select which one to run).
+    """
+
     def __init__(
         self,
         manager: CliManager,
@@ -24,7 +44,7 @@ class Argstrap(ArgumentParser):
         version: Optional[str],
         registered_tokens: list[Token],
     ) -> None:
-        prog = Metadata.get_program_command(manager.name)
+        prog = Metadata.get_program_command(manager.name)[-1]
         is_multi_token = len(registered_tokens) > 1
         default_token = registered_tokens[0] if is_multi_token else None
 
@@ -51,15 +71,15 @@ class Argstrap(ArgumentParser):
         )
 
     def _add_token_argument(self, strings: Strings, valid_tokens: list[Token]) -> None:
+        uids = [token.uid for token in valid_tokens]
+        uids_help_text = '"' + f'" {strings.affirmation_conjunction} "'.join(uids) + '"'
         self.add_argument(
             _TOKEN_KEY,
             metavar=_TOKEN_METAVAR,
             nargs="?",
-            choices=(uids := [token.uid for token in valid_tokens]),
+            choices=uids,
             default=uids[0],
-            help=strings.cli_desc_token_id.substitute(
-                token_ids='"' + '" / "'.join(uids) + '"',
-            ),
+            help=strings.cli_desc_token_id.substitute(token_ids=uids_help_text),
         )
 
     def _add_option_argument(
@@ -121,6 +141,6 @@ def _build_description_string(
     ) or ""
 
     return description + manager.strings.cli_desc_info.substitute(
-        program_name=Metadata.get_program_command(manager.name),
+        program_name=" ".join(Metadata.get_program_command(manager.name)),
         token_specifier=f" {token_spec.strip()}" if token_spec else "",
     )

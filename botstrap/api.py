@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Final, Iterable
+from typing import Final
 
 from botstrap.internal import (
     Argstrap,
@@ -147,7 +147,7 @@ class Botstrap(CliManager):
             >>> )
 
             $ python coolbot.py -h
-            usage: python coolbot.py [--help] [-t]
+            usage: coolbot.py [--help] [-t]
 
               A really cool Discord bot that uses Botstrap!
               Run "python coolbot.py" with no parameters to start the bot.
@@ -187,12 +187,15 @@ class Botstrap(CliManager):
 
         if version and args.version:
             print(version)
-        elif tokens and args.manage_tokens:
+        elif args.manage_tokens:
             self._manage_tokens(tokens)
         else:
-            self._active_token = (
-                tokens[0] if (len(tokens) == 1) else self._tokens_by_uid[args.token]
-            )
+            # If no tokens were manually registered, don't assign the active token here.
+            # The default token will be used if/when a token is needed by other methods.
+            if tokens:
+                self._active_token = (
+                    tokens[0] if (len(tokens) == 1) else self._tokens_by_uid[args.token]
+                )
             return self  # This is the only path that will continue program execution.
 
         raise SystemExit(0)  # Exit successfully if another path was taken & completed.
@@ -206,8 +209,7 @@ class Botstrap(CliManager):
     ) -> str | None:
         if not self._tokens_by_uid:
             if allow_auto_register_token:
-                uid = _DEFAULT_TOKEN_NAME
-                self.register_token(uid=uid, display_name=self.colors.highlight(uid))
+                self._tokens_by_uid[_DEFAULT_TOKEN_NAME] = self._create_default_token()
             else:
                 raise RuntimeError(
                     "There are no registered tokens to retrieve.\nTo fix this, you can "
@@ -248,6 +250,11 @@ class Botstrap(CliManager):
         if token_value:
             self._init_bot(token_value, bot_class, **options)
 
+    def _create_default_token(self) -> Token:
+        return Token(
+            self, (uid := _DEFAULT_TOKEN_NAME), display_name=self.colors.primary(uid)
+        )
+
     def _handle_keyboard_interrupt(self) -> None:
         self.cli.exit_process(self.strings.exit_keyboard_interrupt, is_error=False)
 
@@ -258,7 +265,7 @@ class Botstrap(CliManager):
         )
 
         @bot.event
-        async def on_connect():
+        async def on_connect() -> None:
             bot_name = getattr(bot, "user", type(bot).__name__)
             self.cli.print_prefixed_message(
                 self.strings.discord_login_success.substitute(
@@ -277,10 +284,13 @@ class Botstrap(CliManager):
         except KeyboardInterrupt:
             self._handle_keyboard_interrupt()
         except Metadata.import_class("discord.LoginFailure"):  # type: ignore[misc]
-            self.cli.print_prefixed_message(is_error=True)  # Print error prefix only.
+            self.cli.print_prefixed_message(is_error=True)
             self.cli.exit_process(self.strings.discord_login_failure)
 
-    def _manage_tokens(self, tokens: Iterable[Token]) -> None:
+    def _manage_tokens(self, tokens: list[Token]) -> None:
+        if not any(token for token in tokens if token.uid == _DEFAULT_TOKEN_NAME):
+            tokens.append(self._create_default_token())
+
         while saved_tokens := [token for token in tokens if token.file_path.is_file()]:
             self.cli.print_prefixed_message(self.strings.bot_token_mgmt_list)
 

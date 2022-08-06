@@ -29,12 +29,13 @@ class Metadata:
             return {}
 
     @classmethod
-    def get_program_command(cls, name: str) -> str:
+    def get_program_command(cls, name: str) -> list[str]:
         # noinspection PyArgumentList, PyUnresolvedReferences
         if name in entry_points(group="console_scripts").names:
-            return name
+            # noinspection PyRedundantParentheses
+            return [name]
         else:
-            return " ".join(cls._get_top_level_args())
+            return list(cls._get_top_level_args())
 
     @classmethod
     def guess_program_name(cls) -> Optional[str]:
