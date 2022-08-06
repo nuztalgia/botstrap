@@ -132,7 +132,7 @@ class Botstrap(CliManager):
         """Parses any arguments and options passed in via the command line.
 
         This method should only be called after all expected tokens have been defined
-        with `register_token()`, in order to ensure that the "active" token can be
+        with `register_token()`, in order to ensure that the "active token" can be
         correctly determined from command-line arguments to your bot script.
 
         If your bot doesn't require the customization provided by the parameters to this
@@ -147,6 +147,7 @@ class Botstrap(CliManager):
             >>> )
 
             $ python coolbot.py -h
+
             usage: coolbot.py [--help] [-t]
 
               A really cool Discord bot that uses Botstrap!
@@ -207,6 +208,55 @@ class Botstrap(CliManager):
         allow_auto_parse_args: bool = True,
         allow_token_creation: bool = True,
     ) -> str | None:
+        """Returns the value of the active token, if it exists and can be decrypted.
+
+        The "active token" is the token that should be used to run your bot, taking into
+        account all tokens that have been registered and any arguments that were passed
+        in from the command line. If no custom tokens have been defined, this will be
+        the basic "default" token, as in the example below.
+
+        The "value" of the token is a string containing its decrypted data, which can be
+        plugged into your bot's `run()` method to authenticate and start up your bot.
+        This value should be kept secret and can be very damaging if leaked, so make
+        sure you don't `print()` or otherwise log the result of this method.
+
+        If your bot is modularly coded such that it can be "atomically" instantiated and
+        run by `run_bot()`, consider using that method instead for brevity and safety.
+        This method is provided for cases in which that isn't a viable option, but
+        should be avoided if possible to prevent potential security mishaps.
+
+        Example:
+            >>> from botstrap import Botstrap
+            >>>
+            >>> Botstrap(name="example-bot").retrieve_active_token()
+
+            $ python bot.py
+
+            example-bot: You currently don't have a saved default bot token.
+            Would you like to add one now? If so, type "yes" or "y":
+
+        Args:
+            allow_auto_register_token:
+                Whether to automatically register a simple "default" token if no tokens
+                have been manually registered. Defaults to `True`.
+            allow_auto_parse_args:
+                Whether to automatically parse command-line options and arguments if
+                `parse_args()` has not been manually invoked. Defaults to `True`.
+            allow_token_creation:
+                Whether to interactively prompt to create a token (i.e. encrypt a token
+                value and save it to a new `.key` file for future use) if the active
+                token has not previously been created. Defaults to `True`.
+
+        Returns:
+            The string value of the active token if it exists and can be successfully
+            decrypted, otherwise `None`.
+
+        Raises:
+            RuntimeError:
+                If no tokens have been registered and `allow_auto_register_token` is set
+                to `False`, OR if args have not been parsed and `allow_auto_parse_args`
+                is set to `False`.
+        """
         if not self._tokens_by_uid:
             if allow_auto_register_token:
                 self._tokens_by_uid[_DEFAULT_TOKEN_NAME] = self._create_default_token()
@@ -234,6 +284,58 @@ class Botstrap(CliManager):
         return None
 
     def run_bot(self, bot_class: str | type = "discord.Bot", **options) -> None:
+        """Instantiates the bot as specified and runs it using the active token.
+
+        In the simplest use case, this method will work out-of-the-box with no extra
+        customization needed, as in the example below. This assumes a default token has
+        already been created and that you are using one of the more common Python API
+        wrappers for Discord: discord.py or Pycord.
+
+        In practice, you will likely have to provide a little more information, such as
+        the name (or type) of your `bot_class` if your bot subclasses `discord.Bot` or
+        uses a different Discord library. This method provides a straightforward answer
+        to these more complex use cases, while at the same time preserving most (if not
+        all) of the flexibility provided by your chosen Discord library. See below for
+        more information about the parameters you can pass into this method.
+
+        Example:
+            >>> from botstrap import Botstrap
+            >>>
+            >>> Botstrap().run_bot()
+
+            $ python bot.py
+
+            bot: default: Attempting to log in to Discord...
+            bot: default: Successfully logged in as "BasicBot#1234".
+
+        Args:
+            bot_class:
+                A string or type specifying the class of your bot. Will be instantiated
+                with the `options` keyword args. Must be fully-qualified (i.e. include
+                package/module names if it is a string) and have a method named `run()`
+                that accepts a token string. This method will be invoked with the value
+                of the active token. If omitted, this arg will default to "discord.Bot",
+                which is compatible with the `discord` and `py-cord` packages.
+            options:
+                Any keyword args (e.g. `intents`, `status`) that you would like to pass
+                to your bot class constructor upon instantiation. These may also include
+                any of the keyword args accepted by `retrieve_active_token()`, which
+                will be invoked as specified in order to obtain the token to run your
+                bot. If omitted, default values for all keyword arguments will be used.
+
+        Returns:
+            Nothing.
+
+        Raises:
+            ImportError:
+                If the specified `bot_class` is a string that refers to a type that
+                cannot be imported in the current environment.
+            TypeError:
+                If the specified `bot_class` is not an instantiable type.
+            SystemExit:
+                If Discord login fails, so the bot cannot run. This may be caused by
+                an invalid bot token.
+        """
         token_value = self.retrieve_active_token(
             allow_auto_register_token=options.pop("allow_auto_register_token", True),
             allow_auto_parse_args=options.pop("allow_auto_parse_args", True),
