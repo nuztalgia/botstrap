@@ -84,7 +84,7 @@ class CliUtils:
                 If the user responds non-affirmatively.
         """
         if not self.get_bool_input(question):
-            self.exit_process(self.manager.strings.exit_user_choice, is_error=False)
+            self.exit_process(self.manager.strings.x_reason_choice, is_error=False)
 
     def exit_process(self, reason: str, is_error: bool = True) -> None:
         """Exits the program in a user-friendly manner.
@@ -108,7 +108,7 @@ class CliUtils:
         """
         colors = self.manager.colors
         colored_reason = colors.error(reason) if is_error else colors.lowlight(reason)
-        print(f"{colored_reason} {colors.lowlight(self.manager.strings.exit_notice)}")
+        print(f"{colored_reason} {colors.lowlight(self.manager.strings.x_exiting)}")
         raise SystemExit(1 if is_error else 0)
 
     def get_bool_input(self, question: str) -> bool:
@@ -132,7 +132,7 @@ class CliUtils:
             format_response=self.manager.colors.highlight, quote_responses=True
         )
         result = self.get_input(f"{question} {colored_prompt}:").strip("'\"").lower()
-        return result in self.manager.strings.affirmation_responses
+        return result in self.manager.strings.m_affirm_responses
 
     def get_hidden_input(
         self,
@@ -234,7 +234,7 @@ class CliUtils:
             Nothing.
         """
         name = self.manager.colors.primary(self.manager.name)
-        prefix = self.manager.strings.cli_prefix_main.substitute(program_name=name)
-        error_text = self.manager.strings.cli_prefix_error.strip() if is_error else None
+        prefix = self.manager.strings.m_prefix.substitute(program_name=name)
+        error_text = self.manager.strings.m_prefix_error.strip() if is_error else None
         end = "\n" if (message and not suppress_newline) else " "
         print(" ".join(s for s in (prefix, error_text, message) if s), end=end)

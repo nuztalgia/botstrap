@@ -358,26 +358,21 @@ class Botstrap(CliManager):
         )
 
     def _handle_keyboard_interrupt(self) -> None:
-        self.cli.exit_process(self.strings.exit_keyboard_interrupt, is_error=False)
+        self.cli.exit_process(self.strings.x_reason_interrupt, is_error=False)
 
     def _init_bot(self, token_value: str, bot_class: type, **options) -> None:
         bot = bot_class(**options)
-        token_label = (
-            token.display_name if (token := self._active_token) else _DEFAULT_TOKEN_NAME
-        )
+        token = self._active_token or self._create_default_token()
 
         @bot.event
         async def on_connect() -> None:
-            bot_name = getattr(bot, "user", type(bot).__name__)
+            bot_name = self.colors.highlight(getattr(bot, "user", type(bot).__name__))
             self.cli.print_prefixed_message(
-                self.strings.discord_login_success.substitute(
-                    token_label=token_label,
-                    bot_identifier=self.colors.highlight(bot_name),
-                )
+                self.strings.m_login_success.substitute(bot_name=bot_name, token=token)
             )
 
         self.cli.print_prefixed_message(
-            self.strings.discord_login_attempt.substitute(token_label=token_label),
+            self.strings.m_login.substitute(token=token),
             suppress_newline=True,
         )
 
@@ -387,31 +382,31 @@ class Botstrap(CliManager):
             self._handle_keyboard_interrupt()
         except Metadata.import_class("discord.LoginFailure"):  # type: ignore[misc]
             self.cli.print_prefixed_message(is_error=True)
-            self.cli.exit_process(self.strings.discord_login_failure)
+            self.cli.exit_process(self.strings.m_login_failure)
 
     def _manage_tokens(self, tokens: list[Token]) -> None:
         if not any(token for token in tokens if token.uid == _DEFAULT_TOKEN_NAME):
             tokens.append(self._create_default_token())
 
         while saved_tokens := [token for token in tokens if token.file_path.is_file()]:
-            self.cli.print_prefixed_message(self.strings.bot_token_mgmt_list)
+            self.cli.print_prefixed_message(self.strings.t_manage_list)
 
             for count, token in enumerate(saved_tokens, start=1):
                 index = str(token.file_path).rindex(token.uid) + len(token.uid)
                 path = self.colors.lowlight(f"{str(token.file_path)[:index]}.*")
                 print(f"  {count}) {self.colors.highlight(token.uid)} -> {path}")
 
-            self.cli.confirm_or_exit(self.strings.bot_token_mgmt_delete)
+            self.cli.confirm_or_exit(self.strings.t_delete)
 
             uids = [token.uid for token in saved_tokens]
-            prompt = self.strings.bot_token_deletion_cue
+            prompt = self.strings.t_delete_cue
 
             while (uid := self.cli.get_input(prompt)) not in uids:
-                print(self.colors.warning(self.strings.bot_token_deletion_mismatch))
-                print(self.strings.bot_token_deletion_hint.substitute(examples=uids))
-                self.cli.confirm_or_exit(self.strings.bot_token_deletion_retry)
+                print(self.colors.warning(self.strings.t_delete_mismatch))
+                print(self.strings.t_delete_hint.substitute(token_ids=uids))
+                self.cli.confirm_or_exit(self.strings.t_delete_retry)
 
             next(token for token in tokens if token.uid == uid).clear()
-            print(self.colors.success(self.strings.bot_token_deletion_success))
+            print(self.colors.success(self.strings.t_delete_success))
 
-        self.cli.print_prefixed_message(self.strings.bot_token_mgmt_none)
+        self.cli.print_prefixed_message(self.strings.t_manage_none)

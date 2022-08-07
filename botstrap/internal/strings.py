@@ -1,7 +1,8 @@
 from __future__ import annotations
 
+import string
 from dataclasses import asdict, dataclass
-from string import Template
+from string import Template as T
 from typing import Any, Callable, Iterable, overload
 
 
@@ -23,16 +24,14 @@ class Strings:
         >>> from string import Template
         >>>
         >>> bot_strings = Strings(
-        >>>     discord_login_attempt=Template("Logging in with '$token_label' token."),
-        >>>     discord_login_success=Template(
-        >>>         "$bot_identifier reporting for duty in $token_label mode!"
-        >>>     ),
+        >>>     m_login=Template("Logging in with '$token' bot token."),
+        >>>     m_login_success=Template("$bot_name reporting for duty in $token mode!")
         >>> )
         >>> Botstrap(strings=bot_strings).run_bot()
 
         $ python bot.py
 
-        bot: Logging in with 'default' token.
+        bot: Logging in with 'default' bot token.
         bot: BasicBot#1234 reporting for duty in default mode!
     """
 
@@ -57,93 +56,102 @@ class Strings:
         default_items = asdict(cls.default()).items()
         return cls(**{key: _get_compact_value(value) for key, value in default_items})
 
-    bot_token_prompt: str = "BOT TOKEN"
-    bot_token_mismatch: Template = Template(
-        "Decrypted keyfile data for $token_label doesn't look like a bot token.\n"
-    )
-    bot_token_missing: Template = Template(
-        "Keyfile for $token_label bot token doesn't exist.\n"
-    )
-    bot_token_missing_add: Template = Template(
-        "You currently don't have a saved $token_label bot token."
-        "\nWould you like to add one now?"
-    )
-    bot_token_creation_cue: str = (
-        "\nPlease enter your bot token now. It'll be invisible for security reasons."
-    )
-    bot_token_creation_hint: str = (
-        "\nThat doesn't seem like a valid bot token. It should look like this:"
-    )
-    bot_token_creation_mismatch: str = (
-        "\nPlease make sure you have the correct token, then try again."
-    )
-    bot_token_creation_success: str = (
-        "\nYour token has been successfully encrypted and saved."
-    )
-    bot_token_creation_run: str = "\nDo you want to use this token to run your bot now?"
-    bot_token_mgmt_none: str = "You currently don't have any saved bot tokens.\n"
-    bot_token_mgmt_list: str = "You currently have the following bot tokens saved:"
-    bot_token_mgmt_delete: str = (
-        "\nWould you like to permanently delete any of these tokens?"
-    )
-    bot_token_deletion_cue: str = "Please enter the ID of the token to delete:"
-    bot_token_deletion_mismatch: str = "\nThat doesn't match any of your saved tokens."
-    bot_token_deletion_hint: Template = Template("Expected one of: $examples")
-    bot_token_deletion_retry: str = "\nWould you like to try again?"
-    bot_token_deletion_success: str = "\nToken successfully deleted."
-    password_prompt: str = "PASSWORD"
-    password_cue: Template = Template(
-        "Please enter the password to decrypt your $token_label bot token."
-    )
-    password_mismatch: str = (
-        "Please make sure you have the correct password, then try again.\n"
-    )
-    password_creation_info: Template = Template(
-        "\nTo keep your bot token extra safe, it must be encrypted with a password."
-        "\nThis password won't be stored anywhere. It will only be used as a key to"
-        "\ndecrypt your token every time you run your bot in $token_label mode."
-    )
-    password_creation_cue: Template = Template(
-        "\nPlease enter a password for your $token_label token."
-    )
-    password_creation_hint: Template = Template(
-        "\nYour password must be at least $min_length characters long."
-    )
-    password_creation_retry: str = "Would you like to try a different one?"
-    password_confirmation_cue: str = (
-        "\nPlease re-enter the same password again to confirm."
-    )
-    password_confirmation_hint: str = (
-        "\nThat password doesn't match your original password."
-    )
-    password_confirmation_retry: str = "Would you like to try again?"
-    affirmation_instruction: str = "If so, type"
-    affirmation_conjunction: str = "or"
-    affirmation_responses: tuple[str, ...] = ("yes", "y")
-    cli_prefix_main: Template = Template("\n$program_name:")
-    cli_prefix_error: str = "error:"
-    cli_desc_info: Template = Template(
-        'Run "$program_name" with no parameters to start the bot$token_specifier.'
-    )
-    cli_desc_info_specifier: Template = Template("in $token_label mode")
-    cli_desc_token_id: Template = Template(
-        "The ID of the token to use to run the bot ($token_ids)."
-    )
-    cli_desc_manage_tokens: str = "View/manage your saved Discord bot tokens."
-    cli_desc_version: str = "Display the currently installed version."
-    cli_desc_help: str = "Display this help message."
-    discord_login_attempt: Template = Template(
-        "$token_label: Attempting to log in to Discord..."
-    )
-    discord_login_success: Template = Template(
-        '$token_label: Successfully logged in as "$bot_identifier".\n'
-    )
-    discord_login_failure: str = (
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    # Basic `str` attributes.
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+    h_help: str = "Display this help message."
+    h_tokens: str = "View/manage your saved Discord bot tokens."
+    h_version: str = "Display the current bot version."
+
+    m_affirm_cue: str = "If so, type"
+    m_conj_or: str = "or"
+    m_login_failure: str = (
         "Failed to log in. Make sure your bot token is configured properly."
     )
-    exit_keyboard_interrupt: str = "\n\nReceived a keyboard interrupt."
-    exit_user_choice: str = "\nReceived a non-affirmative response."
-    exit_notice: str = "Exiting process.\n"
+    m_prefix_error: str = "error:"
+
+    p_confirm_cue: str = "\nPlease re-enter the same password again to confirm."
+    p_confirm_hint: str = "\nThat password doesn't match your original password."
+    p_confirm_retry: str = "Would you like to try again?"
+    p_create_retry: str = "Would you like to try a different one?"
+    p_mismatch: str = (
+        "Please make sure you have the correct password, then try again.\n"
+    )
+    p_prompt: str = "PASSWORD"
+
+    t_create_cue: str = (
+        "\nPlease enter your bot token now. It'll be invisible for security reasons."
+    )
+    t_create_hint: str = (
+        "\nThat doesn't seem like a valid bot token. It should look like this:"
+    )
+    t_create_mismatch: str = (
+        "\nPlease make sure you have the correct token, then try again."
+    )
+    t_create_success: str = "\nYour token has been successfully encrypted and saved."
+    t_create_use: str = "\nDo you want to use this token to run your bot now?"
+    t_delete: str = "\nWould you like to permanently delete any of these tokens?"
+    t_delete_cue: str = "Please enter the ID of the token to delete:"
+    t_delete_mismatch: str = "\nThat doesn't match any of your saved tokens."
+    t_delete_retry: str = "\nWould you like to try again?"
+    t_delete_success: str = "\nToken successfully deleted."
+    t_manage_list: str = "You currently have the following bot tokens saved:"
+    t_manage_none: str = "You currently don't have any saved bot tokens.\n"
+    t_prompt: str = "BOT TOKEN"
+
+    x_exiting: str = "Exiting process.\n"
+    x_reason_choice: str = "\nReceived a non-affirmative response."
+    x_reason_interrupt: str = "\n\nReceived a keyboard interrupt."
+
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    # `string.Template` attributes with only a "$token_label" placeholder.
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+    h_desc_mode: T = T("in ${token} mode")
+
+    m_login: T = T("${token}: Attempting to log in to Discord...")
+
+    p_create_cue: T = T("\nPlease enter a password for your ${token} token.")
+    p_create_info: T = T(
+        "\nTo keep your bot token extra safe, it must be encrypted with a password."
+        "\nThis password won't be stored anywhere. It will only be used as a key to"
+        "\ndecrypt your token every time you run your bot in ${token} mode."
+    )
+    p_cue: T = T("Please enter the password to decrypt your ${token} bot token.")
+
+    t_create: T = T(
+        "You currently don't have a saved ${token} bot token."
+        "\nWould you like to add one now?"
+    )
+    t_mismatch: T = T(
+        "Decrypted keyfile data for ${token} doesn't look like a bot token.\n"
+    )
+    t_missing: T = T("Keyfile for ${token} bot token doesn't exist.\n")
+
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    # Other `string.Template` attributes. Check the placeholders carefully!
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+    h_desc: T = T(
+        'Run "${program_name}" with no parameters to start the bot${mode_addendum}.'
+    )
+    h_token_id: T = T("The ID of the token to use to run the bot: ${token_ids}")
+
+    m_login_success: T = T('${token}: Successfully logged in as "${bot_name}".\n')
+    m_prefix: T = T("\n${program_name}:")
+
+    p_create_hint: T = T(
+        "\nYour password must be at least ${min_length} characters long."
+    )
+
+    t_delete_hint: T = T("Expected one of: ${token_ids}")
+
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    # The loneliest attribute, a `tuple` of `str` objects.
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+    m_affirm_responses: tuple[str, ...] = ("yes", "y")
 
     def get_affirmation_prompt(
         self,
@@ -152,7 +160,7 @@ class Strings:
     ) -> str:
         """Returns a string prompting the user for an affirmative response.
 
-        Responses considered "affirmative" are defined by the `affirmation_responses`
+        Responses considered "affirmative" are defined by the `m_affirm_responses`
         attribute of an instance of this class, which is a tuple that consists of the
         strings "yes" and "y" by default.
 
@@ -184,10 +192,10 @@ class Strings:
                 response = f'"{response.strip()}"'
             return response
 
-        responses = [get_display_response(resp) for resp in self.affirmation_responses]
-        conj, sep = self.affirmation_conjunction.strip(), ", "
+        responses = [get_display_response(resp) for resp in self.m_affirm_responses]
+        conj, sep = self.m_conj_or.strip(), ", "
 
-        return f"{self.affirmation_instruction.strip()} " + (
+        return f"{self.m_affirm_cue.strip()} " + (
             f" {conj} ".join(responses)
             if len(responses) < 3
             else f"{sep.join(responses[:-1])}{sep}{conj} {responses[-1]}"
@@ -205,11 +213,11 @@ def _get_compact_value(value: Iterable[str]) -> tuple[str, ...]:
 
 
 @overload
-def _get_compact_value(value: Template) -> Template:
+def _get_compact_value(value: string.Template) -> string.Template:
     ...
 
 
-def _get_compact_value(value: Any) -> str | Template | tuple[str, ...]:
+def _get_compact_value(value: Any) -> str | string.Template | tuple[str, ...]:
     if isinstance(value, str):
         value = value.strip("\n")  # First, strip any leading and/or trailing newlines.
         return value.replace("\n", " ")  # Then, replace remaining newlines with spaces.
@@ -217,10 +225,10 @@ def _get_compact_value(value: Any) -> str | Template | tuple[str, ...]:
         # Recursively call this function on each item in the iterable, and use
         # tuple comprehension to assemble the results into an immutable object.
         return tuple(_get_compact_value(item) for item in value)
-    elif isinstance(value, Template):
+    elif isinstance(value, string.Template):
         # Construct a new Template in which the template string is produced by
         # recursively calling this function on the original template string.
-        return Template(_get_compact_value(value.template))
+        return string.Template(_get_compact_value(value.template))
     else:
         # In theory, there shouldn't be any other value types, but just in case...
         return _get_compact_value(str(value))

@@ -60,26 +60,22 @@ class Argstrap(ArgumentParser):
             self._add_token_argument(manager.strings, registered_tokens)
 
         self._add_option_argument(
-            _TOKENS_KEY, manager.strings.cli_desc_manage_tokens, dest=_TOKENS_DEST
+            _TOKENS_KEY, manager.strings.h_tokens, dest=_TOKENS_DEST
         )
 
         if version:
-            self._add_option_argument(_VERSION_KEY, manager.strings.cli_desc_version)
+            self._add_option_argument(_VERSION_KEY, manager.strings.h_version)
 
-        self._add_option_argument(
-            _HELP_KEY, manager.strings.cli_desc_help, action="help"
-        )
+        self._add_option_argument(_HELP_KEY, manager.strings.h_help, action="help")
 
     def _add_token_argument(self, strings: Strings, valid_tokens: list[Token]) -> None:
-        uids = [token.uid for token in valid_tokens]
-        uids_help_text = '"' + f'" {strings.affirmation_conjunction} "'.join(uids) + '"'
         self.add_argument(
             _TOKEN_KEY,
             metavar=_TOKEN_METAVAR,
             nargs="?",
-            choices=uids,
+            choices=(uids := [token.uid for token in valid_tokens]),
             default=uids[0],
-            help=strings.cli_desc_token_id.substitute(token_ids=uids_help_text),
+            help=strings.h_token_id.substitute(token_ids=uids),
         )
 
     def _add_option_argument(
@@ -135,12 +131,11 @@ def _build_description_string(
     description = f"{indentation}{description.strip()}\n" if description else ""
     description += indentation
 
-    token_spec = (
-        (token_label := default_token and default_token.display_name)
-        and manager.strings.cli_desc_info_specifier.substitute(token_label=token_label)
+    mode_addendum = (
+        default_token and manager.strings.h_desc_mode.substitute(token=default_token)
     ) or ""
 
-    return description + manager.strings.cli_desc_info.substitute(
+    return description + manager.strings.h_desc.substitute(
         program_name=" ".join(Metadata.get_program_command(manager.name)),
-        token_specifier=f" {token_spec.strip()}" if token_spec else "",
+        mode_addendum=f" {mode_addendum.strip()}" if mode_addendum else "",
     )

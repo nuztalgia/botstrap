@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import re
 from pathlib import Path
-from string import Template
 from typing import Final
 
 from cryptography.fernet import InvalidToken
@@ -29,90 +28,81 @@ class Token(Secret):
             requires_password=requires_password,
             display_name=display_name,
             storage_directory=storage_directory,
-            valid_pattern=_matches_token_pattern,
+            valid_pattern=_PATTERN.fullmatch,
         )
         self.manager: Final[CliManager] = manager
 
     def resolve(self, create_if_missing: bool) -> str | None:
-        cli, colors, strings = (mgr := self.manager).cli, mgr.colors, mgr.strings
+        cli, strings = self.manager.cli, self.manager.strings
 
         if self.file_path.is_file():
             if self.requires_password:
-                cli.print_prefixed_message(self._substitute_into(strings.password_cue))
-                password = cli.get_hidden_input(strings.password_prompt)
+                cli.print_prefixed_message(strings.p_cue.substitute(token=self))
+                password = cli.get_hidden_input(strings.p_prompt)
             else:
                 password = None
 
             try:
                 return self.read(password=password)
             except (InvalidToken, ValueError):
-                message = self._substitute_into(strings.bot_token_mismatch)
+                message = strings.t_mismatch.substitute(token=self)
                 cli.print_prefixed_message(message, is_error=True)
                 if self.requires_password:
-                    print(colors.lowlight(strings.password_mismatch))
+                    print(strings.p_mismatch)
                 return None
 
         if not create_if_missing:
-            message = self._substitute_into(strings.bot_token_missing)
+            message = strings.t_missing.substitute(token=self)
             cli.print_prefixed_message(message, is_error=True)
             return None
 
-        cli.print_prefixed_message()  # Print prefix only; continue on the same line.
-        cli.confirm_or_exit(self._substitute_into(strings.bot_token_missing_add))
+        cli.print_prefixed_message()
+        cli.confirm_or_exit(strings.t_create.substitute(token=self))
 
         self.write(
             data=(bot_token := _get_new_bot_token(self)),
             password=_get_new_password(self) if self.requires_password else None,
         )
 
-        print(colors.success(strings.bot_token_creation_success))
-        cli.confirm_or_exit(strings.bot_token_creation_run)
+        print(self.manager.colors.success(strings.t_create_success))
+        cli.confirm_or_exit(strings.t_create_use)
 
         return bot_token
 
-    def _substitute_into(self, template: Template) -> str:
-        return template.substitute(token_label=self.display_name)
-
-
-def _matches_token_pattern(text: str) -> bool:
-    return bool(_PATTERN.fullmatch(text))
-
 
 def _get_new_bot_token(token: Token) -> str:
-    cli, colors, strings = (mgr := token.manager).cli, mgr.colors, mgr.strings
+    cli, strings = token.manager.cli, token.manager.strings
 
     def format_bot_token_text(bot_token_text: str) -> str:
         # Let the default formatter handle the string if it doesn't look like a token.
-        return _PLACEHOLDER if _matches_token_pattern(bot_token_text) else ""
+        return _PLACEHOLDER if token.validate(bot_token_text) else ""
 
-    print(strings.bot_token_creation_cue)
-    bot_token = cli.get_hidden_input(strings.bot_token_prompt, format_bot_token_text)
+    print(strings.t_create_cue)
+    token_input = cli.get_hidden_input(strings.t_prompt, format_bot_token_text)
 
-    if not _matches_token_pattern(bot_token):
-        print(strings.bot_token_creation_hint)
-        print(colors.lowlight(f"{strings.bot_token_prompt}: {_PLACEHOLDER}"))
-        cli.exit_process(strings.bot_token_creation_mismatch)
+    if not token.validate(token_input):
+        print(strings.t_create_hint)
+        print(token.manager.colors.lowlight(f"{strings.t_prompt}: {_PLACEHOLDER}"))
+        cli.exit_process(strings.t_create_mismatch)
 
-    return bot_token
+    return token_input
 
 
 def _get_new_password(token: Token) -> str:
-    cli, colors, strings = (mgr := token.manager).cli, mgr.colors, mgr.strings
+    cli, strings = token.manager.cli, token.manager.strings
     min_length = type(token).MINIMUM_PASSWORD_LENGTH
 
-    # noinspection PyProtectedMember
-    def print_password_creation_strings() -> None:
-        print(token._substitute_into(strings.password_creation_info))
-        print(token._substitute_into(strings.password_creation_cue))
+    print(strings.p_create_info.substitute(token=token))
+    print(strings.p_create_cue.substitute(token=token))
 
-    print_password_creation_strings()
-    while len(password := cli.get_hidden_input(strings.password_prompt)) < min_length:
-        msg = strings.password_creation_hint.substitute(min_length=min_length)
-        cli.confirm_or_exit(f"{colors.warning(msg)}\n{strings.password_creation_retry}")
+    while len(password_input := cli.get_hidden_input(strings.p_prompt)) < min_length:
+        hint = strings.p_create_hint.substitute(min_length=min_length)
+        print(token.manager.colors.warning(hint))
+        cli.confirm_or_exit(strings.p_create_retry)
 
-    print(strings.password_confirmation_cue)  # lgtm
-    while cli.get_hidden_input(strings.password_prompt) != password:
-        print(colors.warning(strings.password_confirmation_hint))
-        cli.confirm_or_exit(strings.password_confirmation_retry)
+    print(strings.p_confirm_cue)
+    while cli.get_hidden_input(strings.p_prompt) != password_input:
+        print(token.manager.colors.warning(strings.p_confirm_hint))
+        cli.confirm_or_exit(strings.p_confirm_retry)
 
-    return password
+    return password_input
