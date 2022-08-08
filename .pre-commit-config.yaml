@@ -96,7 +96,8 @@ repos:
       - id: pretty-format-toml
         args: ["--autofix"]
 
-  - repo: https://github.com/renovatebot/pre-commit-hooks
-    rev: 32.137.0
+  - repo: https://github.com/python-jsonschema/check-jsonschema
+    rev: 0.17.1
     hooks:
-      - id: renovate-config-validator
+      - id: check-readthedocs
+      - id: check-renovate
