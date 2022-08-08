@@ -11,13 +11,45 @@ from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 
 from botstrap.internal.metadata import Metadata
 
+_MINIMUM_PASSWORD_LENGTH: Final[int] = 8
+
 _CONTENT_FILE: Final[str] = "content"
 _FERNET_FILE: Final[str] = "fernet"
+
 _KEY_FILES: Final[tuple[str, ...]] = (_CONTENT_FILE, _FERNET_FILE)
 
 
 class Secret:
-    MINIMUM_PASSWORD_LENGTH: Final[int] = 8
+    """Manages read & write operations for files that contain sensitive encrypted data.
+
+    A secret is represented in the file system by two `.key` files, both of which
+    include the secret's `uid` in their file names. One of the files contains the
+    encrypted `content` of the secret, and the other file contains the `fernet` key
+    required to decrypt it. Each file is useless without the other.
+
+    More about Fernet symmetric encryption: https://cryptography.io/en/latest/fernet/
+
+    Args:
+        uid:
+            A unique string identifying this secret. Will be used as a file name for the
+            encrypted `.key` files containing this secret's data.
+        requires_password:
+            Whether a user-provided password is required in order to read and/or write
+            this secret. Defaults to `False`.
+        display_name:
+            A human-readable string describing this secret. If omitted, the `uid` for
+            this secret will be displayed instead.
+        storage_directory:
+            The location in which to store the encrypted `.key` files containing the
+            data for this secret. If omitted, the files will be placed in a directory
+            named ".botstrap_keys", which will be created in the same location as the
+            file containing the `__main__` module for the executing script.
+        valid_pattern:
+            A string, regex `Pattern`, or function for determining whether a provided
+            input string fits the expected pattern for this secret. Will be used to
+            validate the secret data before it is encrypted and after it is decrypted.
+            If omitted, any string will be considered valid data for this secret.
+    """
 
     def __init__(
         self,
@@ -37,31 +69,102 @@ class Secret:
         self.validate: Final[Callable[[str], bool]] = _get_validator(valid_pattern)
 
     def __str__(self) -> str:
+        """Returns a nicely-printable string representation of this secret."""
         return self.display_name
 
     @property
     def file_path(self) -> Path:
-        return _get_key_file(self.uid, self.storage_directory, _CONTENT_FILE)
+        """The `Path` of the file containing this secret's encrypted data."""
+        return self._get_key_file(_CONTENT_FILE)
 
-    def read(self, password: Optional[str] = None) -> Optional[str]:
-        fernet = _get_fernet(
-            self.uid, self.storage_directory, self.requires_password, password
-        )
-        data = fernet.decrypt(self.file_path.read_bytes()).decode()
-        return data if self.validate(data) else None
+    @property
+    def minimum_password_length(self) -> int:
+        """The minimum length for this secret's password, or 0 if not required."""
+        return _MINIMUM_PASSWORD_LENGTH if self.requires_password else 0
 
     def write(self, data: str, password: Optional[str] = None) -> None:
+        """Encrypts and writes the data to a file, optionally protected by a password.
+
+        Args:
+            data:
+                A string containing sensitive information that should be encrypted
+                before being stored in a file.
+            password:
+                An optional string that can improve the security of this secret. If
+                provided, it must be at least 8 characters long, and must be inputted
+                again every time this secret is decrypted. If omitted, a password will
+                not be factored into this secret's encryption, and only the two `.key`
+                files will be required to decrypt it (i.e. no human action needed).
+
+        Raises:
+            ValueError:
+                If the `data` is not considered valid according to the `valid_pattern`
+                parameter that was specified when instantiating this secret.
+        """
         if not self.validate(data):
             raise ValueError(f'Attempted to write invalid data for "{self.uid}".')
-        fernet = _get_fernet(
-            self.uid, self.storage_directory, self.requires_password, password
-        )
-        self.file_path.write_bytes(fernet.encrypt(data.encode()))
+        self.file_path.write_bytes(self._get_fernet(password).encrypt(data.encode()))
+
+    def read(self, password: Optional[str] = None) -> Optional[str]:
+        """Returns the decrypted data from this secret's file if it exists and is valid.
+
+        Args:
+            password:
+                The password originally used to create this secret, if applicable. This
+                must match the original password, or else the decrypted data will not be
+                valid. If this secret was not created with a password, this argument
+                should be omitted/ignored.
+
+        Returns:
+            The string data for this secret if both of its `.key` files exist and it can
+            be successfully decrypted, otherwise `None`.
+        """
+        data = self._get_fernet(password).decrypt(self.file_path.read_bytes()).decode()
+        return data if self.validate(data) else None
 
     def clear(self) -> None:
+        """Deletes any files containing data related to this secret, if they exist."""
         for qualifier in _KEY_FILES:
-            key_file = _get_key_file(self.uid, self.storage_directory, qualifier)
+            key_file = self._get_key_file(qualifier)
             key_file.unlink(missing_ok=True)
+
+    def _get_key_file(self, qualifier: str) -> Path:
+        if qualifier not in _KEY_FILES:
+            raise ValueError(f'Invalid key file qualifier: "{qualifier}"')
+
+        if (file := self.storage_directory / f".{self.uid}.{qualifier}.key").is_dir():
+            dir_path = file.resolve()
+            raise ValueError(f'Expected a file, but found a directory: "{dir_path}"')
+
+        return file
+
+    def _get_fernet(self, password: Optional[str]) -> Fernet:
+        if self.requires_password:
+            if not password:
+                raise ValueError(f'Password is required to read/write "{self.uid}".')
+            elif not isinstance(password, str):
+                raise TypeError(f'Password type must be "str", not "{type(password)}".')
+            elif len(password) < (length := self.minimum_password_length):
+                raise ValueError(f"Password must be at least {length} characters long.")
+
+        def get_extra_bytes(get_initial_bytes: Callable[[], bytes]) -> bytes:
+            if not (fernet_file := self._get_key_file(_FERNET_FILE)).is_file():
+                fernet_file.write_bytes(get_initial_bytes())
+            return fernet_file.read_bytes()
+
+        # Source: https://cryptography.io/en/latest/fernet/#using-passwords-with-fernet
+        if password:
+            kdf = PBKDF2HMAC(
+                algorithm=hashes.SHA256(),
+                length=32,
+                salt=get_extra_bytes(partial(os.urandom, 16)),
+                iterations=480000,
+            )
+            key = urlsafe_b64encode(kdf.derive(password.encode()))
+        else:
+            key = get_extra_bytes(Fernet.generate_key)
+
+        return Fernet(key)
 
 
 def _get_validator(
@@ -95,45 +198,3 @@ def _get_storage_directory(directory_path: str | Path | None) -> Path:
 
     directory_path.mkdir(exist_ok=True)
     return directory_path
-
-
-def _get_key_file(uid: str, storage_dir: Path, qualifier: str) -> Path:
-    if qualifier not in _KEY_FILES:
-        raise ValueError(f'Invalid key file qualifier: "{qualifier}"')
-
-    if (key_file := storage_dir / f".{uid}.{qualifier}.key").is_dir():
-        dir_path = key_file.resolve()
-        raise ValueError(f'Expected a file, but found a directory: "{dir_path}"')
-
-    return key_file
-
-
-def _get_fernet(
-    uid: str, storage_dir: Path, requires_password: bool, password: Optional[str]
-) -> Fernet:
-    if requires_password:
-        if not password:
-            raise ValueError(f'Password is required in order to read/write "{uid}".')
-        elif not isinstance(password, str):
-            raise TypeError(f'Password type must be "str", not "{type(password)}".')
-        elif len(password) < (min_length := Secret.MINIMUM_PASSWORD_LENGTH):
-            raise ValueError(f"Password must be at least {min_length} characters long.")
-
-    def get_extra_bytes(get_initial_bytes: Callable[[], bytes]) -> bytes:
-        fernet_file = _get_key_file(uid, storage_dir, _FERNET_FILE)
-        if not fernet_file.is_file():
-            fernet_file.write_bytes(get_initial_bytes())
-        return fernet_file.read_bytes()
-
-    if password:
-        kdf = PBKDF2HMAC(
-            algorithm=hashes.SHA256(),
-            length=32,
-            salt=get_extra_bytes(partial(os.urandom, 16)),
-            iterations=480000,
-        )
-        key = urlsafe_b64encode(kdf.derive(password.encode()))
-    else:
-        key = get_extra_bytes(Fernet.generate_key)
-
-    return Fernet(key)
