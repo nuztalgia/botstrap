@@ -279,7 +279,7 @@ class Botstrap(CliManager):
             try:
                 return token.resolve(create_if_missing=allow_token_creation)
             except KeyboardInterrupt:
-                self._handle_keyboard_interrupt()
+                self.cli.exit_process(self.strings.m_exit_by_interrupt, is_error=False)
 
         return None
 
@@ -354,11 +354,8 @@ class Botstrap(CliManager):
 
     def _create_default_token(self) -> Token:
         return Token(
-            self, (uid := _DEFAULT_TOKEN_NAME), display_name=self.colors.primary(uid)
+            self, (uid := _DEFAULT_TOKEN_NAME), display_name=self.colors.lowlight(uid)
         )
-
-    def _handle_keyboard_interrupt(self) -> None:
-        self.cli.exit_process(self.strings.x_reason_interrupt, is_error=False)
 
     def _init_bot(self, token_value: str, bot_class: type, **options) -> None:
         bot = bot_class(**options)
@@ -366,9 +363,9 @@ class Botstrap(CliManager):
 
         @bot.event
         async def on_connect() -> None:
-            bot_name = self.colors.highlight(getattr(bot, "user", type(bot).__name__))
+            bot_id = self.colors.highlight(getattr(bot, "user", type(bot).__name__))
             self.cli.print_prefixed_message(
-                self.strings.m_login_success.substitute(bot_name=bot_name, token=token)
+                self.strings.m_login_success.substitute(bot_id=bot_id, token=token)
             )
 
         self.cli.print_prefixed_message(
@@ -379,7 +376,7 @@ class Botstrap(CliManager):
         try:
             bot.run(token_value)
         except KeyboardInterrupt:
-            self._handle_keyboard_interrupt()
+            self.cli.exit_process(self.strings.m_exit_by_interrupt, is_error=False)
         except Metadata.import_class("discord.LoginFailure"):  # type: ignore[misc]
             self.cli.print_prefixed_message(is_error=True)
             self.cli.exit_process(self.strings.m_login_failure)

@@ -68,23 +68,41 @@ class Color:
 
 @dataclass(eq=False, frozen=True)
 class ThemeColors:
-    """A `dataclass` specifying the colors to be used for certain types of console text.
+    """A `dataclass` specifying the colors to be used by the Botstrap-provided CLI.
 
-    The attributes of this class are all functions that accept and return a string, just
-    like the class methods of `Color`. In fact, many of those class methods are used as
-    the default values for this class's attributes, such that (for example) `Color.red`
-    is synonymous with `ThemeColors.default().error`.
+    The following table summarizes this class's attributes, their default colors, and
+    the types of text to which they are applied.
 
-    Basic color presets are provided by this class's `default()` and `off()` methods. If
+    ===========  ======  ===============================================================
+    `primary`    n/a     Your bot's brand. See the "Note" section below for more info.
+    `error`      RED     Messages shown when the script terminates due to an error.
+    `highlight`  CYAN    Text that calls for emphasis, but isn't success/warning/error.
+    `lowlight`   GREY    Text that is less important and may be de-emphasized.
+    `success`    GREEN   Messages shown when processes/tasks are completed successfully.
+    `warning`    YELLOW  Messages shown when something goes wrong, but is recoverable.
+    ===========  ======  ===============================================================
+
+    Simple color presets are provided by the `default()` and `off()` class methods. If
     you desire further customization, you can create a new instance of this class and
-    specify any colors you'd like to change. All constructor arguments are keyword-only
-    except `primary`, which is the only one NOT assigned a color by default.
+    specify any colors you'd like to change. All constructor args are keyword-only
+    except for `primary`.
+
+    Note:
+        The `primary` attribute is not assigned a color by default. This is deliberate,
+        as it will be used to color your bot's name and is essentially a personal brand.
+
+        To customize `primary`, simply instantiate this class with your desired color as
+        the first constructor arg - such as `ThemeColors(Color.pink)` - and pass it in
+        as the `colors` argument when creating your `Botstrap` instance.
 
     Example:
         >>> from botstrap import Botstrap, Color, ThemeColors
         >>>
+        >>> # We want cyan as our primary color, but it's the default highlight color...
+        >>> # Let's change the highlight color to pink so our bot can be primarily cyan!
         >>> bot_colors = ThemeColors(Color.cyan, highlight=Color.pink)
-        >>> Botstrap(colors=bot_colors).run_bot()
+        >>>
+        >>> Botstrap(colors=bot_colors).run_bot()  # Living our cyan bot dreams.
     """
 
     primary: Callable[[str], str] = str
@@ -97,7 +115,16 @@ class ThemeColors:
 
     @classmethod
     def default(cls) -> ThemeColors:
-        """Returns an instance of this class with default values for all attributes."""
+        """Returns an instance of this class with default values for all attributes.
+
+        Note:
+            Class methods from `Color` are used as the default values for all of this
+            class's attributes, with the exception of `primary`.
+
+            >>> from botstrap import Color, ThemeColors
+            >>> ThemeColors.default().error == Color.red
+            True
+        """
         return cls()
 
     @classmethod

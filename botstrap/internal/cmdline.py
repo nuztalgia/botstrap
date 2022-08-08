@@ -84,7 +84,7 @@ class CliUtils:
                 If the user responds non-affirmatively.
         """
         if not self.get_bool_input(question):
-            self.exit_process(self.manager.strings.x_reason_choice, is_error=False)
+            self.exit_process(self.manager.strings.m_exit_by_choice, is_error=False)
 
     def exit_process(self, reason: str, is_error: bool = True) -> None:
         """Exits the program in a user-friendly manner.
@@ -108,7 +108,7 @@ class CliUtils:
         """
         colors = self.manager.colors
         colored_reason = colors.error(reason) if is_error else colors.lowlight(reason)
-        print(f"{colored_reason} {colors.lowlight(self.manager.strings.x_exiting)}")
+        print(f"{colored_reason} {colors.lowlight(self.manager.strings.m_exiting)}")
         raise SystemExit(1 if is_error else 0)
 
     def get_bool_input(self, question: str) -> bool:

@@ -1,8 +1,7 @@
 from __future__ import annotations
 
-import string
 from dataclasses import asdict, dataclass
-from string import Template as T
+from string import Template
 from typing import Any, Callable, Iterable, overload
 
 
@@ -10,14 +9,23 @@ from typing import Any, Callable, Iterable, overload
 class Strings:
     """A `dataclass` specifying the strings to be used by the Botstrap-provided CLI.
 
-    The attributes of this class are strings, `string.Template` objects, and tuples of
-    strings. Collectively, they determine the text that is displayed in the console when
-    you run a script that utilizes Botstrap.
+    The attributes of this class are strings, `Template` strings, and tuples of strings.
+    Collectively, they determine the text that is displayed in the console when you run
+    a script that utilizes Botstrap.
 
-    Preconfigured string setups are provided by this class's `default()` and `compact()`
-    methods. If you desire further customization, you can create a new instance of this
-    class and specify any strings you'd like to change. All constructor arguments are
-    keyword-only.
+    Each attribute begins with a single-letter prefix that indicates the subject of the
+    string. These prefixes/categories can be summarized as follows:
+
+    ====  ==============================================================================
+    `t_`  Token-related strings regarding bot token creation/management/deletion.
+    `p_`  Password-related strings, displayed for password-protected bot tokens.
+    `h_`  Help strings, printed when the bot script is passed the `-h` or `--help` args.
+    `m_`  Miscellaneous strings that don't fall under any of the other categories.
+    ====  ==============================================================================
+
+    Preconfigured strings are provided by the `default()` and `compact()` class methods.
+    If you desire further customization, you can create a new instance of this class and
+    specify any strings you'd like to change. All constructor args are keyword-only.
 
     Example:
         >>> from botstrap import Botstrap, Strings
@@ -25,7 +33,7 @@ class Strings:
         >>>
         >>> bot_strings = Strings(
         >>>     m_login=Template("Logging in with '$token' bot token."),
-        >>>     m_login_success=Template("$bot_name reporting for duty in $token mode!")
+        >>>     m_login_success=Template("$bot_id reporting for duty in $token mode!"),
         >>> )
         >>> Botstrap(strings=bot_strings).run_bot()
 
@@ -57,7 +65,22 @@ class Strings:
         return cls(**{key: _get_compact_value(value) for key, value in default_items})
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    # Basic `str` attributes.
+    #   A brief note on attribute organization:
+    #
+    #   This class has *a lot* of attributes. To keep things organized, they've been
+    #   separated into the following four sections:
+    #
+    #       1) Basic strings
+    #       2) `Template` strings with only a "${token}" placeholder
+    #       3) Other `Template` strings
+    #       4) Tuples of strings
+    #
+    #   Within each section, attributes are organized alphabetically, with an extra
+    #   newline inserted between each prefix group (see class docstring for more info
+    #   about prefixes).
+
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    #   1) Basic `str` attributes. Super simple strings.
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
     h_help: str = "Display this help message."
@@ -66,6 +89,9 @@ class Strings:
 
     m_affirm_cue: str = "If so, type"
     m_conj_or: str = "or"
+    m_exit_by_choice: str = "\nReceived a non-affirmative response."
+    m_exit_by_interrupt: str = "\n\nReceived a keyboard interrupt."
+    m_exiting: str = "Exiting process.\n"
     m_login_failure: str = (
         "Failed to log in. Make sure your bot token is configured properly."
     )
@@ -100,55 +126,59 @@ class Strings:
     t_manage_none: str = "You currently don't have any saved bot tokens.\n"
     t_prompt: str = "BOT TOKEN"
 
-    x_exiting: str = "Exiting process.\n"
-    x_reason_choice: str = "\nReceived a non-affirmative response."
-    x_reason_interrupt: str = "\n\nReceived a keyboard interrupt."
-
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    # `string.Template` attributes with only a "$token_label" placeholder.
+    #   2) `Template` attributes with only a "${token}" placeholder.
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-    h_desc_mode: T = T("in ${token} mode")
+    h_desc_mode: Template = Template("in ${token} mode")
 
-    m_login: T = T("${token}: Attempting to log in to Discord...")
+    m_login: Template = Template("${token}: Attempting to log in to Discord...")
 
-    p_create_cue: T = T("\nPlease enter a password for your ${token} token.")
-    p_create_info: T = T(
+    p_create_cue: Template = Template(
+        "\nPlease enter a password for your ${token} bot token."
+    )
+    p_create_info: Template = Template(
         "\nTo keep your bot token extra safe, it must be encrypted with a password."
         "\nThis password won't be stored anywhere. It will only be used as a key to"
         "\ndecrypt your token every time you run your bot in ${token} mode."
     )
-    p_cue: T = T("Please enter the password to decrypt your ${token} bot token.")
+    p_cue: Template = Template(
+        "Please enter the password to decrypt your ${token} bot token."
+    )
 
-    t_create: T = T(
+    t_create: Template = Template(
         "You currently don't have a saved ${token} bot token."
         "\nWould you like to add one now?"
     )
-    t_mismatch: T = T(
+    t_mismatch: Template = Template(
         "Decrypted keyfile data for ${token} doesn't look like a bot token.\n"
     )
-    t_missing: T = T("Keyfile for ${token} bot token doesn't exist.\n")
+    t_missing: Template = Template("Keyfile for ${token} bot token doesn't exist.\n")
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    # Other `string.Template` attributes. Check the placeholders carefully!
+    #   3) Other `Template` attributes. Check the placeholders carefully!
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-    h_desc: T = T(
+    h_desc: Template = Template(
         'Run "${program_name}" with no parameters to start the bot${mode_addendum}.'
     )
-    h_token_id: T = T("The ID of the token to use to run the bot: ${token_ids}")
+    h_token_id: Template = Template(
+        "The ID of the token to use to run the bot: ${token_ids}"
+    )
 
-    m_login_success: T = T('${token}: Successfully logged in as "${bot_name}".\n')
-    m_prefix: T = T("\n${program_name}:")
+    m_login_success: Template = Template(
+        '${token}: Successfully logged in as "${bot_id}".\n'
+    )
+    m_prefix: Template = Template("\n${program_name}:")
 
-    p_create_hint: T = T(
+    p_create_hint: Template = Template(
         "\nYour password must be at least ${min_length} characters long."
     )
 
-    t_delete_hint: T = T("Expected one of: ${token_ids}")
+    t_delete_hint: Template = Template("Expected one of: ${token_ids}")
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    # The loneliest attribute, a `tuple` of `str` objects.
+    #   4) The loneliest attribute - a `tuple` of strings.
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
     m_affirm_responses: tuple[str, ...] = ("yes", "y")
@@ -213,11 +243,11 @@ def _get_compact_value(value: Iterable[str]) -> tuple[str, ...]:
 
 
 @overload
-def _get_compact_value(value: string.Template) -> string.Template:
+def _get_compact_value(value: Template) -> Template:
     ...
 
 
-def _get_compact_value(value: Any) -> str | string.Template | tuple[str, ...]:
+def _get_compact_value(value: Any) -> str | Template | tuple[str, ...]:
     if isinstance(value, str):
         value = value.strip("\n")  # First, strip any leading and/or trailing newlines.
         return value.replace("\n", " ")  # Then, replace remaining newlines with spaces.
@@ -225,10 +255,10 @@ def _get_compact_value(value: Any) -> str | string.Template | tuple[str, ...]:
         # Recursively call this function on each item in the iterable, and use
         # tuple comprehension to assemble the results into an immutable object.
         return tuple(_get_compact_value(item) for item in value)
-    elif isinstance(value, string.Template):
+    elif isinstance(value, Template):
         # Construct a new Template in which the template string is produced by
         # recursively calling this function on the original template string.
-        return string.Template(_get_compact_value(value.template))
+        return Template(_get_compact_value(value.template))
     else:
         # In theory, there shouldn't be any other value types, but just in case...
         return _get_compact_value(str(value))
