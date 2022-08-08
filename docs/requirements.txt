@@ -31,9 +31,9 @@ jinja2==3.1.2 \
     #   mkdocs
     #   mkdocs-material
     #   mkdocstrings
-Markdown==3.4.1 \
-    --hash=sha256:08fb8465cffd03d10b9dd34a5c3fea908e20391a2a90b88d66362cb05beed186 \
-    --hash=sha256:3b809086bb6efad416156e00a0da66fe47618a5d6918dd688f53f40c8e4cfeff
+markdown==3.3.7 \
+    --hash=sha256:cbb516f16218e643d8e0a95b309f77eb118cb138d39a4f27851e6a63581db874 \
+    --hash=sha256:f5da449a6e1c989a4cea2631aa8ee67caa5a2ef855d551c88f9e309f4634c621
     # via
     #   mkdocs
     #   mkdocs-autorefs
@@ -100,6 +100,10 @@ mkdocs-autorefs==0.4.1 \
     --hash=sha256:70748a7bd025f9ecd6d6feeba8ba63f8e891a1af55f48e366d6d6e78493aba84 \
     --hash=sha256:a2248a9501b29dc0cc8ba4c09f4f47ff121945f6ce33d760f145d6f89d313f5b
     # via mkdocstrings
+mkdocs-include-markdown-plugin==3.6.1 \
+    --hash=sha256:5e7416f23081085a220f7534b2fc7456e74c5a65f3b401da1f29b9e9132b46e5 \
+    --hash=sha256:ea36a7d50ee98028f03574d7bf40a307e16211ad3013a4e42f64494b3c106e9e
+    # via -r requirements.in
 mkdocs-material==8.4.0rc1 \
     --hash=sha256:1ee635cfe5cd96926b6175591ffc186bdca195fbc245aa9921bc07d90487ec33 \
     --hash=sha256:ff23bb9f9bf3f346dcaca2fc2093019b63f4fc504c2268aed6e8d6978a4c72fa

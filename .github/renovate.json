@@ -1,5 +1,9 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": ["config:base"],
-  "dependencyDashboardAutoclose": true
+  "dependencyDashboardAutoclose": true,
+  "enabledManagers": ["pip-compile", "pip-setup"],
+  "pip-compile": {
+    "fileMatch": ["(^|/)requirements\\.in$"]
+  }
 }

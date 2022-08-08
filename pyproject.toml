@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "botstrap"
-description = "Utilities for Discord bots. WIP."
+description = "Simple and secure token handling for Discord bots written in Python."
 requires-python = ">=3.10"
 authors = [
     { name = "Nuztalgia" },
@@ -13,7 +13,7 @@ authors = [
 readme = "README.md"
 license = { text = "Apache-2.0" }
 classifiers = [
-    "Development Status :: 2 - Pre-Alpha",
+    "Development Status :: 3 - Alpha",
     "Environment :: Console",
     "Intended Audience :: Developers",
     "License :: OSI Approved :: Apache Software License",
@@ -29,7 +29,7 @@ classifiers = [
     "Topic :: Utilities",
     "Typing :: Typed",
 ]
-dynamic = ["dependencies", "optional-dependencies", "urls", "version"]
+dynamic = ["dependencies", "urls", "version"]
 
 [tool.black]
 target-version = ["py310"]

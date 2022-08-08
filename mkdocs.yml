@@ -1,5 +1,5 @@
 site_name: Botstrap
-site_url: https://botstrap.readthedocs.io/
+site_url: https://botstrap.readthedocs.io
 repo_url: https://github.com/nuztalgia/botstrap
 edit_uri: edit/main/docs/
 
@@ -13,14 +13,16 @@ theme:
     - media: "(prefers-color-scheme: light)"
       scheme: default
       primary: deep purple
+      accent: deep purple
       toggle:
-        icon: material/toggle-switch
+        icon: material/weather-night
         name: Switch to dark mode
     - media: "(prefers-color-scheme: dark)"
       scheme: slate
       primary: deep purple
+      accent: deep purple
       toggle:
-        icon: material/toggle-switch-off-outline
+        icon: material/weather-sunny
         name: Switch to light mode
 
 nav:
@@ -29,6 +31,7 @@ nav:
 
 plugins:
   - search
+  - include-markdown
   - mkdocstrings:
       handlers:
         python:

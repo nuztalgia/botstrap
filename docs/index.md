@@ -1,3 +1,8 @@
-# Botstrap
+# <img src="icon.png" width=24> Botstrap
 
-Under construction. Stay tuned!
+{%
+  include-markdown "../README.md"
+  start="<!--content-start-->"
+  end="<!--content-end-->"
+  comments=false
+%}
