@@ -1,0 +1,20 @@
+site_name: Botstrap
+repo_url: https://github.com/nuztalgia/botstrap
+theme:
+  name: material
+  icon:
+    logo: material/robot-happy
+    repo: fontawesome/brands/github
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: deep purple
+      toggle:
+        icon: material/toggle-switch
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: deep purple
+      toggle:
+        icon: material/toggle-switch-off-outline
+        name: Switch to light mode
