@@ -1,7 +1,11 @@
 site_name: Botstrap
+site_url: https://botstrap.readthedocs.io/
 repo_url: https://github.com/nuztalgia/botstrap
+edit_uri: edit/main/docs/
+
 theme:
   name: material
+  favicon: icon.png
   icon:
     logo: material/robot-happy
     repo: fontawesome/brands/github
@@ -18,3 +22,24 @@ theme:
       toggle:
         icon: material/toggle-switch-off-outline
         name: Switch to light mode
+
+nav:
+  - Home: index.md
+  - API Reference: api.md
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            show_root_heading: true
+            show_root_full_path: false
+            members_order: source
+            merge_init_into_class: true
+            show_signature_annotations: true
+            separate_signature: true
+            show_bases: false
+            show_source: false
+      watch:
+        - botstrap/
