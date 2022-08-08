@@ -14,12 +14,20 @@ readme = "README.md"
 license = { text = "Apache-2.0" }
 classifiers = [
     "Development Status :: 2 - Pre-Alpha",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
     "License :: OSI Approved :: Apache Software License",
+    "Natural Language :: English",
     "Operating System :: OS Independent",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
+    "Topic :: Communications :: Chat",
+    "Topic :: Security :: Cryptography",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Utilities",
+    "Typing :: Typed",
 ]
 dynamic = ["dependencies", "optional-dependencies", "urls", "version"]
 
@@ -31,7 +39,7 @@ profile = "black"
 
 [tool.pydocstyle]
 convention = "google"
-add-ignore = "D1"
+add-ignore = "D100, D104, D107"
 
 [tool.setuptools.dynamic]
 version = { attr = "botstrap.version.VERSION" }
