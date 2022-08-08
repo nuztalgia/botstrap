@@ -15,6 +15,30 @@ _PLACEHOLDER: Final[str] = ".".join("*" * i for i in _LENGTHS)
 
 
 class Token(Secret):
+    """A subclass of `Secret` that represents an individual Discord bot token.
+
+    Args:
+        manager:
+            A `CliManager` instance specifying the `ThemeColors` and `Strings` to be
+            used by the CLI for interactive operations involving this token.
+        uid:
+            A unique string identifying this token. Will be used as a file name for the
+            encrypted `.key` files containing this token's data.
+        requires_password:
+            Whether a user-provided password is required in order to create and/or
+            retrieve this token. Defaults to `False`.
+        display_name:
+            A human-readable string describing this token. May include formatting
+            characters, such as those provided by `Color` methods. Will be displayed in
+            the CLI when referring to this token. If omitted, the `uid` for this token
+            will be displayed instead.
+        storage_directory:
+            The location in which to store the encrypted `.key` files containing the
+            data for this token. If omitted, the files will be placed in a directory
+            named ".botstrap_keys", which will be created in the same location as the
+            file containing the `__main__` module for the executing script.
+    """
+
     def __init__(
         self,
         manager: CliManager,
@@ -32,7 +56,32 @@ class Token(Secret):
         )
         self.manager: Final[CliManager] = manager
 
-    def resolve(self, create_if_missing: bool) -> str | None:
+    def resolve(self, allow_token_creation: bool) -> str | None:
+        """Returns this token's data, interactively requesting user input if needed.
+
+        The primary advantage of this method over the superclass methods `read()` and
+        `write()` is that it can interact with the user via the CLI and take different
+        code paths according to the input it may receive. This allows it to:
+
+          * Automatically retrieve the decrypted token if no password is required
+          * Prompt the user for a password to decrypt the token, if one is required
+          * Notify the user about errors such as password mismatches / nonexistent files
+          * Ask whether the user wants to create a new token file, if one doesn't exist
+          * Walk the user through the process of adding a new token (and password)
+          * Let the user choose whether to exit / continue the process at various points
+
+        Args:
+            allow_token_creation:
+                Whether to prompt the user to create a file for this token, if one
+                doesn't already exist. If `True` and the user responds affirmatively,
+                they will be asked to input the token data, and then create a password
+                for it (if `requires_password` was set to `True` when this token was
+                instantiated).
+
+        Returns:
+            The bot token string if it exists and can be successfully decrypted,
+            otherwise `None`.
+        """
         cli, strings = self.manager.cli, self.manager.strings
 
         if self.file_path.is_file():
@@ -51,7 +100,7 @@ class Token(Secret):
                     print(strings.p_mismatch)
                 return None
 
-        if not create_if_missing:
+        if not allow_token_creation:
             message = strings.t_missing.substitute(token=self)
             cli.print_prefixed_message(message, is_error=True)
             return None
@@ -73,12 +122,12 @@ class Token(Secret):
 def _get_new_bot_token(token: Token) -> str:
     cli, strings = token.manager.cli, token.manager.strings
 
-    def format_bot_token_text(bot_token_text: str) -> str:
+    def format_input(user_input: str) -> str:
         # Let the default formatter handle the string if it doesn't look like a token.
-        return _PLACEHOLDER if token.validate(bot_token_text) else ""
+        return _PLACEHOLDER if token.validate(user_input) else ""
 
     print(strings.t_create_cue)
-    token_input = cli.get_hidden_input(strings.t_prompt, format_bot_token_text)
+    token_input = cli.get_hidden_input(strings.t_prompt, format_input)
 
     if not token.validate(token_input):
         print(strings.t_create_hint)

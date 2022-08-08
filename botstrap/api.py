@@ -277,7 +277,7 @@ class Botstrap(CliManager):
 
         if token := self._active_token:
             try:
-                return token.resolve(create_if_missing=allow_token_creation)
+                return token.resolve(allow_token_creation=allow_token_creation)
             except KeyboardInterrupt:
                 self.cli.exit_process(self.strings.m_exit_by_interrupt, is_error=False)
 

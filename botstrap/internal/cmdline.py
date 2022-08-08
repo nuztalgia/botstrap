@@ -137,7 +137,7 @@ class CliUtils:
     def get_hidden_input(
         self,
         prompt: str,
-        format_text: Callable[[str], str] | None = None,
+        format_input: Callable[[str], str] | None = None,
     ) -> str:
         """Returns the user's input without echoing (i.e. displaying it on the screen).
 
@@ -155,7 +155,7 @@ class CliUtils:
             prompt:
                 A short human-readable prompt for the user. Will be automatically
                 highlighted (if colors are enabled) and followed by a colon (":").
-            format_text:
+            format_input:
                 An optional function that takes the raw user input string and returns
                 a string that will be displayed on-screen in place of the user input.
                 If omitted, the result will be displayed as a sequence of asterisks
@@ -166,7 +166,7 @@ class CliUtils:
         """
         colored_prompt = self.manager.colors.highlight(f"{prompt}:")
         result = self.get_input(colored_prompt, hidden=True)
-        if not (output := format_text and format_text(result)):
+        if not (output := format_input and format_input(result)):
             output = self.manager.colors.lowlight("*" * len(result))
         print(f"\033[F\033[1A{colored_prompt} {output}")  # Overwrite the previous line.
         return result
