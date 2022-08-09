@@ -101,7 +101,13 @@ repos:
     hooks:
       - id: check-readthedocs
 
-  - repo: https://github.com/renovatebot/pre-commit-hooks
-    rev: 32.152.0
+  # TODO: Update this when https://github.com/jazzband/pip-tools/pull/1584 is merged.
+  - repo: https://github.com/AndydeCleyre/pip-tools
+    rev: ae15c4d
     hooks:
-      - id: renovate-config-validator
+      - id: pip-compile
+        files: ^docs/requirements\.(in|txt)$
+        args: ["--force-lf-newlines", "--generate-hashes", "-q", "docs/requirements.in"]
+
+ci:
+  skip: [pip-compile]

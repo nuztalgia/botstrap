@@ -2,10 +2,9 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": ["config:base"],
   "dependencyDashboardAutoclose": true,
-  "enabledManagers": ["pip-compile", "pip_setup"],
-  "pip-compile": {
+  "enabledManagers": ["pip_setup", "pip_requirements"],
+  "pip_requirements": {
     "fileMatch": ["(^|/)requirements\\.in$"],
-    "ignoreDeps": ["colorama"],
-    "schedule": ["at 8:00 am every weekday"]
+    "ignorePaths": ["docs/requirements.txt"]
   }
 }
