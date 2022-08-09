@@ -4,6 +4,8 @@
   "dependencyDashboardAutoclose": true,
   "enabledManagers": ["pip-compile", "pip_setup"],
   "pip-compile": {
-    "fileMatch": ["(^|/)requirements\\.in$"]
+    "fileMatch": ["(^|/)requirements\\.in$"],
+    "ignoreDeps": ["colorama"],
+    "schedule": ["at 8:00 am every weekday"]
   }
 }
