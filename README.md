@@ -1,4 +1,4 @@
-# <img src="docs/icon.png" width=24> Botstrap
+# [![Botstrap Logo](docs/images/logo-24.png)](#) Botstrap
 
 [![Project License](https://img.shields.io/github/license/nuztalgia/botstrap?color=993388)](LICENSE)
 [![Python Version](https://img.shields.io/badge/python-3.10-blue)](pyproject.toml)

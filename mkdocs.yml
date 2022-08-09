@@ -5,7 +5,7 @@ edit_uri: edit/main/docs/
 
 theme:
   name: material
-  favicon: icon.png
+  favicon: images/logo-48.png
   icon:
     logo: material/robot-happy
     repo: fontawesome/brands/github

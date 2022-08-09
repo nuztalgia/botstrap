@@ -1,4 +1,4 @@
-# <img src="icon.png" width=24> Botstrap
+# [![Botstrap Logo](images/logo-24.png)](#) Botstrap
 
 {%
   include-markdown "../README.md"
