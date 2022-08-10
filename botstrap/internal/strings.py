@@ -16,31 +16,35 @@ class Strings:
     Each attribute begins with a single-letter prefix that indicates the subject of the
     string. These prefixes/categories can be summarized as follows:
 
-    ====  ==============================================================================
-    `t_`  Token-related strings regarding bot token creation/management/deletion.
-    `p_`  Password-related strings, displayed for password-protected bot tokens.
-    `h_`  Help strings, printed when the bot script is passed the `-h` or `--help` args.
-    `m_`  Miscellaneous strings that don't fall under any of the other categories.
-    ====  ==============================================================================
+    | Prefix | Description of attributes with this prefix                              |
+    | ------ | ----------------------------------------------------------------------- |
+    |  `t_`  | Token-related strings regarding bot token creation/management/deletion. |
+    |  `p_`  | Password-related strings, displayed for password-protected bot tokens.  |
+    |  `h_`  | Help strings, printed when the bot script is passed the `--help` arg.   |
+    |  `m_`  | Miscellaneous strings that don't fall under any of the other categories.|
 
     Preconfigured strings are provided by the `default()` and `compact()` class methods.
     If you desire further customization, you can create a new instance of this class and
     specify any strings you'd like to change. All constructor args are keyword-only.
 
     Example:
-        >>> from botstrap import Botstrap, Strings
-        >>> from string import Template
-        >>>
-        >>> bot_strings = Strings(
-        >>>     m_login=Template("Logging in with '$token' bot token."),
-        >>>     m_login_success=Template("$bot_id reporting for duty in $token mode!"),
-        >>> )
-        >>> Botstrap(strings=bot_strings).run_bot()
+        ```py title="bot.py"
+        from botstrap import Botstrap, Strings
+        from string import Template
 
+        bot_strings = Strings(
+            m_login=Template("Logging in with '$token' bot token."),
+            m_login_success=Template("$bot_id reporting for duty in $token mode!"),
+        )
+        Botstrap(strings=bot_strings).run_bot()
+        ```
+
+        ```console title="Console Session"
         $ python bot.py
 
         bot: Logging in with 'default' bot token.
         bot: BasicBot#1234 reporting for duty in default mode!
+        ```
     """
 
     @classmethod

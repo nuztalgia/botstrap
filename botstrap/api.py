@@ -75,16 +75,18 @@ class Botstrap(CliManager):
         future use.
 
         Example:
-            >>> from botstrap import Botstrap, Color
-            >>>
-            >>> Botstrap().register_token(
-            >>>     uid="dev",
-            >>>     display_name=Color.yellow("development"),
-            >>> ).register_token(
-            >>>     uid="prod",
-            >>>     requires_password=True,
-            >>>     display_name=Color.green("production"),
-            >>> )
+            ```py title="bot.py"
+            from botstrap import Botstrap, Color
+
+            Botstrap().register_token(
+                uid="dev",
+                display_name=Color.yellow("development"),
+            ).register_token(
+                uid="prod",
+                requires_password=True,
+                display_name=Color.green("production"),
+            )
+            ```
 
         Args:
             uid:
@@ -140,22 +142,26 @@ class Botstrap(CliManager):
         set to `True` (its default value) in any subsequent API method calls.
 
         Example:
-            >>> from botstrap import Botstrap
-            >>>
-            >>> Botstrap().parse_args(
-            >>>     description="A really cool Discord bot that uses Botstrap!"
-            >>> )
+            ```py title="bot.py"
+            from botstrap import Botstrap
 
-            $ python coolbot.py -h
+            Botstrap().parse_args(
+                description="A really cool Discord bot that uses Botstrap!"
+            )
+            ```
 
-            usage: coolbot.py [--help] [-t]
+            ```console title="Console Session" hl_lines="5"
+            $ python bot.py -h
+
+            usage: bot.py [--help] [-t]
 
               A really cool Discord bot that uses Botstrap!
-              Run "python coolbot.py" with no parameters to start the bot.
+              Run "python bot.py" with no parameters to start the bot.
 
             options:
               -t, --tokens  View/manage your saved Discord bot tokens.
               -h, --help    Display this help message.
+            ```
 
         Args:
             description:
@@ -226,14 +232,18 @@ class Botstrap(CliManager):
         should be avoided if possible to prevent potential security mishaps.
 
         Example:
-            >>> from botstrap import Botstrap
-            >>>
-            >>> Botstrap(name="example-bot").retrieve_active_token()
+            ```py title="bot.py"
+            from botstrap import Botstrap
 
+            Botstrap(name="example-bot").retrieve_active_token()
+            ```
+
+            ```console title="Console Session"
             $ python bot.py
 
             example-bot: You currently don't have a saved default bot token.
             Would you like to add one now? If so, type "yes" or "y":
+            ```
 
         Args:
             allow_auto_register_token:
@@ -299,14 +309,18 @@ class Botstrap(CliManager):
         more information about the parameters you can pass into this method.
 
         Example:
-            >>> from botstrap import Botstrap
-            >>>
-            >>> Botstrap().run_bot()
+            ```py title="bot.py"
+            from botstrap import Botstrap
 
+            Botstrap().run_bot()
+            ```
+
+            ```console title="Console Session"
             $ python bot.py
 
             bot: default: Attempting to log in to Discord...
             bot: default: Successfully logged in as "BasicBot#1234".
+            ```
 
         Args:
             bot_class:

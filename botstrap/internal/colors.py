@@ -18,12 +18,14 @@ class Color:
     specific color/style.
 
     Example:
-        >>> from botstrap import Color
-        >>>
-        >>> print(
-        >>>     f"{Color.pink('P')}{Color.red('R')}{Color.yellow('I')}"
-        >>>     f"{Color.green('D')}{Color.cyan('E')}{Color.blue('!')}"
-        >>> )
+        ```py title="pride.py"
+        from botstrap import Color
+
+        print(
+            f"{Color.pink('P')}{Color.red('R')}{Color.yellow('I')}"
+            f"{Color.green('D')}{Color.cyan('E')}{Color.blue('!')}"
+        )
+        ```
     """
 
     @classmethod
@@ -73,14 +75,13 @@ class ThemeColors:
     The following table summarizes this class's attributes, their default colors, and
     the types of text to which they are applied.
 
-    ===========  ======  ===============================================================
-    `primary`    n/a     Your bot's brand. See the "Note" section below for more info.
-    `error`      RED     Messages shown when the script terminates due to an error.
-    `highlight`  CYAN    Text that calls for emphasis, but isn't success/warning/error.
-    `lowlight`   GREY    Text that is less important and may be de-emphasized.
-    `success`    GREEN   Messages shown when processes/tasks are completed successfully.
-    `warning`    YELLOW  Messages shown when something goes wrong, but is recoverable.
-    ===========  ======  ===============================================================
+    | `primary`   | n/a    | Your bot's brand. See the "Note" below for more info.     |
+    | ----------- | ------ | --------------------------------------------------------- |
+    | `error`     | red    | Message shown when the script terminates due to an error. |
+    | `highlight` | cyan   | Important text that isn't a success/warning/error message.|
+    | `lowlight`  | grey   | Less important text that may safely be de-emphasized.     |
+    | `success`   | green  | Text shown when processes or tasks complete successfully. |
+    | `warning`   | yellow | Text shown when something goes wrong, but is recoverable. |
 
     Simple color presets are provided by the `default()` and `off()` class methods. If
     you desire further customization, you can create a new instance of this class and
@@ -96,13 +97,15 @@ class ThemeColors:
         as the `colors` argument when creating your `Botstrap` instance.
 
     Example:
-        >>> from botstrap import Botstrap, Color, ThemeColors
-        >>>
-        >>> # We want cyan as our primary color, but it's the default highlight color...
-        >>> # Let's change the highlight color to pink so our bot can be primarily cyan!
-        >>> bot_colors = ThemeColors(Color.cyan, highlight=Color.pink)
-        >>>
-        >>> Botstrap(colors=bot_colors).run_bot()  # Living our cyan bot dreams.
+        ```py title="bot.py" hl_lines="5"
+        from botstrap import Botstrap, Color, ThemeColors
+
+        # We want cyan as our primary color, but it's the default highlight color...
+        # Let's change the highlight color to pink so our bot can be primarily cyan!
+        bot_colors = ThemeColors(Color.cyan, highlight=Color.pink)
+
+        Botstrap(colors=bot_colors).run_bot()  # Living our cyan bot dreams.
+        ```
     """
 
     primary: Callable[[str], str] = str
@@ -119,11 +122,13 @@ class ThemeColors:
 
         Note:
             Class methods from `Color` are used as the default values for all of this
-            class's attributes, with the exception of `primary`.
+            class's attributes, except for `primary`.
 
+            ```pycon
             >>> from botstrap import Color, ThemeColors
             >>> ThemeColors.default().error == Color.red
             True
+            ```
         """
         return cls()
 
