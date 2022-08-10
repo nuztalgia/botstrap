@@ -1,0 +1,17 @@
+/* Prevent user selection of all code block filenames, as well as
+   "console" and "pycon" code block prompt markers and output. */
+.highlight .filename,
+.language-console .gp,
+.language-console .go,
+.language-pycon .gp,
+.language-pycon .go {
+  user-select: none;
+}
+
+/* Hide line numbers and clipboard icon in "console" and "pycon" code blocks. */
+.language-console .linenos,
+.language-console .md-clipboard,
+.language-pycon .linenos,
+.language-pycon .md-clipboard {
+  display: none;
+}

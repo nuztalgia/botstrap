@@ -94,12 +94,17 @@ mkdocs==1.3.1 \
     # via
     #   -r docs/requirements.in
     #   mkdocs-autorefs
+    #   mkdocs-exclude
     #   mkdocs-material
+    #   mkdocs-section-index
     #   mkdocstrings
 mkdocs-autorefs==0.4.1 \
     --hash=sha256:70748a7bd025f9ecd6d6feeba8ba63f8e891a1af55f48e366d6d6e78493aba84 \
     --hash=sha256:a2248a9501b29dc0cc8ba4c09f4f47ff121945f6ce33d760f145d6f89d313f5b
     # via mkdocstrings
+mkdocs-exclude==1.0.2 \
+    --hash=sha256:ba6fab3c80ddbe3fd31d3e579861fd3124513708271180a5f81846da8c7e2a51
+    # via -r docs/requirements.in
 mkdocs-include-markdown-plugin==3.6.1 \
     --hash=sha256:5e7416f23081085a220f7534b2fc7456e74c5a65f3b401da1f29b9e9132b46e5 \
     --hash=sha256:ea36a7d50ee98028f03574d7bf40a307e16211ad3013a4e42f64494b3c106e9e
@@ -112,6 +117,10 @@ mkdocs-material-extensions==1.0.3 \
     --hash=sha256:a82b70e533ce060b2a5d9eb2bc2e1be201cf61f901f93704b4acf6e3d5983a44 \
     --hash=sha256:bfd24dfdef7b41c312ede42648f9eb83476ea168ec163b613f9abd12bbfddba2
     # via mkdocs-material
+mkdocs-section-index==0.3.4 \
+    --hash=sha256:050151bfe7c0e374f197335e0ecb19c45b53dbafc0f817aa203f0cc24bcf7d10 \
+    --hash=sha256:214f7a6df9d35a5772e9577f3899ff3edd90044064589e6dd4d84615b72a8024
+    # via -r docs/requirements.in
 mkdocstrings[python]==0.19.0 \
     --hash=sha256:3217d510d385c961f69385a670b2677e68e07b5fea4a504d86bf54c006c87c7d \
     --hash=sha256:efa34a67bad11229d532d89f6836a8a215937548623b64f3698a1df62e01cc3e
@@ -129,11 +138,14 @@ packaging==21.3 \
 pygments==2.12.0 \
     --hash=sha256:5eb116118f9612ff1ee89ac96437bb6b49e8f04d8a13b514ba26f620208e26eb \
     --hash=sha256:dc9c10fb40944260f6ed4c688ece0cd2048414940f1cea51b8b226318411c519
-    # via mkdocs-material
+    # via
+    #   -r docs/requirements.in
+    #   mkdocs-material
 pymdown-extensions==9.5 \
     --hash=sha256:3ef2d998c0d5fa7eb09291926d90d69391283561cf6306f85cd588a5eb5befa0 \
     --hash=sha256:ec141c0f4983755349f0c8710416348d1a13753976c028186ed14f190c8061c4
     # via
+    #   -r docs/requirements.in
     #   mkdocs-material
     #   mkdocstrings
 pyparsing==3.0.9 \
