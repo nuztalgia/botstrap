@@ -3,8 +3,8 @@ from __future__ import annotations
 from getpass import getpass
 from typing import Callable, Final
 
-from botstrap.internal.colors import ThemeColors
-from botstrap.internal.strings import Strings
+from botstrap.colors import CliColors
+from botstrap.strings import CliStrings
 
 
 class CliManager:
@@ -18,15 +18,15 @@ class CliManager:
             The name of the bot or program. Printed as a prefix for high-level CLI
             messages, and may also be used to look up package metadata (if applicable).
         colors:
-            A `ThemeColors` instance specifying the colors to be used by the CLI.
+            A `CliColors` instance specifying the colors to be used by the CLI.
         strings:
-            A `Strings` instance specifying the strings to be used by the CLI.
+            A `CliStrings` instance specifying the strings to be used by the CLI.
     """
 
-    def __init__(self, name: str, colors: ThemeColors, strings: Strings) -> None:
+    def __init__(self, name: str, colors: CliColors, strings: CliStrings) -> None:
         self._name: Final[str] = name
-        self._colors: Final[ThemeColors] = colors
-        self._strings: Final[Strings] = strings
+        self._colors: Final[CliColors] = colors
+        self._strings: Final[CliStrings] = strings
         self._cli: Final[CliUtils] = CliUtils(self)
 
     @property
@@ -35,13 +35,13 @@ class CliManager:
         return self._name
 
     @property
-    def colors(self) -> ThemeColors:
-        """The `ThemeColors` used by the CLI for this instance."""
+    def colors(self) -> CliColors:
+        """The `CliColors` for this instance."""
         return self._colors
 
     @property
-    def strings(self) -> Strings:
-        """The `Strings` used by the CLI for this instance."""
+    def strings(self) -> CliStrings:
+        """The `CliStrings` for this instance."""
         return self._strings
 
     @property
@@ -56,8 +56,7 @@ class CliUtils:
 
     Args:
         manager:
-            A `CliManager` instance specifying the `ThemeColors` and `Strings` to be
-            used by the CLI.
+            A `CliManager` instance specifying the UX to be used by the CLI.
     """
 
     def __init__(self, manager: CliManager) -> None:

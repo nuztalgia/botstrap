@@ -3,21 +3,16 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Final
 
-from botstrap.internal import (
-    Argstrap,
-    CliManager,
-    Metadata,
-    Strings,
-    ThemeColors,
-    Token,
-)
+from botstrap.colors import CliColors
+from botstrap.internal import Argstrap, CliManager, Metadata, Token
+from botstrap.strings import CliStrings
 
 _DEFAULT_PROGRAM_NAME: Final[str] = "bot"
 _DEFAULT_TOKEN_NAME: Final[str] = "default"
 
 
-class Botstrap(CliManager):
-    """The primary API for bot token storage, retrieval, and management.
+class BotstrapFlow(CliManager):
+    """The primary flow for handling bot token storage, retrieval, and management.
 
     This class contains methods that facilitate the simple and secure handling of
     Discord bot tokens. It maintains a token registry to enable programmatic declaration
@@ -30,10 +25,10 @@ class Botstrap(CliManager):
     def __init__(
         self,
         name: str | None = None,
-        colors: ThemeColors = ThemeColors.default(),
-        strings: Strings = Strings.default(),
+        colors: CliColors = CliColors.default(),
+        strings: CliStrings = CliStrings.default(),
     ) -> None:
-        """Initializes a new `Botstrap` instance.
+        """Initializes a new `BotstrapFlow` instance.
 
         Args:
             name:
@@ -42,11 +37,11 @@ class Botstrap(CliManager):
                 will use the default name: `#!py "bot"`.
             colors:
                 The colors to be used by the CLI. Defaults to commonly-used colors (e.g.
-                green for success, red for error). Set this to `ThemeColors.off()`
-                to disable all colors.
+                green for success, red for error). Set this to `CliColors.off()` to
+                disable all colors.
             strings:
                 The strings to be used by the CLI. Defaults to English text with ample
-                vertical spacing for readability. Set this to `Strings.compact()` to
+                vertical spacing for readability. Set this to `CliStrings.compact()` to
                 minimize spacing.
         """
         name = name or Metadata.guess_program_name() or _DEFAULT_PROGRAM_NAME
@@ -61,10 +56,10 @@ class Botstrap(CliManager):
         display_name: str | None = None,
         storage_directory: str | Path | None = None,
         allow_overwrites: bool = False,
-    ) -> Botstrap:
+    ) -> BotstrapFlow:
         """Defines a token to be managed by this Botstrap integration.
 
-        After creating a `Botstrap` instance and before calling any of the other API
+        After creating a `BotstrapFlow` instance and before calling any of the other API
         methods, this method should be called once for each unique token that may be
         used by your bot. If only one token is required, you may skip this step, and a
         basic "default" token will be automatically registered.
@@ -78,9 +73,9 @@ class Botstrap(CliManager):
 
         Example:
             ```py title="bot.py"
-            from botstrap import Botstrap, Color
+            from botstrap import BotstrapFlow, Color
 
-            Botstrap().register_token(
+            BotstrapFlow().register_token(
                 uid="dev",
                 display_name=Color.yellow("development"),
             ).register_token(
@@ -112,7 +107,7 @@ class Botstrap(CliManager):
                 previous token. If `False`, a `#!py ValueError` will be raised.
 
         Returns:
-            This `Botstrap` instance.
+            This `BotstrapFlow` instance.
 
         Raises:
             ValueError:
@@ -131,7 +126,7 @@ class Botstrap(CliManager):
         *,
         description: str | None = None,
         version: str | None = None,
-    ) -> Botstrap:
+    ) -> BotstrapFlow:
         """Parses any arguments and options passed in via the command line.
 
         This method should only be called after all expected tokens have been defined
@@ -144,9 +139,9 @@ class Botstrap(CliManager):
 
         Example:
             ```py title="bot.py"
-            from botstrap import Botstrap
+            from botstrap import BotstrapFlow
 
-            Botstrap().parse_args(
+            BotstrapFlow().parse_args(
                 description="A really cool Discord bot that uses Botstrap!"
             )
             ```
@@ -176,7 +171,7 @@ class Botstrap(CliManager):
                 option will not be available in your bot's CLI.
 
         Returns:
-            This `Botstrap` instance.
+            This `BotstrapFlow` instance.
 
         Raises:
             SystemExit:
@@ -231,9 +226,9 @@ class Botstrap(CliManager):
 
         Example:
             ```py title="bot.py"
-            from botstrap import Botstrap
+            from botstrap import BotstrapFlow
 
-            Botstrap(name="example-bot").retrieve_active_token()
+            BotstrapFlow(name="example-bot").retrieve_active_token()
             ```
 
             ```console title="Console Session"
@@ -249,8 +244,8 @@ class Botstrap(CliManager):
                 tokens have been manually registered.
             allow_auto_parse_args:
                 Whether to automatically parse command-line options and args if
-                [`parse_args()`][botstrap.Botstrap.parse_args] has not been manually
-                invoked.
+                [`parse_args()`][botstrap.BotstrapFlow.parse_args] has not been
+                manually invoked.
             allow_token_creation:
                 Whether to interactively prompt to create (i.e. add and encrypt) a new
                 token if the active token has not already been created.
@@ -307,9 +302,9 @@ class Botstrap(CliManager):
 
         Example:
             ```py title="bot.py"
-            from botstrap import Botstrap
+            from botstrap import BotstrapFlow
 
-            Botstrap().run_bot()
+            BotstrapFlow().run_bot()
             ```
 
             ```console title="Console Session"
@@ -330,7 +325,7 @@ class Botstrap(CliManager):
                 possible destinations:
 
                 1. Any args accepted by
-                [`retrieve_active_token()`][botstrap.Botstrap.retrieve_active_token]
+                [`retrieve_active_token()`][botstrap.BotstrapFlow.retrieve_active_token]
                 will be passed to that method when it gets called by this one in order
                 to obtain the token to run your bot.
 

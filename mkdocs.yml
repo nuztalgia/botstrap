@@ -2,7 +2,7 @@ site_name: Botstrap
 site_url: https://botstrap.readthedocs.io
 repo_name: nuztalgia/botstrap
 repo_url: https://github.com/nuztalgia/botstrap
-edit_uri: edit/main/docs/
+edit_uri: ""
 
 theme:
   name: material
@@ -30,10 +30,10 @@ nav:
   - Home: index.md
   - API Reference:
       - api/index.md
-      - Botstrap: api/botstrap.md
+      - BotstrapFlow: api/botstrap-flow.md
+      - CliColors: api/cli-colors.md
+      - CliStrings: api/cli-strings.md
       - Color: api/color.md
-      - Strings: api/strings.md
-      - ThemeColors: api/theme-colors.md
 
 extra_css:
   - style.css
@@ -44,7 +44,7 @@ plugins:
   - include-markdown
   - exclude:
       regex:
-        - (.*/)?README\.md$
+        - ^(.*/)?README\.md$
         - ^images/robot-happy.*$
         - ^requirements\.(in|txt)$
   - mkdocstrings:
@@ -54,10 +54,10 @@ plugins:
             heading_level: 1
             members_order: source
             show_bases: false
-            show_signature_annotations: true
-            show_source: false
             show_root_full_path: false
             show_root_heading: true
+            show_signature_annotations: true
+            show_source: false
       watch:
         - botstrap/
 

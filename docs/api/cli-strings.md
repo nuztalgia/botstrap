@@ -1,5 +1,5 @@
 <!-- prettier-ignore -->
-::: botstrap.Strings
+::: botstrap.CliStrings
     options:
       members:
         - default

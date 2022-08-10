@@ -6,8 +6,8 @@ from typing import Any, Callable, Iterable, overload
 
 
 @dataclass(eq=False, frozen=True, kw_only=True)
-class Strings:
-    """A `dataclass` specifying the strings to be used by the Botstrap-provided CLI.
+class CliStrings:
+    """A model for the strings used by the Botstrap-provided CLI.
 
     The attributes of this class are strings, `Template` strings, and tuples of strings.
     Collectively, they determine the text that is displayed in the console when you run
@@ -29,14 +29,14 @@ class Strings:
 
     Example:
         ```py title="bot.py"
-        from botstrap import Botstrap, Strings
+        from botstrap import BotstrapFlow, CliStrings
         from string import Template
 
-        bot_strings = Strings(
+        bot_strings = CliStrings(
             m_login=Template("Logging in with '$token' bot token."),
             m_login_success=Template("$bot_id reporting for duty in $token mode!"),
         )
-        Botstrap(strings=bot_strings).run_bot()
+        BotstrapFlow(strings=bot_strings).run_bot()
         ```
 
         ```console title="Console Session"
@@ -48,7 +48,7 @@ class Strings:
     """
 
     @classmethod
-    def default(cls) -> Strings:
+    def default(cls) -> CliStrings:
         """Returns an instance of this class with default values for all attributes.
 
         The default strings are all in English and include ample vertical spacing (e.g.
@@ -57,7 +57,7 @@ class Strings:
         return cls()
 
     @classmethod
-    def compact(cls) -> Strings:
+    def compact(cls) -> CliStrings:
         """Returns an instance of this class with vertical spacing minimized.
 
         In other words, the semantic contents of all attributes are the same as they are
@@ -199,9 +199,9 @@ class Strings:
         strings "yes" and "y" by default.
 
         Example:
-            >>> from botstrap import Strings
+            >>> from botstrap import CliStrings
             >>> pig_latin = lambda text: f"{text[1:]}{text[0]}ay"
-            >>> Strings.default().get_affirmation_prompt(format_response=pig_latin)
+            >>> CliStrings.default().get_affirmation_prompt(format_response=pig_latin)
             'If so, type "esyay" or "yay"'
 
         Args:

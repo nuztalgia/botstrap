@@ -1,18 +1,19 @@
 """This package exports the classes that make up Botstrap's public API.
 
-* [`Botstrap`](botstrap)
-* [`Color`](color)
-* [`Strings`](strings)
-* [`ThemeColors`](theme-colors)
+- [`BotstrapFlow`](botstrap-flow)
+- [`CliColors`](cli-colors)
+- [`CliStrings`](cli-strings)
+- [`Color`](color)
 
-For more details, see the documentation for each class. [Start here.](botstrap)
+For more details, see the documentation for each class. [Start here.](botstrap-flow)
 """
-from botstrap.api import Botstrap
-from botstrap.internal import Color, Strings, ThemeColors
+from botstrap.colors import CliColors, Color
+from botstrap.flow import BotstrapFlow
+from botstrap.strings import CliStrings
 
 __all__ = [
-    "Botstrap",
+    "BotstrapFlow",
+    "CliColors",
+    "CliStrings",
     "Color",
-    "Strings",
-    "ThemeColors",
 ]

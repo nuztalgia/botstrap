@@ -1,11 +1,11 @@
 from argparse import ArgumentParser, RawTextHelpFormatter
 from typing import Final, Optional
 
+from botstrap.colors import CliColors
 from botstrap.internal.cmdline import CliManager
-from botstrap.internal.colors import ThemeColors
 from botstrap.internal.metadata import Metadata
-from botstrap.internal.strings import Strings
 from botstrap.internal.tokens import Token
+from botstrap.strings import CliStrings
 
 _HELP_KEY: Final[str] = "help"
 _TOKEN_KEY: Final[str] = "token"
@@ -21,8 +21,7 @@ class Argstrap(ArgumentParser):
 
     Args:
         manager:
-            A `CliManager` instance specifying the `ThemeColors` and `Strings` to be
-            used by the CLI.
+            A `CliManager` instance specifying the UX to be used by the CLI.
         description:
             An optional string containing a description/summary of the bot. Will be
             displayed along with usage instructions when the `-h` option is specified.
@@ -68,7 +67,11 @@ class Argstrap(ArgumentParser):
 
         self._add_option_argument(_HELP_KEY, manager.strings.h_help, action="help")
 
-    def _add_token_argument(self, strings: Strings, valid_tokens: list[Token]) -> None:
+    def _add_token_argument(
+        self,
+        strings: CliStrings,
+        valid_tokens: list[Token],
+    ) -> None:
         self.add_argument(
             _TOKEN_KEY,
             metavar=_TOKEN_METAVAR,
@@ -91,7 +94,7 @@ class Argstrap(ArgumentParser):
 
 
 def _build_usage_string(
-    colors: ThemeColors,
+    colors: CliColors,
     prog_name: str,
     version: Optional[str],
     is_multi_token: bool,

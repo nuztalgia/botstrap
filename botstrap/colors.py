@@ -10,7 +10,7 @@ init(autoreset=True)
 
 
 class Color:
-    """A collection of functions that add color to strings printed to the console.
+    """A collection of functions that add color to console-printed strings.
 
     These functions work by adding pre-defined ANSI escape codes from `colorama.Fore`
     and `colorama.Style` to the beginning and end of a given string. These characters
@@ -69,8 +69,8 @@ class Color:
 
 
 @dataclass(eq=False, frozen=True)
-class ThemeColors:
-    """A `dataclass` specifying the colors to be used by the Botstrap-provided CLI.
+class CliColors:
+    """A model for the colors used by the Botstrap-provided CLI.
 
     The following table summarizes this class's attributes, their default colors, and
     the types of text to which they are applied.
@@ -93,18 +93,18 @@ class ThemeColors:
         as it will be used to color your bot's name and is essentially a personal brand.
 
         To customize `primary`, simply instantiate this class with your desired color as
-        the first constructor arg - such as `ThemeColors(Color.pink)` - and pass it in
-        as the `colors` argument when creating your `Botstrap` instance.
+        the first constructor arg - such as `CliColors(Color.pink)` - and pass it in as
+        the `colors` argument when creating your `BotstrapFlow` instance.
 
     Example:
         ```py title="bot.py" hl_lines="5"
-        from botstrap import Botstrap, Color, ThemeColors
+        from botstrap import BotstrapFlow, CliColors, Color
 
         # We want cyan as our primary color, but it's the default highlight color...
         # Let's change the highlight color to pink so our bot can be primarily cyan!
-        bot_colors = ThemeColors(Color.cyan, highlight=Color.pink)
+        bot_colors = CliColors(Color.cyan, highlight=Color.pink)
 
-        Botstrap(colors=bot_colors).run_bot()  # Living our cyan bot dreams.
+        BotstrapFlow(colors=bot_colors).run_bot()  # Living our cyan bot dreams.
         ```
     """
 
@@ -117,7 +117,7 @@ class ThemeColors:
     warning: Callable[[str], str] = Color.yellow
 
     @classmethod
-    def default(cls) -> ThemeColors:
+    def default(cls) -> CliColors:
         """Returns an instance of this class with default values for all attributes.
 
         Note:
@@ -125,15 +125,15 @@ class ThemeColors:
             class's attributes, except for `primary`.
 
             ```pycon
-            >>> from botstrap import Color, ThemeColors
-            >>> ThemeColors.default().error == Color.red
+            >>> from botstrap import Color, CliColors
+            >>> CliColors.default().error == Color.red
             True
             ```
         """
         return cls()
 
     @classmethod
-    def off(cls) -> ThemeColors:
+    def off(cls) -> CliColors:
         """Returns an instance of this class with all colors disabled.
 
         In other words, all attributes are effectively no-ops (functions that simply

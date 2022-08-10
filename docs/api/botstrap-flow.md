@@ -1,4 +1,4 @@
 <!-- prettier-ignore -->
-::: botstrap.Botstrap
+::: botstrap.BotstrapFlow
     options:
       show_signature: false
