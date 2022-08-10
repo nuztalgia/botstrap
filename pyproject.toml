@@ -39,7 +39,8 @@ profile = "black"
 
 [tool.pydocstyle]
 convention = "google"
-add-ignore = "D100, D104, D107"
+add-ignore = "D100, D417"
+match = "botstrap(?!/internal).*\\.py" # TODO: Remove this when internal docs are ready.
 
 [tool.setuptools.dynamic]
 version = { attr = "botstrap.version.VERSION" }

@@ -1,4 +1,4 @@
 <!-- prettier-ignore -->
 ::: botstrap.Botstrap
     options:
-      separate_signature: true
+      show_signature: false

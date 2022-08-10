@@ -51,11 +51,13 @@ plugins:
       handlers:
         python:
           options:
-            show_root_full_path: false
+            heading_level: 1
             members_order: source
-            show_signature_annotations: true
             show_bases: false
+            show_signature_annotations: true
             show_source: false
+            show_root_full_path: false
+            show_root_heading: true
       watch:
         - botstrap/
 
@@ -66,4 +68,5 @@ markdown_extensions:
       linenums_style: pymdownx-inline
       pygments_lang_class: true
       use_pygments: true
+  - pymdownx.inlinehilite
   - pymdownx.superfences

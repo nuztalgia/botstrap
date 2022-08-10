@@ -25,20 +25,6 @@ class Botstrap(CliManager):
     of encrypted token data. This class also maintains some state corresponding to its
     constructor arguments, which collectively ensure a consistent look and feel for the
     aforementioned CLI.
-
-    Args:
-        name:
-            An optional string containing the name of your bot. If omitted or empty,
-            Botstrap will try to determine an appropriate name from module and/or file
-            metadata. If unsuccessful, it will simply use the default name: "bot".
-        colors:
-            A `ThemeColors` instance specifying the colors to be used by the CLI for
-            this Botstrap integration. Defaults to commonly-used colors (e.g. green for
-            success, red for error). Set this to `ThemeColors.off()` to disable colors.
-        strings:
-            A `Strings` instance specifying the strings to be used by the CLI for this
-            Botstrap integration. Defaults to English text with liberal spacing for
-            readability. Set this to `Strings.compact()` to disable superfluous spacing.
     """
 
     def __init__(
@@ -47,6 +33,22 @@ class Botstrap(CliManager):
         colors: ThemeColors = ThemeColors.default(),
         strings: Strings = Strings.default(),
     ) -> None:
+        """Initializes a new `Botstrap` instance.
+
+        Args:
+            name:
+                The name of your bot. If omitted, Botstrap will try to determine an
+                appropriate name from package and/or file metadata. If unsuccessful, it
+                will use the default name: `#!py "bot"`.
+            colors:
+                The colors to be used by the CLI. Defaults to commonly-used colors (e.g.
+                green for success, red for error). Set this to `ThemeColors.off()`
+                to disable all colors.
+            strings:
+                The strings to be used by the CLI. Defaults to English text with ample
+                vertical spacing for readability. Set this to `Strings.compact()` to
+                minimize spacing.
+        """
         name = name or Metadata.guess_program_name() or _DEFAULT_PROGRAM_NAME
         super().__init__(name, colors, strings)
         self._tokens_by_uid: Final[dict[str, Token]] = {}
