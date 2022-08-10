@@ -92,28 +92,27 @@ class Botstrap(CliManager):
 
         Args:
             uid:
-                A unique string identifying this token. Will be used as a file name for
-                the encrypted `.key` files containing this token's data.
+                A unique string identifying this token. Will be used in the names of
+                the files containing this token's data.
             requires_password:
-                Whether a user-provided password is required in order to create and/or
-                retrieve this token. Defaults to `False`.
+                Whether a password is required in order to create and subsequently
+                retrieve this token.
             display_name:
-                A human-readable string describing this token. May include formatting
-                characters, such as those provided by `Color` methods. Will be displayed
-                in the CLI when referring to this token. If omitted, the `uid` for this
-                token will be displayed instead.
+                A human-readable string describing this token. Will be displayed in the
+                CLI when referring to this token. If omitted, the `uid` will be
+                displayed instead.
             storage_directory:
-                The location in which to store the encrypted `.key` files containing the
-                data for this token. If omitted, the files will be placed in a directory
-                named ".botstrap_keys", which will be created in the same location as
-                the file containing the `__main__` module for the executing script.
+                Where to store the files containing this token's data. If omitted, the
+                files will be saved in a folder named `.botstrap_keys`, which will be
+                created in the same location as the `#!py "__main__"` module of your
+                script.
             allow_overwrites:
-                Whether to allow this token to be registered even if `uid` belongs to a
-                token that has already been registered. If `True`, this token will
-                overwrite the previously registered token. Defaults to `False`.
+                Whether to allow this token to be registered even if `uid` already
+                belongs to a registered token. If `True`, this token will clobber the
+                previous token. If `False`, a `#!py ValueError` will be raised.
 
         Returns:
-            This `Botstrap` instance, to allow chaining method calls.
+            This `Botstrap` instance.
 
         Raises:
             ValueError:
@@ -167,20 +166,17 @@ class Botstrap(CliManager):
 
         Args:
             description:
-                An optional string containing a short human-readable description/summary
-                of your bot. May include formatting characters. Will be displayed when
-                the `--help` option is specified on the command line, along with some
-                usage instructions for running your bot. If omitted or empty, Botstrap
-                will try to populate this field from package metadata (if available).
-                Otherwise, only the usage instructions will be displayed.
+                A short human-readable description of your bot. Will be displayed when
+                the `--help` option is passed to the CLI. If omitted, Botstrap will try
+                to fill this field from package metadata. If unsuccessful, this line
+                will be left blank.
             version:
-                An optional string representing the version of your bot. May include
-                formatting characters. Will be displayed when the `--version` option is
-                specified on the command line. If omitted or empty, the `--version`
-                option will not be available (as is the case in the example above).
+                A string representing the current version of your bot. Will be displayed
+                when the `--version` option is passed to the CLI. If omitted, that
+                option will not be available in your bot's CLI.
 
         Returns:
-            This `Botstrap` instance, to allow chaining method calls.
+            This `Botstrap` instance.
 
         Raises:
             SystemExit:
@@ -249,19 +245,18 @@ class Botstrap(CliManager):
 
         Args:
             allow_auto_register_token:
-                Whether to automatically register a simple "default" token if no tokens
-                have been manually registered. Defaults to `True`.
+                Whether to automatically register a simple `#!py "default"` token if no
+                tokens have been manually registered.
             allow_auto_parse_args:
-                Whether to automatically parse command-line options and arguments if
-                `parse_args()` has not been manually invoked. Defaults to `True`.
+                Whether to automatically parse command-line options and args if
+                [`parse_args()`][botstrap.Botstrap.parse_args] has not been manually
+                invoked.
             allow_token_creation:
-                Whether to interactively prompt to create a token (i.e. encrypt a token
-                value and save it to a new `.key` file for future use) if the active
-                token has not previously been created. Defaults to `True`.
+                Whether to interactively prompt to create (i.e. add and encrypt) a new
+                token if the active token has not already been created.
 
         Returns:
-            The string value of the active token if it exists and can be successfully
-            decrypted, otherwise `None`.
+            The active token `#!py str` if it exists & can be decrypted, or else `None`.
 
         Raises:
             RuntimeError:
@@ -326,21 +321,27 @@ class Botstrap(CliManager):
 
         Args:
             bot_class:
-                A string or type specifying the class of your bot. Will be instantiated
-                with the `options` keyword args. Must be fully-qualified (i.e. include
-                package/module names if it is a string) and have a method named `run()`
-                that accepts a token string. This method will be invoked with the value
-                of the active token. If omitted, this arg will default to "discord.Bot",
-                which is compatible with the `discord` and `py-cord` packages.
+                The class name or `#!py type` of your bot. Will be instantiated with the
+                `options` keyword args. This arg's default value is compatible with the
+                [`discord.py`](https://pypi.org/project/discord.py/) and
+                [`py-cord`](https://pypi.org/project/py-cord/) packages.
             options:
-                Any keyword args (e.g. `intents`, `status`) that you would like to pass
-                to your bot class constructor upon instantiation. These may also include
-                any of the keyword args accepted by `retrieve_active_token()`, which
-                will be invoked as specified in order to obtain the token to run your
-                bot. If omitted, default values for all keyword arguments will be used.
+                Optional keyword arguments that will be forwarded to one of two
+                possible destinations:
 
-        Returns:
-            Nothing.
+                1. Any args accepted by
+                [`retrieve_active_token()`][botstrap.Botstrap.retrieve_active_token]
+                will be passed to that method when it gets called by this one in order
+                to obtain the token to run your bot.
+
+                2. The remaining args will be passed to the constructor of `bot_class`
+                upon instantiation. A common use case for this is specifying any special
+                [`intents`](https://discord.com/developers/docs/topics/gateway#privileged-intents)
+                your bot might need.
+
+                Despite what the column to the right says, this parameter is <u>not
+                required</u>. Any options that aren't specified (which may be all of
+                them) will simply use their default values.
 
         Raises:
             ImportError:
