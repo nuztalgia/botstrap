@@ -1,3 +1,4 @@
+"""This module contains two classes for facilitating command-line input and output."""
 from __future__ import annotations
 
 from getpass import getpass
@@ -8,22 +9,29 @@ from botstrap.strings import CliStrings
 
 
 class CliManager:
-    """Manages UX state to ensure a consistent look and feel for the CLI.
+    """Maintains UX state to ensure a consistent look and feel for the CLI.
 
-    Maintains state corresponding to the following constructor arguments, and allows
-    subsequent read-only property access to their values.
-
-    Args:
-        name:
-            The name of the bot or program. Printed as a prefix for high-level CLI
-            messages, and may also be used to look up package metadata (if applicable).
-        colors:
-            A `CliColors` instance specifying the colors to be used by the CLI.
-        strings:
-            A `CliStrings` instance specifying the strings to be used by the CLI.
+    "UX state" is defined by the constructor arguments upon creating an instance of this
+    class. It can subsequently be accessed through the instance's read-only properties.
     """
 
-    def __init__(self, name: str, colors: CliColors, strings: CliStrings) -> None:
+    def __init__(
+        self,
+        name: str,
+        colors: CliColors = CliColors.default(),
+        strings: CliStrings = CliStrings.default(),
+    ) -> None:
+        """Initializes a new `CliManager` instance.
+
+        Args:
+            name:
+                The name of your program. Will be displayed in some CLI messages and may
+                be used to look up package metadata.
+            colors:
+                The colors to be used by the CLI.
+            strings:
+                The strings to be used by the CLI.
+        """
         self._name: Final[str] = name
         self._colors: Final[CliColors] = colors
         self._strings: Final[CliStrings] = strings
@@ -31,52 +39,66 @@ class CliManager:
 
     @property
     def name(self) -> str:
-        """The name of the bot/program that created this instance."""
+        """The name of the program that created this `CliManager`."""
         return self._name
 
     @property
     def colors(self) -> CliColors:
-        """The `CliColors` for this instance."""
+        """The [`CliColors`][botstrap.CliColors] for this instance."""
         return self._colors
 
     @property
     def strings(self) -> CliStrings:
-        """The `CliStrings` for this instance."""
+        """The [`CliStrings`][botstrap.CliStrings] for this instance."""
         return self._strings
 
     @property
     def cli(self) -> CliUtils:
-        """A collection of CLI utility functions that adhere to this instance's UX."""
+        """The [`CliUtils`][botstrap.internal.CliUtils] for this instance."""
         return self._cli
 
 
-# noinspection PyUnresolvedReferences
 class CliUtils:
-    """A collection of CLI utilities that adhere to the UX defined by a `CliManager`.
+    """A collection of CLI functions that adhere to the UX defined by a `CliManager`.
 
-    Args:
-        manager:
-            A `CliManager` instance specifying the UX to be used by the CLI.
+    Note:
+        All of the code examples in this class reference a `CliUtils` instance named
+        `cli`, which may be created as follows:
+        ```pycon
+        >>> from botstrap.internal import CliManager
+        >>> cli = CliManager(name="cli-demo").cli
+        ```
+        To keep the examples focused and brief, the above definition is only explicitly
+        written out once in this section. However, <u>all</u> of the examples will fail
+        with a `#!py NameError` if the `cli` variable has not been defined.
     """
 
     def __init__(self, manager: CliManager) -> None:
+        """Initializes a new `CliUtils` instance.
+
+        Args:
+            manager:
+                A `CliManager` specifying the UX to be used by the CLI.
+        """
         self.manager: Final[CliManager] = manager
 
     def confirm_or_exit(self, question: str) -> None:
+        # noinspection PyUnresolvedReferences
         """Exits the program if the user responds non-affirmatively to a prompt.
 
-        If the user responds affirmatively, this method will return without raising an
-        error, allowing program execution to continue normally.
+        If the user responds affirmatively, this function will return without raising
+        any errors, allowing program execution to continue normally.
 
         Example:
+            ```pycon
             >>> cli.confirm_or_exit("Would you like to continue?")
             Would you like to continue? If so, type "yes" or "y":
+            ```
 
         Args:
             question:
-                The text to display as part of the user prompt. Should be phrased as a
-                yes/no question, because it will be followed by additional text telling
-                the user how to proceed.
+                The first part of the prompt. Should be phrased as a question that can
+                be meaningfully answered by a "yes" or "no" response.
 
         Raises:
             SystemExit:
@@ -86,19 +108,30 @@ class CliUtils:
             self.exit_process(self.manager.strings.m_exit_by_choice, is_error=False)
 
     def exit_process(self, reason: str, is_error: bool = True) -> None:
+        # noinspection PyUnresolvedReferences
         """Exits the program in a user-friendly manner.
 
         Example:
-            >>> cli.exit_process("Received a keyboard interrupt.", is_error=False)
-            Received a keyboard interrupt. Exiting process.
+            ```pycon
+            >>> cli.exit_process("Testing the exit_process() function.", is_error=False)
+            Testing the exit_process() function. Exiting process.
+            ```
+
+            ```console title="Console Session"
+            Process finished with exit code 0
+            ```
+
+            **Note:** Depending on your shell settings, the text in the "Console
+            Session" block may or may not be displayed. However, the behavior of
+            `exit_process()` remains consistent regardless of what is printed after
+            the process ends.
 
         Args:
             reason:
-                A brief human-readable explanation for why the program is ending.
+                A simple explanation for why the program is ending.
             is_error:
-                Whether the program is ending due to an error. Determines the exit
-                status passed to `SystemExit()` and the color of the displayed `reason`
-                text. Defaults to `False`.
+                Whether the program is ending due to an error. Determines its exit code
+                and the color of the displayed `reason` text.
 
         Raises:
             SystemExit:
@@ -111,21 +144,27 @@ class CliUtils:
         raise SystemExit(1 if is_error else 0)
 
     def get_bool_input(self, question: str) -> bool:
+        # noinspection PyUnresolvedReferences
         """Returns a boolean value corresponding to the user's response to a prompt.
 
         Example:
-            >>> if cli.get_bool_input(f"Does {member} like pineapple on pizza?"):
-            >>>     member.ban(reason="Disgusting.")
+            ```pycon
+            >>> if cli.get_bool_input("Do you believe in life after love?"):
+            ...     print("I can feel something inside me say...")
+            ... else:
+            ...     print("I really don't think you're strong enough, no!")
+            ...
+            Do you believe in life after love? If so, type "yes" or "y": umm...
+            I really don't think you're strong enough, no!
+            ```
 
         Args:
             question:
-                The text to display as part of the user prompt. Should be phrased as a
-                yes/no question, because it will be followed by additional text telling
-                the user how to proceed.
+                The first part of the prompt. Should be phrased as a question that can
+                be meaningfully answered by a "yes" or "no" response.
 
         Returns:
-            `True` if the user responds affirmatively, or `False` if the user responds
-            non-affirmatively.
+            `True` if the user responds affirmatively, otherwise `False`.
         """
         colored_prompt = self.manager.strings.get_affirmation_prompt(
             format_response=self.manager.colors.highlight, quote_responses=True
@@ -138,57 +177,73 @@ class CliUtils:
         prompt: str,
         format_input: Callable[[str], str] | None = None,
     ) -> str:
-        """Returns the user's input without echoing (i.e. displaying it on the screen).
+        # noinspection PyUnresolvedReferences
+        """Returns the user's input without echoing. Prints a safe representation of it.
 
-        This method automatically takes care of formatting the input/output according
-        to the expected styles. If a more basic (but still hidden) input experience is
-        desired, use the `get_input()` method with its `hidden` argument set to `True`.
+        In this context, "[echoing](https://en.wikipedia.org/wiki/Echo_(computing))" is
+        displaying the user's input on the screen as they type. For security reasons, it
+        is undesirable when dealing with sensitive data.
+
+        This function tries to provide a user-friendly experience without leaking the
+        resulting input. If the descriptions in the "Parameters" section below are
+        undesirable for your use case, consider using
+        [`get_input()`][botstrap.internal.CliUtils.get_input]
+        (with the keyword argument `#!py echo_input=False`) instead of this function.
 
         Example:
+            ```pycon hl_lines="2"
             >>> very_secure_password = cli.get_hidden_input("Enter your password")
             Enter your password: *******
-            >>> print(very_secure_password)
+            >>> print(very_secure_password)  # NEVER do this with a real password!
             hunter2
+            ```
 
         Args:
             prompt:
                 A short human-readable prompt for the user. Will be automatically
-                highlighted (if colors are enabled) and followed by a colon (":").
+                highlighted if colors are enabled, and then followed by a colon (`:`)
+                and a space.
             format_input:
-                An optional function that takes the raw user input string and returns
-                a string that will be displayed on-screen in place of the user input.
-                If omitted, the result will be displayed as a sequence of asterisks
-                ("*") matching the length of the user input string.
+                A function that accepts the raw input and returns a string that can be
+                safely displayed. If omitted, the input will be displayed as a sequence
+                of asterisks (one `*` for each character in the input).
 
         Returns:
             The user's response as a string, stripped of leading & trailing whitespace.
         """
         colored_prompt = self.manager.colors.highlight(f"{prompt}:")
-        result = self.get_input(colored_prompt, hidden=True)
+        result = self.get_input(colored_prompt, echo_input=False)
         if not (output := format_input and format_input(result)):
             output = self.manager.colors.lowlight("*" * len(result))
         print(f"\033[F\033[1A{colored_prompt} {output}")  # Overwrite the previous line.
         return result
 
     # noinspection PyMethodMayBeStatic
-    def get_input(self, prompt: str, *, hidden: bool = False) -> str:
-        """Returns the user's input as a string (optionally without echoing).
+    def get_input(self, prompt: str, *, echo_input: bool = True) -> str:
+        # noinspection PyUnresolvedReferences
+        """Returns the user's input, with the option to turn off echoing.
 
-        This method does not do anything to format the input/output besides appending a
-        space to the prompt (and hiding the user's input if `hidden` is set to `True`).
-        For fancier formatting of sensitive input, use the `get_hidden_input()` method.
+        In this context, "[echoing](https://en.wikipedia.org/wiki/Echo_(computing))" is
+        displaying the user's input on the screen as they type. For security reasons, it
+        is undesirable when dealing with sensitive data.
+
+        This function does not do anything special to format its console output. If you
+        require sensitive user input with more nuanced console output, consider using
+        [`get_hidden_input()`][botstrap.internal.CliUtils.get_hidden_input] instead.
 
         Example:
+            ```pycon
             >>> print(cli.get_input("Baby shark"))
             Baby shark doo doo doo
             doo doo doo
+            ```
 
         Args:
             prompt:
-                A short human-readable prompt for the user.
-            hidden:
-                Whether the user's input should be concealed (i.e. not displayed on the
-                screen). Set this to `True` for sensitive input. Defaults to `False`.
+                A short human-readable prompt for the user. Will be followed by a space.
+            echo_input:
+                Whether the user's input should be displayed on the screen. Set this to
+                `False` for sensitive input.
 
         Returns:
             The user's response as a string, stripped of leading & trailing whitespace.
@@ -197,7 +252,7 @@ class CliUtils:
         # but override the default `end` with " " to keep user input on the same line.
         print(prompt, end=" ")
         # Strip all leading and trailing whitespace from the input before returning it.
-        return (getpass(prompt="") if hidden else input()).strip()
+        return (input() if echo_input else getpass(prompt="")).strip()
 
     def print_prefixed_message(
         self,
@@ -205,32 +260,30 @@ class CliUtils:
         is_error: bool = False,
         suppress_newline: bool = False,
     ) -> None:
-        """Prints a message prefixed by the bot name (and optionally an error label).
+        # noinspection PyUnresolvedReferences
+        """Prints a message prefixed by the program name, and optionally an error label.
 
-        The bot name is automatically read from the `CliManager` that was provided to
+        The program name is obtained from the `CliManager` that was provided to
         instantiate this class.
 
         Example:
+            ```pycon
             >>> cli.print_prefixed_message("What does the fox say?")
-            bot: What does the fox say?
+            cli-demo: What does the fox say?
             >>> cli.print_prefixed_message("Wa-pa-pa-pa-pa-pa-pow!", is_error=True)
-            bot: error: Wa-pa-pa-pa-pa-pa-pow!
+            cli-demo: error: Wa-pa-pa-pa-pa-pa-pow!
+            ```
 
         Args:
             message:
-                A human-readable string to display. If omitted or empty, only the prefix
-                will be printed, followed by a space instead of the usual newline.
-                Subsequent messages/prompts may then be printed on the same line, after
-                the prefix. Default value is the empty string.
+                A human-readable string to display. If omitted, only the prefix will be
+                printed, followed by a space instead of the usual newline. This allows
+                subsequent text to be printed on the same line (after the prefix).
             is_error:
-                Whether an error label (e.g. "error:") should be included in the prefix.
-                Defaults to `False`.
+                Whether an error label should be included in the prefix.
             suppress_newline:
                 Whether to end the printed message with a space instead of a newline,
-                even when `message` is non-empty. Defaults to `False`.
-
-        Returns:
-            Nothing.
+                even if `message` is non-empty.
         """
         name = self.manager.colors.primary(self.manager.name)
         prefix = self.manager.strings.m_prefix.substitute(program_name=name)
