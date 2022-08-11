@@ -19,3 +19,9 @@
 a[href*="../internal"].md-footer__link--next {
   display: none;
 }
+
+/* Add some extra horizontal spacing around emoji so they don't look cramped. */
+.twemoji {
+  margin-left: 0.25em;
+  margin-right: 0.25em;
+}

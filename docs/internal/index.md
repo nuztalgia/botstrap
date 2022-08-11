@@ -13,3 +13,9 @@
 
     If you're just trying to integrate Botstrap into your Discord bot, the
     info you need is in the [public API reference](../api).
+
+??? quote "Here Be Memes"
+
+    <figure markdown>
+      ![Botstrap - Simba Meme](https://user-images.githubusercontent.com/95021853/184226591-958ca40d-354e-4bbf-a91a-c19bccb96402.png)
+    </figure>

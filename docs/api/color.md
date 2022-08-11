@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="/stylesheets/color.css" />
+<link rel="stylesheet" href="../../stylesheets/color.css" />
 
 <!-- prettier-ignore -->
 ::: botstrap.Color

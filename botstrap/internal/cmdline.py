@@ -101,8 +101,8 @@ class CliUtils:
                 be meaningfully answered by a "yes" or "no" response.
 
         Raises:
-            SystemExit:
-                If the user responds non-affirmatively.
+            SystemExit: If the user responds non-affirmatively. Will be raised with
+                exit code `#!py 0`.
         """
         if not self.get_bool_input(question):
             self.exit_process(self.manager.strings.m_exit_by_choice, is_error=False)
@@ -134,9 +134,9 @@ class CliUtils:
                 and the color of the displayed `reason` text.
 
         Raises:
-            SystemExit:
-                Will be called with exit status `0` (a "successful" exit) if `is_error`
-                is `False`, or `1` (an "abnormal" exit) if `is_error` is `True`.
+            SystemExit: If `is_error` is `True`, this will be raised with exit code
+                `#!py 1` to indicate an "abnormal" exit. Otherwise, it will be raised
+                with exit code `#!py 0` to indicate a "successful" exit.
         """
         colors = self.manager.colors
         colored_reason = colors.error(reason) if is_error else colors.lowlight(reason)

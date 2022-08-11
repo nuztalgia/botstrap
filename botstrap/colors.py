@@ -12,12 +12,12 @@ init(autoreset=True)
 class Color:
     """A collection of functions that add color to console-printed strings.
 
-    These functions work by adding pre-defined ANSI escape codes from `colorama.Fore`
-    and `colorama.Style` to the beginning and end of a given string. These characters
-    are interpreted by the terminal as instructions to display the enclosed text in a
-    specific color/style.
+    These functions work by adding pre-defined ANSI escape codes from
+    [`colorama`](https://pypi.org/project/colorama/) to the beginning and end of the
+    given string. These characters are interpreted by the console as instructions to
+    display the enclosed text in a specific color/style.
 
-    ???+ example
+    !!! example "Example - Printing rainbow text :rainbow_flag:"
         ```pycon
         >>> from botstrap import Color
         >>> print(
