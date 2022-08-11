@@ -17,14 +17,14 @@ class Color:
     are interpreted by the terminal as instructions to display the enclosed text in a
     specific color/style.
 
-    Example:
-        ```py title="pride.py"
-        from botstrap import Color
-
-        print(
-            f"{Color.pink('P')}{Color.red('R')}{Color.yellow('I')}"
-            f"{Color.green('D')}{Color.cyan('E')}{Color.blue('!')}"
-        )
+    ???+ example
+        ```pycon
+        >>> from botstrap import Color
+        >>> print(
+        ...     f"{Color.pink('P')}{Color.red('R')}{Color.yellow('I')}"
+        ...     f"{Color.green('D')}{Color.cyan('E')}{Color.blue('!')}"
+        ... )
+        PRIDE!
         ```
     """
 

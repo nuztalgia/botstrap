@@ -34,6 +34,9 @@ nav:
       - CliColors: api/cli-colors.md
       - CliStrings: api/cli-strings.md
       - Color: api/color.md
+  - Internal Modules:
+      - internal/index.md
+      - cmdline: internal/cmdline.md
 
 extra_css:
   - style.css
