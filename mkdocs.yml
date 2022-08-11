@@ -68,5 +68,6 @@ markdown_extensions:
       linenums_style: pymdownx-inline
       pygments_lang_class: true
       use_pygments: true
+  - pymdownx.details
   - pymdownx.inlinehilite
   - pymdownx.superfences
