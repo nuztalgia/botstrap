@@ -39,7 +39,7 @@ nav:
       - cmdline: internal/cmdline.md
 
 extra_css:
-  - style.css
+  - stylesheets/global.css
 
 plugins:
   - search
@@ -64,12 +64,15 @@ plugins:
         - botstrap/
 
 markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - pymdownx.details
   - pymdownx.highlight:
       auto_title: true
       linenums: true
       linenums_style: pymdownx-inline
       pygments_lang_class: true
       use_pygments: true
-  - pymdownx.details
   - pymdownx.inlinehilite
   - pymdownx.superfences

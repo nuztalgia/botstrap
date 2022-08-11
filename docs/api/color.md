@@ -1,32 +1,4 @@
-<style>
-  /* Prevent the "Example" box from being collapsed. */
-  details.example summary { pointer-events: none; }
-  details.example summary::after { display: none; }
-
-  /* Increase the size of all text inside the "Example" box. */
-  details.example .language-pycon span.filename { font-size: 1em; }
-  details.example .language-pycon code { font-size: 1em; }
-
-  /* Color the console output text in the "Example" box. */
-  details.example .language-pycon .go {
-    -webkit-background-clip: text;
-    background-clip: text;
-    background-image: linear-gradient(
-      to right,
-      #ff55ff 0%,      #ff55ff 16.667%,
-      #ff5555 16.667%, #ff5555 33.333%,
-      #ffff55 33.333%, #ffff55 50%,
-      #55ff55 50%    , #55ff55 66.667%,
-      #55ffff 66.667%, #55ffff 83.333%,
-      #5555ff 83.333%, #5555ff 100%
-    );
-    color: transparent;
-    font-weight: bold;
-  }
-
-  /* Hide function descriptions (they're redundant and ugly). */
-  .doc-function p { display: none; }
-</style>
+<link rel="stylesheet" href="/stylesheets/color.css" />
 
 <!-- prettier-ignore -->
 ::: botstrap.Color
