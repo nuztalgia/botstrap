@@ -4,6 +4,7 @@
       members:
         - compact
         - default
+      show_root_full_path: false
 
 <!-- prettier-ignore -->
 ??? quote "Default Attribute Values"
