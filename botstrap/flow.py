@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Final
+from typing import Any, Final
 
 from botstrap.colors import CliColors
 from botstrap.internal import Argstrap, CliManager, Metadata, Token
@@ -57,21 +57,46 @@ class BotstrapFlow(CliManager):
         storage_directory: str | Path | None = None,
         allow_overwrites: bool = False,
     ) -> BotstrapFlow:
-        """Defines a token to be managed by this Botstrap integration.
+        """Defines a Discord bot token to be managed by this flow.
 
-        After creating a `BotstrapFlow` instance and before calling any of the other API
-        methods, this method should be called once for each unique token that may be
-        used by your bot. If only one token is required, you may skip this step, and a
-        basic "default" token will be automatically registered.
+        After instantiating this class and before calling any of its other methods, this
+        one must be called for **each unique token** that may be used by your bot. For
+        instance, to define a `#!py "development"` token as well as a password-protected
+        `#!py "production"` token, you would call this method twice.
 
-        This method does not have anything to do with the actual "secret data" for the
-        token, which may or may not exist at the time this method is called. Rather, it
-        is a way to declare the token's usage and display characteristics. The "secret
-        data" will be requested interactively and securely through the CLI only if/when
-        the token is actually needed, at which point it will be encrypted and saved for
-        future use.
+        This is what lets Botstrap know how to display the token's name, whether to ask
+        for a password when it's accessed, and where to find (or create) its files. In
+        other words, this method is simply a way to declare the token's behavior -
+        **not** its value.
 
-        Example:
+        ??? question "Where is the token value defined?"
+            So far, we haven't mentioned the **value** or "secret data" of the token,
+            which may or may not exist at the time this method is called - it makes no
+            difference at this point. The token value will be requested interactively
+            and securely through the CLI only if/when it's actually needed, at which
+            point it will be encrypted and saved for future use. :lock:
+
+        ??? tip "Tip - Skipping this step"
+            If <u>**all**</u> of the following statements are true, you may skip this
+            method and move on to the [next one][botstrap.BotstrapFlow.parse_args]
+            in the flow:
+
+            - **Your bot only uses one token** - it only needs to run in one
+              environment, or only has a single configuration, or a similar
+              reason along those lines.
+            - **It doesn't require password-protection** - the Discord account it
+              controls doesn't have access to any real users or servers that could
+              potentially be damaged if a malicious actor were to gain access to it.
+            - **You do not disable** `allow_auto_register_token` **in any subsequent
+              method calls** - it's enabled by default, so unless you explicitly set
+              it to `False`, you'll be fine.
+
+            If you decide to skip this method, a simple token named `#!py "default"`
+            will be created when you first run your bot. It will be saved in a directory
+            named `.botstrap_keys`, which will be created in the same location as the
+            file containing the `#!py "__main__"` module of your bot's script.
+
+        ??? example "Example - Registering multiple tokens"
             ```py title="bot.py"
             from botstrap import BotstrapFlow, Color
 
@@ -99,21 +124,19 @@ class BotstrapFlow(CliManager):
             storage_directory:
                 Where to store the files containing this token's data. If omitted, the
                 files will be saved in a folder named `.botstrap_keys`, which will be
-                created in the same location as the `#!py "__main__"` module of your
-                script.
+                created in the same location as the main module of your bot's script.
             allow_overwrites:
                 Whether to allow this token to be registered even if `uid` already
                 belongs to a registered token. If `True`, this token will clobber the
-                previous token. If `False`, a `#!py ValueError` will be raised.
+                previous token.
 
         Returns:
-            This `BotstrapFlow` instance.
+            This `BotstrapFlow` instance, for chaining method calls.
 
         Raises:
-            ValueError:
-                If `storage_directory` does not point to a valid directory (e.g. is
-                nonexistent or points to a file), OR if `allow_overwrites` is `False`
-                and `uid` belongs to a token that has already been registered.
+            ValueError: If `storage_directory` does not point to a valid directory (i.e.
+                is nonexistent or points to a file), **OR** if `allow_overwrites` is
+                `False` and `uid` belongs to a token that has already been registered.
         """
         token = Token(self, uid, requires_password, display_name, storage_directory)
         if (not allow_overwrites) and (token.uid in self._tokens_by_uid):
@@ -129,15 +152,20 @@ class BotstrapFlow(CliManager):
     ) -> BotstrapFlow:
         """Parses any arguments and options passed in via the command line.
 
-        This method should only be called after all expected tokens have been defined
-        with `register_token()`, in order to ensure that the "active token" can be
-        correctly determined from command-line arguments to your bot script.
+        This method should only be called after all expected tokens are defined with
+        [`register_token()`][botstrap.BotstrapFlow.register_token], to ensure that the
+        [active token][botstrap.BotstrapFlow.retrieve_active_token] can be correctly
+        determined from any command-line arguments passed to your bot's script.
 
-        If your bot doesn't require the customization provided by the parameters to this
-        method, you may skip calling this method so long as `allow_auto_parse_args` is
-        set to `True` (its default value) in any subsequent API method calls.
+        ??? tip "Tip - Skipping this step"
+            If your bot doesn't require the customization afforded by the parameters
+            below, you can skip this method as long as `allow_auto_parse_args`
+            is not explicitly set to `False` in any subsequent calls to either
+            [`retrieve_active_token()`][botstrap.BotstrapFlow.retrieve_active_token] or
+            [`run_bot()`][botstrap.BotstrapFlow.run_bot]. (It's set to `True` by
+            default, so just leave it as-is.)
 
-        Example:
+        ??? example "Example - Setting a custom description"
             ```py title="bot.py"
             from botstrap import BotstrapFlow
 
@@ -146,9 +174,8 @@ class BotstrapFlow(CliManager):
             )
             ```
 
-            ```console title="Console Session" hl_lines="5"
+            ```console title="Console Session" hl_lines="4"
             $ python bot.py -h
-
             usage: bot.py [--help] [-t]
 
               A really cool Discord bot that uses Botstrap!
@@ -171,12 +198,11 @@ class BotstrapFlow(CliManager):
                 option will not be available in your bot's CLI.
 
         Returns:
-            This `BotstrapFlow` instance.
+            This `BotstrapFlow` instance, for chaining method calls.
 
         Raises:
-            SystemExit:
-                If a command-line option was specified that calls for an alternative
-                program flow and exits upon completion (e.g. `--help`, `--version`).
+            SystemExit: If a specified command-line option calls for an alternate
+                program flow that exits on completion, such as `--help` or `--version`.
         """
         args = Argstrap(
             manager=self,
@@ -209,22 +235,29 @@ class BotstrapFlow(CliManager):
     ) -> str | None:
         """Returns the value of the active token, if it exists and can be decrypted.
 
-        The "active token" is the token that should be used to run your bot, taking into
-        account all tokens that have been registered and any arguments that were passed
-        in from the command line. If no custom tokens have been defined, this will be
-        the basic "default" token, as in the example below.
+        The **active token** is the token that should be used to run your bot, taking
+        into account all tokens that have been registered and any arguments that were
+        passed in from the command line. If no custom tokens have been defined, this
+        will be the basic `#!py "default"` token.
 
-        The "value" of the token is a string containing its decrypted data, which can be
-        plugged into your bot's `run()` method to authenticate and start up your bot.
-        This value should be kept secret and can be very damaging if leaked, so make
-        sure you don't `print()` or otherwise log the result of this method.
+        The **value** of the token is a string containing its decrypted data, which can
+        be plugged into your bot's `#!py run()` method to log it into Discord.
+        This can (and for security reasons, should) be handled automatically by
+        [`run_bot()`][botstrap.BotstrapFlow.run_bot] - which means that ideally, you
+        won't need to call this method at all.
 
-        If your bot is modularly coded such that it can be "atomically" instantiated and
-        run by `run_bot()`, consider using that method instead for brevity and safety.
-        This method is provided for cases in which that isn't a viable option, but
-        should be avoided if possible to prevent potential security mishaps.
+        ??? caution "Caution - Keep your tokens safe!"
+            Token values should always be kept secret and can be very damaging if
+            leaked... so **make sure** you don't `#!py print()` (or log, or output in
+            any way) the return value of this method! :zipper_mouth:
 
-        Example:
+            If your bot is coded such that it can be both instantiated and started by
+            [`run_bot()`][botstrap.BotstrapFlow.run_bot], consider using that method
+            instead for brevity and safety. This method is provided for cases in which
+            that isn't a viable option, but it should be avoided if possible to prevent
+            potential security mishaps.
+
+        ??? example "Example - Retrieving a new token"
             ```py title="bot.py"
             from botstrap import BotstrapFlow
 
@@ -240,24 +273,24 @@ class BotstrapFlow(CliManager):
 
         Args:
             allow_auto_register_token:
-                Whether to automatically register a simple `#!py "default"` token if no
-                tokens have been manually registered.
+                Whether to automatically register a basic `#!py "default"` token
+                if no tokens have been explicitly defined with
+                [`register_token()`][botstrap.BotstrapFlow.register_token].
             allow_auto_parse_args:
                 Whether to automatically parse command-line options and args if
-                [`parse_args()`][botstrap.BotstrapFlow.parse_args] has not been
-                manually invoked.
+                [`parse_args()`][botstrap.BotstrapFlow.parse_args]
+                has not been explicitly invoked.
             allow_token_creation:
-                Whether to interactively prompt to create (i.e. add and encrypt) a new
-                token if the active token has not already been created.
+                Whether to interactively prompt to create (i.e. add and encrypt)
+                a new token if the active token has not already been created.
 
         Returns:
-            The active token `#!py str` if it exists & can be decrypted, or else `None`.
+            The active token value if it exists and can be decrypted, otherwise `None`.
 
         Raises:
-            RuntimeError:
-                If no tokens have been registered and `allow_auto_register_token` is set
-                to `False`, OR if args have not been parsed and `allow_auto_parse_args`
-                is set to `False`.
+            RuntimeError: If no tokens have been registered and
+                `allow_auto_register_token` is `False`, <br>**OR** if
+                args have not been parsed and `allow_auto_parse_args` is `False`.
         """
         if not self._tokens_by_uid:
             if allow_auto_register_token:
@@ -285,23 +318,38 @@ class BotstrapFlow(CliManager):
 
         return None
 
-    def run_bot(self, bot_class: str | type = "discord.Bot", **options) -> None:
-        """Instantiates the bot as specified and runs it using the active token.
+    def run_bot(self, bot_class: str | type = "discord.Bot", **options: Any) -> None:
+        """Instantiates the bot class and passes the active token to its `run()` method.
 
-        In the simplest use case, this method will work out-of-the-box with no extra
-        customization needed, as in the example below. This assumes a default token has
-        already been created and that you are using one of the more common Python API
-        wrappers for Discord: discord.py or Pycord.
+        In the simplest use case, this method will work out-of-the-box with no
+        customization required. But in practice, you will likely have to specify
+        information such as the fully-qualified name of your `bot_class`, and/or any
+        `#!py **options` expected by its constructor.
 
-        In practice, you will likely have to provide a little more information, such as
-        the name (or type) of your `bot_class` if your bot subclasses `discord.Bot` or
-        uses a different Discord library. This method provides a straightforward answer
-        to these more complex use cases, while at the same time preserving most (if not
-        all) of the flexibility provided by your chosen Discord library. See below for
-        more information about the parameters you can pass into this method.
+        These two parameters provide a straightforward solution for complex use cases
+        while preserving most, if not all, of the flexibility afforded by your chosen
+        [Discord
+        library](https://discord.com/developers/docs/topics/community-resources) -
+        as long as you're using one of the Python ones. :snake: See the descriptions
+        below for more details.
 
-        Example:
-            ```py title="bot.py"
+        ??? example "Example - The simplest use case"
+            This example makes the following assumptions:
+
+            - You're using one of the more common Python libraries for Discord:
+              either [discord.py](https://github.com/Rapptz/discord.py)
+              or [Pycord](https://github.com/Pycord-Development/pycord).
+            - Your bot does not subclass `discord.Bot`.
+              (**Note:** Subclassing is often useful.
+              [This guide](https://guide.pycord.dev/popular-topics/subclassing-bots/)
+              explains why.)
+            - You've already completed the CLI flow to set up the `#!py "default"`
+              token for your bot.
+
+            If all of the above statements are true, you can run your bot with this
+            extremely simple code:
+
+            ```py title="bot.py" hl_lines="3"
             from botstrap import BotstrapFlow
 
             BotstrapFlow().run_bot()
@@ -316,11 +364,12 @@ class BotstrapFlow(CliManager):
 
         Args:
             bot_class:
-                The class name or `#!py type` of your bot. Will be instantiated with the
-                `options` keyword args. This arg's default value is compatible with the
+                The fully-qualified class name or the `#!py type` of your bot.
+                Will be instantiated with the `#!py **options` keyword args.
+                The default value of this argument is compatible with the
                 [`discord.py`](https://pypi.org/project/discord.py/) and
                 [`py-cord`](https://pypi.org/project/py-cord/) packages.
-            options:
+            **options:
                 Optional keyword arguments that will be forwarded to one of two
                 possible destinations:
 
@@ -334,19 +383,16 @@ class BotstrapFlow(CliManager):
                 [`intents`](https://discord.com/developers/docs/topics/gateway#privileged-intents)
                 your bot might need.
 
-                Despite what the column to the right says, this parameter is <u>not
-                required</u>. Any options that aren't specified (which may be all of
-                them) will simply use their default values.
+                Any options that aren't specified will simply use the default values
+                defined by their respective methods.
 
         Raises:
-            ImportError:
-                If the specified `bot_class` is a string that refers to a type that
+            ImportError: If `bot_class` is a `#!py str` that refers to a type that
                 cannot be imported in the current environment.
-            TypeError:
-                If the specified `bot_class` is not an instantiable type.
-            SystemExit:
-                If Discord login fails, so the bot cannot run. This may be caused by
-                an invalid bot token.
+            TypeError: If `bot_class` (after it's converted to a `#!py type`, if it
+                wasn't one already) is not an instantiable type.
+            SystemExit: If Discord login fails, which means the bot can't run. This
+                may be caused by an invalid bot token.
         """
         token_value = self.retrieve_active_token(
             allow_auto_register_token=options.pop("allow_auto_register_token", True),
