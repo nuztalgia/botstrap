@@ -9,17 +9,19 @@ from typing import Any, Callable, Iterable, overload
 class CliStrings:
     """A model for the strings used by the Botstrap-provided CLI.
 
-    The attributes of this class are strings,
+    The fields of this class are strings,
     [`Template`](https://docs.python.org/3/library/string.html#template-strings)
     strings, and tuples of strings. Collectively, they determine the text that is
     displayed in the console when you run a script that utilizes Botstrap.
 
-    Preconfigured strings are provided by the `default()` and `compact()` class methods.
-    If you desire further customization, you can create a new instance of this class and
-    specify any values you'd like to change. All constructor arguments are keyword-only.
+    Preconfigured strings are provided by the [`default()`][botstrap.CliStrings.default]
+    and [`compact()`][botstrap.CliStrings.compact] class methods. If you desire further
+    customization, you can create a new instance of this class and specify any values
+    you'd like to change. All constructor arguments correspond to field names and are
+    keyword-only.
 
-    Example:
-        ```py title="bot.py"
+    ??? example "Example - Customizing your bot's Discord login text"
+        ```py title="bot.py" hl_lines="5-6"
         from botstrap import BotstrapFlow, CliStrings
         from string import Template
 
@@ -37,57 +39,65 @@ class CliStrings:
         bot: BasicBot#1234 reporting for duty in default mode!
         ```
 
-    ??? info "Attribute Prefixes"
-        Each attribute name begins with a **single-letter prefix** that indicates the
+        **Note:** The strings customized in this example belong to the fields named
+        `m_login` and `m_login_success`. <br> See the following info box for an
+        explanation of `m_` and other prefixes used in the naming of this class's
+        fields.
+
+    ??? info "Info - Understanding fields by their prefix"
+        Each field name begins with a **single-letter prefix** that indicates the
         subject of the string, defined as follows:
 
-        | Prefix | Description |
+        | Prefix | Description                                                         |
         | ------ | ------------------------------------------------------------------- |
         |`t_`| Token-related strings regarding bot token creation/management/deletion. |
         |`p_`| Password-related strings, displayed for password-protected bot tokens.  |
         |`h_`| Help strings, printed when the `-h` argument is given to the bot script.|
         |`m_`| Miscellaneous strings that don't fall under any of the other categories.|
+
+        These prefixes allow for better code organization and are a concise way to
+        indicate the context in which a string should be used. More prefixes may be
+        added as Botstrap grows and acquires new features. :person_juggling:
     """
 
     @classmethod
-    def compact(cls) -> CliStrings:
-        """Returns an instance of this class with vertical spacing minimized.
+    def default(cls) -> CliStrings:
+        """Returns an instance of this class with default values for all strings.
 
-        In other words, the semantic contents of all attributes are the same as they are
-        in the `default()` collection of strings, but any newline characters are either
-        removed (for newlines at the beginning and end of a string) or replaced by a
-        space (for newlines in the middle of a string).
+        The default strings are all in English and include ample vertical spacing (e.g.
+        additional newlines between distinct sections of text) for ease of reading.
+        """
+        return cls()
+
+    @classmethod
+    def compact(cls) -> CliStrings:
+        """Returns an instance of this class with minimal vertical space in all strings.
+
+        In other words, the semantic contents of all strings are unchanged from their
+        [`default()`][botstrap.CliStrings.default] values, but any newline characters
+        are either removed (for newlines at the beginning and end of a string) or
+        replaced by a single space (for newlines in the middle of a string).
         """
         default_items = asdict(cls.default()).items()
         return cls(**{key: _get_compact_value(value) for key, value in default_items})
 
-    @classmethod
-    def default(cls) -> CliStrings:
-        """Returns an instance of this class with default values for all attributes.
+    """ NOTE: This class defines **a lot** of fields.
+    To keep things organized, they're split up according to the following categories:
 
-        The default strings are all in English and include ample vertical spacing (e.g.
-        extra newlines between sections of text) for ease of reading.
-        """
-        return cls()
+    1. Basic `#!py str` values (a.k.a. string literals)
+    2. `Template` strings with only a `${token}` placeholder
+    3. `Template` strings with assorted placeholders
+    4. `tuple` objects containing any number of strings
 
-    """
-    **Note:** This class has *a lot* of attributes. To keep things organized, they're
-    separated into sections:
-
-      1. Basic strings
-      2. `Template` strings with only a `${token}` placeholder
-      3. Other `Template` strings
-      4. Tuples of strings
-
-    Within each section, attributes are organized alphabetically, with an extra newline
-    between each prefix group (see the note on [Attribute Prefixes][botstrap.CliStrings]
-    in the class description for more information about prefix categories).
+    Within each of these sections, fields are sorted alphabetically, with an extra
+    newline separating each prefix group. See the info box in the class description
+    for an explanation of field name prefixes.
     """
 
-    # region ATTRIBUTE DEFINITIONS
+    # region FIELDS
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    #   1) Basic `str` attributes. Super simple strings.
+    #   Section #1  -  Basic `str` values (a.k.a. string literals)
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
     h_help: str = "Display this help message."
@@ -134,7 +144,7 @@ class CliStrings:
     t_prompt: str = "BOT TOKEN"
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    #   2) `Template` attributes with only a `${token}` placeholder.
+    #   Section #2  -  `Template` strings with only a `${token}` placeholder
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
     h_desc_mode: Template = Template("in ${token} mode")
@@ -163,7 +173,7 @@ class CliStrings:
     t_missing: Template = Template("Keyfile for ${token} bot token doesn't exist.\n")
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    #   3) Other `Template` attributes. Check the placeholders carefully!
+    #   Section #3  -  `Template` strings with assorted placeholders
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
     h_desc: Template = Template(
@@ -185,12 +195,12 @@ class CliStrings:
     t_delete_hint: Template = Template("Expected one of: ${token_ids}")
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    #   4) The loneliest attribute - a `tuple` of strings.
+    #   Section #4  -  `tuple` objects containing any number of strings
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
     m_affirm_responses: tuple[str, ...] = ("yes", "y")
 
-    # endregion ATTRIBUTE DEFINITIONS
+    # endregion FIELDS
 
     def get_affirmation_prompt(
         self,
@@ -200,8 +210,7 @@ class CliStrings:
         """Returns a string prompting the user for an affirmative response.
 
         Responses considered "affirmative" are defined by the `m_affirm_responses`
-        attribute of an instance of this class, which is a tuple that consists of the
-        strings "yes" and "y" by default.
+        field, which is a tuple that consists of the strings "yes" and "y" by default.
 
         Example:
             >>> from botstrap import CliStrings

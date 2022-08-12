@@ -2,21 +2,26 @@
 ::: botstrap.CliStrings
     options:
       members:
-        - compact
         - default
       show_root_full_path: false
 
 <!-- prettier-ignore -->
-??? quote "Default Strings"
+??? quote "Definition - All default string values"
     {%
       include "../../botstrap/strings.py"
-      start='\n\n    """'
-      end='"""\n\n    # region ATTRIBUTE DEFINITIONS'
+      start='\n\n    """ NOTE:'
+      end='"""\n\n    # region FIELDS'
     %}
     ```{.py title="botstrap/strings.py" .line-numbers-off}
     {%
       include "../../botstrap/strings.py"
-      start='# region ATTRIBUTE DEFINITIONS'
-      end='# endregion ATTRIBUTE DEFINITIONS'
+      start='# region FIELDS'
+      end='# endregion FIELDS'
     %}
     ```
+
+<!-- prettier-ignore -->
+::: botstrap.CliStrings.compact
+    options:
+      heading_level: 2
+      show_root_full_path: false

@@ -69,14 +69,14 @@ class BotstrapFlow(CliManager):
         other words, this method is simply a way to declare the token's behavior -
         **not** its value.
 
-        ??? question "Where is the token value defined?"
+        ??? question "FAQ - Where is the token value defined?"
             So far, we haven't mentioned the **value** or "secret data" of the token,
             which may or may not exist at the time this method is called - it makes no
             difference at this point. The token value will be requested interactively
             and securely through the CLI only if/when it's actually needed, at which
             point it will be encrypted and saved for future use. :lock:
 
-        ??? tip "Tip - Skipping this step"
+        ??? tip "Tip - Automatically registering a default token"
             If <u>**all**</u> of the following statements are true, you may skip this
             method and move on to the [next one][botstrap.BotstrapFlow.parse_args]
             in the flow:
@@ -97,6 +97,9 @@ class BotstrapFlow(CliManager):
             file containing the `#!py "__main__"` module of your bot's script.
 
         ??? example "Example - Registering multiple tokens"
+            This example uses [`Color`][botstrap.Color] functions to make the tokens
+            more easily identifiable when they're mentioned in the CLI.
+
             ```py title="bot.py"
             from botstrap import BotstrapFlow, Color
 
@@ -135,7 +138,7 @@ class BotstrapFlow(CliManager):
 
         Raises:
             ValueError: If `storage_directory` does not point to a valid directory (i.e.
-                is nonexistent or points to a file), **OR** if `allow_overwrites` is
+                it doesn't exist or points to a file), **OR** if `allow_overwrites` is
                 `False` and `uid` belongs to a token that has already been registered.
         """
         token = Token(self, uid, requires_password, display_name, storage_directory)
@@ -152,20 +155,21 @@ class BotstrapFlow(CliManager):
     ) -> BotstrapFlow:
         """Parses any arguments and options passed in via the command line.
 
-        This method should only be called after all expected tokens are defined with
-        [`register_token()`][botstrap.BotstrapFlow.register_token], to ensure that the
-        [active token][botstrap.BotstrapFlow.retrieve_active_token] can be correctly
-        determined from any command-line arguments passed to your bot's script.
+        This should only be invoked after **all** of your bot's tokens are declared
+        using [`register_token()`][botstrap.BotstrapFlow.register_token], in order to
+        ensure that the [active token][botstrap.BotstrapFlow.retrieve_active_token]
+        can be correctly determined from any command-line arguments passed to your
+        bot's script.
 
-        ??? tip "Tip - Skipping this step"
+        ??? tip "Tip - Automatically parsing arguments"
             If your bot doesn't require the customization afforded by the parameters
-            below, you can skip this method as long as `allow_auto_parse_args`
-            is not explicitly set to `False` in any subsequent calls to either
+            below, you can skip this method as long as you do **not** disable
+            `allow_auto_parse_args` in any subsequent method calls to either
             [`retrieve_active_token()`][botstrap.BotstrapFlow.retrieve_active_token] or
-            [`run_bot()`][botstrap.BotstrapFlow.run_bot]. (It's set to `True` by
-            default, so just leave it as-is.)
+            [`run_bot()`][botstrap.BotstrapFlow.run_bot]. It's enabled by default, so
+            unless you explicitly set it to `False`, you'll be fine.
 
-        ??? example "Example - Setting a custom description"
+        ??? example "Example - Customizing your bot's description"
             ```py title="bot.py"
             from botstrap import BotstrapFlow
 
@@ -195,7 +199,7 @@ class BotstrapFlow(CliManager):
             version:
                 A string representing the current version of your bot. Will be displayed
                 when the `--version` option is passed to the CLI. If omitted, that
-                option will not be available in your bot's CLI.
+                option will not be present in your bot's CLI.
 
         Returns:
             This `BotstrapFlow` instance, for chaining method calls.
@@ -235,13 +239,13 @@ class BotstrapFlow(CliManager):
     ) -> str | None:
         """Returns the value of the active token, if it exists and can be decrypted.
 
-        The **active token** is the token that should be used to run your bot, taking
+        The **active token** is the one that should be used to run your bot, taking
         into account all tokens that have been registered and any arguments that were
         passed in from the command line. If no custom tokens have been defined, this
         will be the basic `#!py "default"` token.
 
-        The **value** of the token is a string containing its decrypted data, which can
-        be plugged into your bot's `#!py run()` method to log it into Discord.
+        The **value** of the token is a string containing its decrypted data,
+        which can be plugged into your bot's `run()` method to log it into Discord.
         This can (and for security reasons, should) be handled automatically by
         [`run_bot()`][botstrap.BotstrapFlow.run_bot] - which means that ideally, you
         won't need to call this method at all.
@@ -257,7 +261,7 @@ class BotstrapFlow(CliManager):
             that isn't a viable option, but it should be avoided if possible to prevent
             potential security mishaps.
 
-        ??? example "Example - Retrieving a new token"
+        ??? example "Example - Retrieving a new default token"
             ```py title="bot.py"
             from botstrap import BotstrapFlow
 
@@ -370,7 +374,7 @@ class BotstrapFlow(CliManager):
                 [`discord.py`](https://pypi.org/project/discord.py/) and
                 [`py-cord`](https://pypi.org/project/py-cord/) packages.
             **options:
-                Optional keyword arguments that will be forwarded to one of two
+                Optional keyword arguments that will each be forwarded to one of two
                 possible destinations:
 
                 1. Any args accepted by
