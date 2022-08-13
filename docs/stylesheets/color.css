@@ -1,33 +1,67 @@
-/* Increase the size of all text inside the "Example" box. */
+/* Improve the alignment of the emoji in the title of the example box. */
+img.twemoji[title=":rainbow_flag:"] {
+  margin: 0.025em calc(var(--emoji-margin) * 1.25) 0;
+}
+
+/* Increase the size of the file name and code text inside the example box. */
 .language-pycon span.filename,
 .language-pycon code {
   font-size: 1em;
 }
 
-/* Color the console output text in the "Example" box. */
-.language-pycon .go {
+/* Insert and color the console output text in the example box. */
+.language-pycon code::after {
   -webkit-background-clip: text;
   background-clip: text;
   background-image: linear-gradient(
     to right,
-    #ff55ff 0%,
-    #ff55ff 16.667%,
-    #ff5555 16.667%,
-    #ff5555 33.333%,
-    #ffff55 33.333%,
-    #ffff55 50%,
-    #55ff55 50%,
-    #55ff55 66.667%,
-    #55ffff 66.667%,
-    #55ffff 83.333%,
-    #5555ff 83.333%,
-    #5555ff 100%
+    var(--color-pink) 0%,
+    var(--color-pink) 16.667%,
+    var(--color-red) 16.667%,
+    var(--color-red) 33.333%,
+    var(--color-yellow) 33.333%,
+    var(--color-yellow) 50%,
+    var(--color-green) 50%,
+    var(--color-green) 66.667%,
+    var(--color-cyan) 66.667%,
+    var(--color-cyan) 83.333%,
+    var(--color-blue) 83.333%,
+    var(--color-blue) 100%
   );
   color: transparent;
+  content: "PRIDE!";
   font-weight: bold;
 }
 
-/* Hide function descriptions (they're redundant and ugly). */
+/* Hide the function docstrings - they're replaced by manual color previews. */
 .doc-function p {
   display: none;
+}
+
+/* Add extra spacing to separate each color preview from its lead-in text. */
+code.preview {
+  margin-left: 0.05em;
+}
+
+/* Color ALL the previews! \o/ */
+code.preview#blue {
+  color: var(--color-blue);
+}
+code.preview#cyan {
+  color: var(--color-cyan);
+}
+code.preview#green {
+  color: var(--color-green);
+}
+code.preview#grey {
+  color: var(--color-grey);
+}
+code.preview#pink {
+  color: var(--color-pink);
+}
+code.preview#red {
+  color: var(--color-red);
+}
+code.preview#yellow {
+  color: var(--color-yellow);
 }

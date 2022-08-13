@@ -17,14 +17,13 @@ class Color:
     given string. These characters are interpreted by the console as instructions to
     display the enclosed text in a specific color/style.
 
-    !!! example "Example - Printing rainbow text :rainbow_flag:"
+    !!! example "Example - Printing rainbow-colored text :rainbow_flag:"
         ```pycon
         >>> from botstrap import Color
         >>> print(
         ...     f"{Color.pink('P')}{Color.red('R')}{Color.yellow('I')}"
         ...     f"{Color.green('D')}{Color.cyan('E')}{Color.blue('!')}"
         ... )
-        PRIDE!
         ```
     """
 

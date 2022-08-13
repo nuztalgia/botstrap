@@ -1,3 +1,15 @@
+/* Define global variables. */
+:root {
+  --color-blue: #55f;
+  --color-cyan: #5ff;
+  --color-green: #5f5;
+  --color-grey: #555;
+  --color-pink: #f5f;
+  --color-red: #f55;
+  --color-yellow: #ff5;
+  --emoji-margin: 0.25em;
+}
+
 /* Prevent user selection of all code block filenames, as well as console and
    pycon code block ".gp" ("generic prompt") and ".go" ("generic output"). */
 .highlight .filename,
@@ -21,7 +33,6 @@ a[href*="../internal"].md-footer__link--next {
 }
 
 /* Add some extra horizontal spacing around emoji so they don't look cramped. */
-.twemoji {
-  margin-left: 0.25em;
-  margin-right: 0.25em;
+img.twemoji {
+  margin: 0 var(--emoji-margin);
 }
