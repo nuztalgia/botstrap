@@ -180,9 +180,8 @@ class CliUtils:
         # noinspection PyUnresolvedReferences
         """Returns the user's input without echoing. Prints a safe representation of it.
 
-        In this context, "[echoing](https://en.wikipedia.org/wiki/Echo_(computing))" is
-        displaying the user's input on the screen as they type. For security reasons, it
-        is undesirable when dealing with sensitive data.
+        In this context, "echoing" is displaying the user's input on the screen as they
+        type. For security reasons, it's undesirable when dealing with sensitive data.
 
         This function tries to provide a user-friendly experience without leaking the
         resulting input. If the descriptions in the "Parameters" section below are
@@ -223,9 +222,8 @@ class CliUtils:
         # noinspection PyUnresolvedReferences
         """Returns the user's input, with the option to turn off echoing.
 
-        In this context, "[echoing](https://en.wikipedia.org/wiki/Echo_(computing))" is
-        displaying the user's input on the screen as they type. For security reasons, it
-        is undesirable when dealing with sensitive data.
+        In this context, "echoing" is displaying the user's input on the screen as they
+        type. For security reasons, it's undesirable when dealing with sensitive data.
 
         This function does not do anything special to format its console output. If you
         require sensitive user input with more nuanced console output, consider using

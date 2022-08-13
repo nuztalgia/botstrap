@@ -1,5 +1,4 @@
-from __future__ import annotations
-
+"""This module contains a class and helper functions for handling Discord bot tokens."""
 import re
 from pathlib import Path
 from typing import Final
@@ -15,29 +14,7 @@ _PLACEHOLDER: Final[str] = ".".join("*" * i for i in _LENGTHS)
 
 
 class Token(Secret):
-    """A subclass of `Secret` that represents an individual Discord bot token.
-
-    Args:
-        manager:
-            A `CliManager` instance specifying the `ThemeColors` and `Strings` to be
-            used by the CLI for interactive operations involving this token.
-        uid:
-            A unique string identifying this token. Will be used as a file name for the
-            encrypted `.key` files containing this token's data.
-        requires_password:
-            Whether a user-provided password is required in order to create and/or
-            retrieve this token. Defaults to `False`.
-        display_name:
-            A human-readable string describing this token. May include formatting
-            characters, such as those provided by `Color` methods. Will be displayed in
-            the CLI when referring to this token. If omitted, the `uid` for this token
-            will be displayed instead.
-        storage_directory:
-            The location in which to store the encrypted `.key` files containing the
-            data for this token. If omitted, the files will be placed in a directory
-            named ".botstrap_keys", which will be created in the same location as the
-            file containing the `__main__` module for the executing script.
-    """
+    """A subclass of `Secret` that represents an individual Discord bot token."""
 
     def __init__(
         self,
@@ -47,6 +24,27 @@ class Token(Secret):
         display_name: str | None = None,
         storage_directory: str | Path | None = None,
     ) -> None:
+        """Initializes a new `Token` instance.
+
+        Args:
+            manager:
+                A `CliManager` specifying the UX to be used by the CLI.
+            uid:
+                A unique string identifying this token. Will be used in the names of
+                the files containing this token's data.
+            requires_password:
+                Whether a password is required in order to create and subsequently
+                retrieve this token.
+            display_name:
+                A human-readable string describing this token. Will be displayed in the
+                CLI when referring to this token. If omitted, the `uid` will be
+                displayed instead.
+            storage_directory:
+                Where to store the encrypted `.key` files containing this token's data.
+                If omitted, the files will be saved in a folder named `.botstrap_keys`,
+                which will be created in the same location as the file containing the
+                `"__main__"` module for the executing script.
+        """
         super().__init__(
             uid=uid,
             requires_password=requires_password,
@@ -79,8 +77,7 @@ class Token(Secret):
                 instantiated).
 
         Returns:
-            The bot token string if it exists and can be successfully decrypted,
-            otherwise `None`.
+            The token value if it exists and can be decrypted, otherwise `None`.
         """
         cli, strings = self.manager.cli, self.manager.strings
 

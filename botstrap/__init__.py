@@ -1,10 +1,4 @@
-"""This package exports the classes that make up Botstrap's public API.
-
-- [`BotstrapFlow`](botstrap-flow)
-- [`CliColors`](cli-colors)
-- [`CliStrings`](cli-strings)
-- [`Color`](color)
-"""
+"""This package exports the classes that make up Botstrap's public API."""
 from botstrap.colors import CliColors, Color
 from botstrap.flow import BotstrapFlow
 from botstrap.strings import CliStrings

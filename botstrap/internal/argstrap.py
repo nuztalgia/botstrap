@@ -1,3 +1,4 @@
+"""This module contains a class and helper functions for parsing command-line args."""
 from argparse import ArgumentParser, RawTextHelpFormatter
 from typing import Final, Optional
 
@@ -17,24 +18,7 @@ _TOKENS_DEST: Final[str] = "manage_tokens"
 
 
 class Argstrap(ArgumentParser):
-    """A subclass of `ArgumentParser` with logic to handle Botstrap-specific use cases.
-
-    Args:
-        manager:
-            A `CliManager` instance specifying the UX to be used by the CLI.
-        description:
-            An optional string containing a description/summary of the bot. Will be
-            displayed along with usage instructions when the `-h` option is specified.
-            If omitted, this field will be populated from package metadata (if it is
-            available). Otherwise, only the usage instructions will be displayed.
-        version:
-            An optional string representing the bot version. Will be displayed when the
-            `-v` option is specified. If omitted, the `-v` option will not be available.
-        registered_tokens:
-            A `list` of all the `Token`s that are recognized by the bot. Will be used to
-            determine the available command-line arguments (e.g. if multiple tokens are
-            supported, a "token id" argument may be passed to select which one to run).
-    """
+    """A subclass of `ArgumentParser` that handles Botstrap-specific use cases."""
 
     def __init__(
         self,
@@ -43,6 +27,25 @@ class Argstrap(ArgumentParser):
         version: Optional[str],
         registered_tokens: list[Token],
     ) -> None:
+        """Initializes a new `Argstrap` instance.
+
+        Args:
+            manager:
+                A `CliManager` specifying the UX to be used by the CLI.
+            description:
+                A short human-readable description of the bot. Will be displayed when
+                the `--help` option is passed to the CLI. If omitted, Botstrap will try
+                to fill this field from package metadata. If unsuccessful, this line
+                will be left blank.
+            version:
+                A string representing the current version of the bot. Will be displayed
+                when the `--version` option is passed to the CLI. If omitted, that
+                option will not be present in the bot's CLI.
+            registered_tokens:
+                The tokens that are defined for the bot. Will be used to determine its
+                available command-line arguments (e.g. if multiple tokens are supported,
+                a "token id" argument may be specified to select which one to run).
+        """
         prog = Metadata.get_program_command(manager.name)[-1]
         is_multi_token = len(registered_tokens) > 1
         default_token = registered_tokens[0] if is_multi_token else None

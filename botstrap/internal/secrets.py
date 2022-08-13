@@ -1,3 +1,4 @@
+"""This module contains a class and helper functions for encrypting/decrypting data."""
 import os
 import re
 from base64 import urlsafe_b64encode
@@ -28,27 +29,6 @@ class Secret:
     required to decrypt it. Each file is useless without the other.
 
     More about Fernet symmetric encryption: https://cryptography.io/en/latest/fernet/
-
-    Args:
-        uid:
-            A unique string identifying this secret. Will be used as a file name for the
-            encrypted `.key` files containing this secret's data.
-        requires_password:
-            Whether a user-provided password is required in order to read and/or write
-            this secret. Defaults to `False`.
-        display_name:
-            A human-readable string describing this secret. If omitted, the `uid` for
-            this secret will be displayed instead.
-        storage_directory:
-            The location in which to store the encrypted `.key` files containing the
-            data for this secret. If omitted, the files will be placed in a directory
-            named ".botstrap_keys", which will be created in the same location as the
-            file containing the `__main__` module for the executing script.
-        valid_pattern:
-            A string, regex `Pattern`, or function for determining whether a provided
-            input string fits the expected pattern for this secret. Will be used to
-            validate the secret data before it is encrypted and after it is decrypted.
-            If omitted, any string will be considered valid data for this secret.
     """
 
     def __init__(
@@ -59,6 +39,30 @@ class Secret:
         storage_directory: str | Path | None = None,
         valid_pattern: str | re.Pattern | Callable[[str], Any] | None = None,
     ) -> None:
+        """Initializes a new `Secret` instance.
+
+        Args:
+            uid:
+                A unique string identifying this secret. Will be used in the names of
+                the files containing this secret's data.
+            requires_password:
+                Whether a user-provided password is required in order to read and/or
+                write the data for this secret.
+            display_name:
+                A human-readable string describing this secret. Will be displayed in the
+                CLI when referring to this secret. If omitted, the `uid` will be
+                displayed instead.
+            storage_directory:
+                Where to store the encrypted `.key` files containing this secret's data.
+                If omitted, the files will be saved in a folder named `.botstrap_keys`,
+                which will be created in the same location as the file containing the
+                `"__main__"` module for the executing script.
+            valid_pattern:
+                A string, regex pattern, or function for determining whether a provided
+                input string fits the expected pattern for this secret. Will be used to
+                validate the secret data before it's encrypted and after it's decrypted.
+                If omitted, any string will be considered valid data for this secret.
+        """
         if (not uid) or (not str(uid).isidentifier()):
             raise ValueError("Unique ID (uid) must be a valid non-empty identifier.")
 
@@ -79,7 +83,7 @@ class Secret:
 
     @property
     def minimum_password_length(self) -> int:
-        """The minimum length for this secret's password, or 0 if not required."""
+        """The minimum length for this secret's password, or `0` if not required."""
         return _MINIMUM_PASSWORD_LENGTH if self.requires_password else 0
 
     def write(self, data: str, password: Optional[str] = None) -> None:
@@ -91,7 +95,7 @@ class Secret:
                 before being stored in a file.
             password:
                 An optional string that can improve the security of this secret. If
-                provided, it must be at least 8 characters long, and must be inputted
+                provided, it must be at least `8` characters long, and must be inputted
                 again every time this secret is decrypted. If omitted, a password will
                 not be factored into this secret's encryption, and only the two `.key`
                 files will be required to decrypt it (i.e. no human action needed).
@@ -116,8 +120,7 @@ class Secret:
                 should be omitted/ignored.
 
         Returns:
-            The string data for this secret if both of its `.key` files exist and it can
-            be successfully decrypted, otherwise `None`.
+            The data for this secret if it exists & can be decrypted, otherwise `None`.
         """
         data = self._get_fernet(password).decrypt(self.file_path.read_bytes()).decode()
         return data if self.validate(data) else None

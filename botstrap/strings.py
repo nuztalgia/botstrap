@@ -20,6 +20,21 @@ class CliStrings:
     you'd like to change. All constructor arguments correspond to field names and are
     keyword-only.
 
+    ??? info "Info - Understanding fields by their prefix"
+        Each field name begins with a **single-letter prefix** that indicates the
+        subject of the string, defined as follows:
+
+        | Prefix | Description                                                         |
+        | ------ | ------------------------------------------------------------------- |
+        |`t_`| Token-related strings regarding bot token creation/management/deletion. |
+        |`p_`| Password-related strings, displayed for password-protected bot tokens.  |
+        |`h_`| Help strings, printed when the `-h` argument is given to the bot script.|
+        |`m_`| Miscellaneous strings that don't fall under any of the other categories.|
+
+        These prefixes allow for better code organization and are a concise way to
+        indicate the context in which a string should be used. More prefixes may be
+        added as Botstrap grows and acquires new features. :person_juggling:
+
     ??? example "Example - Customizing your bot's Discord login text"
         ```py title="bot.py" hl_lines="5-6"
         from botstrap import BotstrapFlow, CliStrings
@@ -43,21 +58,6 @@ class CliStrings:
         `m_login` and `m_login_success`. <br> See the following info box for an
         explanation of `m_` and other prefixes used in the naming of this class's
         fields.
-
-    ??? info "Info - Understanding fields by their prefix"
-        Each field name begins with a **single-letter prefix** that indicates the
-        subject of the string, defined as follows:
-
-        | Prefix | Description                                                         |
-        | ------ | ------------------------------------------------------------------- |
-        |`t_`| Token-related strings regarding bot token creation/management/deletion. |
-        |`p_`| Password-related strings, displayed for password-protected bot tokens.  |
-        |`h_`| Help strings, printed when the `-h` argument is given to the bot script.|
-        |`m_`| Miscellaneous strings that don't fall under any of the other categories.|
-
-        These prefixes allow for better code organization and are a concise way to
-        indicate the context in which a string should be used. More prefixes may be
-        added as Botstrap grows and acquires new features. :person_juggling:
     """
 
     @classmethod

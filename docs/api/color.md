@@ -1,5 +1,3 @@
-<link rel="stylesheet" href="../../stylesheets/color.css" />
-
 <!-- prettier-ignore -->
 ::: botstrap.Color
     options:
@@ -56,3 +54,5 @@ Colors the text `red`{.preview #red}.
       show_root_full_path: false
 
 Colors the text `yellow`{.preview #yellow}.
+
+<link rel="stylesheet" href="../../stylesheets/color.css" />
