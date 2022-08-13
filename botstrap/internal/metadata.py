@@ -1,3 +1,4 @@
+"""This module contains a class that acts a namespace for metadata helper functions."""
 import sys
 from email.errors import MessageError
 from importlib import import_module
@@ -14,7 +15,7 @@ class Metadata:
 
     @classmethod
     def get_main_file_path(cls) -> Path:
-        """Returns the `Path` containing the `__main__` module, if it can be found."""
+        """Returns the `Path` containing the `"__main__"` module, if it can be found."""
         main_file = _MAIN_MODULE.__file__ or (sys.argv and sys.argv[0])
         if main_file and (main_path := Path(main_file).resolve()).exists():
             return main_path
@@ -34,7 +35,7 @@ class Metadata:
 
     @classmethod
     def get_program_command(cls, name: str) -> list[str]:
-        """Returns a str list mirroring the command used to run the current script."""
+        """Returns a `str` list mirroring the command used to run the current script."""
         # noinspection PyArgumentList, PyUnresolvedReferences
         if name in entry_points(group="console_scripts").names:
             return [name]

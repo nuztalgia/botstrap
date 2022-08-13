@@ -1,3 +1,4 @@
+"""This is the main Botstrap module, featuring the `BotstrapFlow` class."""
 from __future__ import annotations
 
 from pathlib import Path

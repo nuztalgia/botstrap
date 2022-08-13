@@ -1,3 +1,4 @@
+"""This module contains a class that defines all the strings used by Botstrap's CLI."""
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass

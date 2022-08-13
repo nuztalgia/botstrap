@@ -1,3 +1,4 @@
+"""This module contains two classes for facilitating colorful command-line output."""
 from __future__ import annotations
 
 from dataclasses import KW_ONLY, asdict, dataclass
