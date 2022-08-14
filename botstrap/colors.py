@@ -72,39 +72,57 @@ class Color:
 class CliColors:
     """A model for the colors used by the Botstrap-provided CLI.
 
-    The following table summarizes this class's attributes, their default colors, and
-    the types of text to which they are applied.
+    The fields of this class are `#!py Callable[[str], str]` functions that can add
+    color to specific types of messages displayed in the console, such as success and
+    error text. Simple color presets are provided by the
+    [`default()`][botstrap.CliColors.default] and [`off()`][botstrap.CliColors.off]
+    class methods.
 
-    | `primary`   | n/a    | Your bot's brand. See the "Note" below for more info.     |
-    | ----------- | ------ | --------------------------------------------------------- |
-    | `error`     | red    | Message shown when the script terminates due to an error. |
-    | `highlight` | cyan   | Important text that isn't a success/warning/error message.|
-    | `lowlight`  | grey   | Less important text that may safely be de-emphasized.     |
-    | `success`   | green  | Text shown when processes or tasks complete successfully. |
-    | `warning`   | yellow | Text shown when something goes wrong, but is recoverable. |
+    To personalize these colors, you can create a new instance of this class and
+    specify any values you'd like to change. All constructor arguments correspond
+    to field names, and all of them are keyword-only except for `primary`.
 
-    Simple color presets are provided by the `default()` and `off()` class methods. If
-    you desire further customization, you can create a new instance of this class and
-    specify any colors you'd like to change. All constructor args are keyword-only
-    except for `primary`.
+    ??? info "Info - Field names and descriptions"
+        The following table lists the names of all the fields in this class,
+        demonstrates the colors that they use by default, and describes the types of
+        text to which they are applied.
 
-    Note:
-        The `primary` attribute is not assigned a color by default. This is deliberate,
-        as it will be used to color your bot's name and is essentially a personal brand.
+        | `primary`        | Your bot's name. See the tip below for more info.         |
+        | ---------------- | --------------------------------------------------------- |
+        |`error`{.red}     | Message shown when the script terminates due to an error. |
+        |`highlight`{.cyan}| Important text that isn't a success/warning/error message.|
+        |`lowlight`{.grey} | Less important text that may safely be de-emphasized.     |
+        |`success`{.green} | Text shown when processes or tasks complete successfully. |
+        |`warning`{.yellow}| Text shown when something goes wrong, but is recoverable. |
 
-        To customize `primary`, simply instantiate this class with your desired color as
-        the first constructor arg - such as `CliColors(Color.pink)` - and pass it in as
-        the `colors` argument when creating your `BotstrapFlow` instance.
+    ??? tip "Tip - Set your bot's primary color"
+        The `primary` field is not assigned a color by default. This is deliberate, as
+        it will be used to color your bot's name and is essentially a personal brand.
+        :rainbow:
 
-    Example:
-        ```py title="bot.py" hl_lines="5"
+        To customize `primary`, simply instantiate this class with your desired color
+        as the first constructor arg - such as `#!py CliColors(Color.blue)` - and pass
+        it in as the `colors` argument when creating your
+        [`BotstrapFlow`][botstrap.BotstrapFlow] instance.
+
+    ??? example "Example - Customizing specific colors"
+        Let's say you want to use cyan as your bot's primary color - but cyan is the
+        default highlight color, so that might be confusing. Fortunately, it's easy to
+        change the highlight color too! This example demonstrates how to change the
+        primary color to `cyan`{.cyan} and the highlight color to `pink`{.pink}.
+
+        ```py title="bot.py" hl_lines="3"
         from botstrap import BotstrapFlow, CliColors, Color
 
-        # We want cyan as our primary color, but it's the default highlight color...
-        # Let's change the highlight color to pink so our bot can be primarily cyan!
         bot_colors = CliColors(Color.cyan, highlight=Color.pink)
+        BotstrapFlow(name="cyan-bot", colors=bot_colors).run_bot()
+        ```
 
-        BotstrapFlow(colors=bot_colors).run_bot()  # Living our cyan bot dreams.
+        ```console title="Console Session"
+        $ python bot.py
+
+        cyan-bot: You currently don't have a saved default bot token.
+        Would you like to add one now? If so, type "yes" or "y":
         ```
     """
 
@@ -118,26 +136,16 @@ class CliColors:
 
     @classmethod
     def default(cls) -> CliColors:
-        """Returns an instance of this class with default values for all attributes.
-
-        Note:
-            Class methods from `Color` are used as the default values for all of this
-            class's attributes, except for `primary`.
-
-            ```pycon
-            >>> from botstrap import Color, CliColors
-            >>> CliColors.default().error == Color.red
-            True
-            ```
-        """
+        """Returns an instance of this class with default values for all colors."""
         return cls()
 
     @classmethod
     def off(cls) -> CliColors:
         """Returns an instance of this class with all colors disabled.
 
-        In other words, all attributes are effectively no-ops (functions that simply
-        call `str()` on their inputs without adding any formatting characters), causing
-        any strings printed to the console to be displayed in their original color.
+        In other words, the values of all fields are effectively no-ops - functions
+        that simply call `#!py str()` on their inputs without adding any formatting
+        characters. This means that any text printed to the console will be displayed
+        in its original (un-styled) color.
         """
         return cls(**{key: str for key in asdict(cls.default())})

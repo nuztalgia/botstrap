@@ -5,4 +5,5 @@
     options:
       heading_level: 1
 
+<link rel="stylesheet" href="../../stylesheets/cli-colors.css" />
 <link rel="stylesheet" href="../../stylesheets/nav-code.css" />

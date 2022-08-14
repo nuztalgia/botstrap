@@ -36,26 +36,3 @@
 .doc-function > .doc-contents {
   display: none;
 }
-
-/* Color ALL the things! \o/ */
-#blue {
-  color: var(--color-blue);
-}
-#cyan {
-  color: var(--color-cyan);
-}
-#green {
-  color: var(--color-green);
-}
-#grey {
-  color: var(--color-grey);
-}
-#pink {
-  color: var(--color-pink);
-}
-#red {
-  color: var(--color-red);
-}
-#yellow {
-  color: var(--color-yellow);
-}

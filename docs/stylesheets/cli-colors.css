@@ -1,0 +1,45 @@
+/* Un-bold the description text in the table header. */
+.md-typeset__table thead th:last-child {
+  font-weight: normal;
+}
+
+/* Make all code text in the first column bold. */
+.md-typeset__table td:first-child > code {
+  font-weight: bold;
+}
+
+/* Set up example console output text to be colored by a background gradient. */
+details.example .language-console .go {
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  font-weight: bold;
+}
+
+/* Add the primary color (cyan) to the first line of console output text. */
+details.example .language-console [data-linenos="3 "] + .go {
+  background-image: linear-gradient(
+    to right,
+    var(--color-cyan) 0%,
+    var(--color-cyan) 13.12%,
+    var(--md-code-hl-generic-color) 13.12%,
+    var(--md-code-hl-generic-color) 100%
+  );
+}
+
+/* Add the highlight color (pink) to the second line of console output text. */
+details.example .language-console [data-linenos="4 "] + .go {
+  background-image: linear-gradient(
+    to right,
+    var(--md-code-hl-generic-color) 0%,
+    var(--md-code-hl-generic-color) 78.57%,
+    var(--color-pink) 78.57%,
+    var(--color-pink) 83.93%,
+    var(--md-code-hl-generic-color) 83.93%,
+    var(--md-code-hl-generic-color) 94.64%,
+    var(--color-pink) 94.64%,
+    var(--color-pink) 96.43%,
+    var(--md-code-hl-generic-color) 96.43%,
+    var(--md-code-hl-generic-color) 100%
+  );
+}

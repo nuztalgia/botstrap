@@ -26,3 +26,26 @@
 :is(.language-console, .language-pycon, .line-numbers-off) .linenos {
   display: none;
 }
+
+/* Color ALL the things! \o/ */
+code.blue {
+  color: var(--color-blue);
+}
+code.cyan {
+  color: var(--color-cyan);
+}
+code.green {
+  color: var(--color-green);
+}
+code.grey {
+  color: var(--color-grey);
+}
+code.pink {
+  color: var(--color-pink);
+}
+code.red {
+  color: var(--color-red);
+}
+code.yellow {
+  color: var(--color-yellow);
+}
