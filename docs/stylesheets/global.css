@@ -10,29 +10,19 @@
   --emoji-margin: 0.25em;
 }
 
+/* Add some extra horizontal spacing around emoji so they don't look cramped. */
+.twemoji {
+  margin: 0 var(--emoji-margin);
+}
+
 /* Prevent user selection of all code block filenames, as well as console and
-   pycon code block ".gp" ("generic prompt") and ".go" ("generic output"). */
-.highlight .filename,
-.language-console .gp,
-.language-console .go,
-.language-pycon .gp,
-.language-pycon .go {
+   pycon code block ".go" (generic output) and ".gp" (generic prompt). */
+.highlight > .filename,
+:is(.language-console, .language-pycon) :is(.go, .gp) {
   user-select: none;
 }
 
 /* Hide line numbers in console, pycon, and explicitly opted-out code blocks. */
-.language-console .linenos,
-.language-pycon .linenos,
-.line-numbers-off .linenos {
+:is(.language-console, .language-pycon, .line-numbers-off) .linenos {
   display: none;
-}
-
-/* Hide footer links pointing into the "internal" category from outside it. */
-a[href*="../internal"].md-footer__link--next {
-  display: none;
-}
-
-/* Add some extra horizontal spacing around emoji so they don't look cramped. */
-img.twemoji {
-  margin: 0 var(--emoji-margin);
 }

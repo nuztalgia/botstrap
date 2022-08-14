@@ -1,0 +1,5 @@
+/* Hide the table of contents and footer navigation. */
+[data-md-type="toc"] nav.md-nav--secondary,
+.md-footer > nav.md-footer__inner {
+  display: none;
+}

@@ -2,6 +2,7 @@
 ::: botstrap.internal
     options:
       members: false
+      show_root_full_path: true
 
 !!! danger "Here Be Dragons"
 
@@ -19,3 +20,5 @@
     <figure markdown>
       ![Botstrap - Simba Meme](https://user-images.githubusercontent.com/95021853/184226591-958ca40d-354e-4bbf-a91a-c19bccb96402.png)
     </figure>
+
+<link rel="stylesheet" href="../../stylesheets/nav-hidden.css" />

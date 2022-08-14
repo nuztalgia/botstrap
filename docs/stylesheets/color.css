@@ -1,16 +1,15 @@
-/* Improve the alignment of the emoji in the title of the example box. */
-img.twemoji[title=":rainbow_flag:"] {
-  margin: 0.025em calc(var(--emoji-margin) * 1.25) 0;
+/* Fine-tune the alignment of the emoji in the title of the admonition. */
+.admonition-title > .twemoji[title=":rainbow_flag:"] {
+  margin: 0.05em calc(var(--emoji-margin) * 1.4) 0;
 }
 
 /* Increase the size of the file name and code text inside the example box. */
-.language-pycon span.filename,
-.language-pycon code {
+.example:first-of-type :is(.filename, code) {
   font-size: 1em;
 }
 
-/* Insert and color the console output text in the example box. */
-.language-pycon code::after {
+/* Insert the colored console output text after the code in the example box. */
+.example:first-of-type code::after {
   -webkit-background-clip: text;
   background-clip: text;
   background-image: linear-gradient(
@@ -33,35 +32,30 @@ img.twemoji[title=":rainbow_flag:"] {
   font-weight: bold;
 }
 
-/* Hide the function docstrings - they're replaced by manual color previews. */
-.doc-function p {
+/* Hide the function docstrings - the page manually adds color preview text. */
+.doc-function > .doc-contents {
   display: none;
 }
 
-/* Add extra spacing to separate each color preview from its lead-in text. */
-code.preview {
-  margin-left: 0.05em;
-}
-
-/* Color ALL the previews! \o/ */
-code.preview#blue {
+/* Color ALL the things! \o/ */
+#blue {
   color: var(--color-blue);
 }
-code.preview#cyan {
+#cyan {
   color: var(--color-cyan);
 }
-code.preview#green {
+#green {
   color: var(--color-green);
 }
-code.preview#grey {
+#grey {
   color: var(--color-grey);
 }
-code.preview#pink {
+#pink {
   color: var(--color-pink);
 }
-code.preview#red {
+#red {
   color: var(--color-red);
 }
-code.preview#yellow {
+#yellow {
   color: var(--color-yellow);
 }

@@ -1,4 +1,8 @@
+## CliColors {#}
+
 <!-- prettier-ignore -->
 ::: botstrap.CliColors
     options:
-      show_root_full_path: false
+      heading_level: 1
+
+<link rel="stylesheet" href="../../stylesheets/nav-code.css" />

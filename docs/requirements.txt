@@ -109,9 +109,9 @@ mkdocs-include-markdown-plugin==3.6.1 \
     --hash=sha256:5e7416f23081085a220f7534b2fc7456e74c5a65f3b401da1f29b9e9132b46e5 \
     --hash=sha256:ea36a7d50ee98028f03574d7bf40a307e16211ad3013a4e42f64494b3c106e9e
     # via -r docs/requirements.in
-mkdocs-material==8.4.0rc1 \
-    --hash=sha256:1ee635cfe5cd96926b6175591ffc186bdca195fbc245aa9921bc07d90487ec33 \
-    --hash=sha256:ff23bb9f9bf3f346dcaca2fc2093019b63f4fc504c2268aed6e8d6978a4c72fa
+mkdocs-material==8.4.0 \
+    --hash=sha256:6c0a6e6cda8b43956e0c562374588160af8110584a1444f422b1cfd91930f9c7 \
+    --hash=sha256:ef6641e1910d4f217873ac376b4594f3157dca3949901b88b4991ba8e5477577
     # via -r docs/requirements.in
 mkdocs-material-extensions==1.0.3 \
     --hash=sha256:a82b70e533ce060b2a5d9eb2bc2e1be201cf61f901f93704b4acf6e3d5983a44 \

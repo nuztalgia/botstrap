@@ -1,58 +1,38 @@
+## Color {#}
+
 <!-- prettier-ignore -->
 ::: botstrap.Color
     options:
-      members:
-        - blue
-      show_root_full_path: false
+      heading_level: 1
+      members: false
 
-Colors the text `blue`{.preview #blue}.
+::: botstrap.Color.blue
 
-<!-- prettier-ignore -->
+Colors the text `blue`{#blue}.
+
 ::: botstrap.Color.cyan
-    options:
-      heading_level: 2
-      show_root_full_path: false
 
-Colors the text `cyan`{.preview #cyan}.
+Colors the text `cyan`{#cyan}.
 
-<!-- prettier-ignore -->
 ::: botstrap.Color.green
-    options:
-      heading_level: 2
-      show_root_full_path: false
 
-Colors the text `green`{.preview #green}.
+Colors the text `green`{#green}.
 
-<!-- prettier-ignore -->
 ::: botstrap.Color.grey
-    options:
-      heading_level: 2
-      show_root_full_path: false
 
-Colors the text `grey`{.preview #grey}.
+Colors the text `grey`{#grey}.
 
-<!-- prettier-ignore -->
 ::: botstrap.Color.pink
-    options:
-      heading_level: 2
-      show_root_full_path: false
 
-Colors the text `pink`{.preview #pink}.
+Colors the text `pink`{#pink}.
 
-<!-- prettier-ignore -->
 ::: botstrap.Color.red
-    options:
-      heading_level: 2
-      show_root_full_path: false
 
-Colors the text `red`{.preview #red}.
+Colors the text `red`{#red}.
 
-<!-- prettier-ignore -->
 ::: botstrap.Color.yellow
-    options:
-      heading_level: 2
-      show_root_full_path: false
 
-Colors the text `yellow`{.preview #yellow}.
+Colors the text `yellow`{#yellow}.
 
 <link rel="stylesheet" href="../../stylesheets/color.css" />
+<link rel="stylesheet" href="../../stylesheets/nav-code.css" />
