@@ -27,6 +27,14 @@
   display: none;
 }
 
+/* Allow marked ".go" (generic output) to be colored by its background-image. */
+.colored-output .go {
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  font-weight: bold;
+}
+
 /* Color ALL the things! \o/ */
 code.blue {
   color: var(--color-blue);

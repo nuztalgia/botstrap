@@ -1,23 +1,11 @@
-/* Un-bold the description text in the table header. */
-.md-typeset__table thead th:last-child {
-  font-weight: normal;
-}
-
-/* Make all code text in the first column bold. */
-.md-typeset__table td:first-child > code {
-  font-weight: bold;
-}
-
-/* Set up example console output text to be colored by a background gradient. */
-details.example .language-console .go {
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  font-weight: bold;
+/* Slightly decrease the vertical padding of cells in the field info table. */
+.cli-colors-fieldinfo .md-typeset__table tr > :is(td, th) {
+  padding-top: 0.75em;
+  padding-bottom: 0.75em;
 }
 
 /* Add the primary color (cyan) to the first line of console output text. */
-details.example .language-console [data-linenos="3 "] + .go {
+.cli-colors-example .language-console.colored-output [data-linenos="3 "] + .go {
   background-image: linear-gradient(
     to right,
     var(--color-cyan) 0%,
@@ -28,7 +16,7 @@ details.example .language-console [data-linenos="3 "] + .go {
 }
 
 /* Add the highlight color (pink) to the second line of console output text. */
-details.example .language-console [data-linenos="4 "] + .go {
+.cli-colors-example .language-console.colored-output [data-linenos="4 "] + .go {
   background-image: linear-gradient(
     to right,
     var(--md-code-hl-generic-color) 0%,
@@ -42,4 +30,9 @@ details.example .language-console [data-linenos="4 "] + .go {
     var(--md-code-hl-generic-color) 96.43%,
     var(--md-code-hl-generic-color) 100%
   );
+}
+
+/* Hide the distracting "type: ignore" comment in the source definitions. */
+.cli-colors-sourcedefs .language-py .c1 {
+  display: none;
 }

@@ -18,13 +18,14 @@ class Color:
     given string. These characters are interpreted by the console as instructions to
     display the enclosed text in a specific color/style.
 
-    !!! example "Example - Printing rainbow-colored text :rainbow_flag:"
-        ```pycon
+    !!! example colors-example "Example - Printing rainbow-colored text :rainbow_flag:"
+        ```{.pycon .colored-output}
         >>> from botstrap import Color
         >>> print(
         ...     f"{Color.pink('P')}{Color.red('R')}{Color.yellow('I')}"
         ...     f"{Color.green('D')}{Color.cyan('E')}{Color.blue('!')}"
         ... )
+        PRIDE!
         ```
     """
 
@@ -82,31 +83,32 @@ class CliColors:
     specify any values you'd like to change. All constructor arguments correspond
     to field names, and all of them are keyword-only except for `primary`.
 
-    ??? info "Info - Field names and descriptions"
+    ??? info cli-colors-fieldinfo "Info - Field names and descriptions"
         The following table lists the names of all the fields in this class,
         demonstrates the colors that they use by default, and describes the types of
         text to which they are applied.
 
-        | `primary`        | Your bot's name. See the tip below for more info.         |
+        | Field            | Description                                               |
         | ---------------- | --------------------------------------------------------- |
+        |`primary`         | Your bot's name. See the tip below for more info.         |
         |`error`{.red}     | Message shown when the script terminates due to an error. |
         |`highlight`{.cyan}| Important text that isn't a success/warning/error message.|
         |`lowlight`{.grey} | Less important text that may safely be de-emphasized.     |
         |`success`{.green} | Text shown when processes or tasks complete successfully. |
         |`warning`{.yellow}| Text shown when something goes wrong, but is recoverable. |
 
-    ??? tip "Tip - Set your bot's primary color"
+    ??? tip "Tip - Set your bot's primary color!"
         The `primary` field is not assigned a color by default. This is deliberate, as
         it will be used to color your bot's name and is essentially a personal brand.
         :rainbow:
 
-        To customize `primary`, simply instantiate this class with your desired color
-        as the first constructor arg - such as `#!py CliColors(Color.blue)` - and pass
-        it in as the `colors` argument when creating your
-        [`BotstrapFlow`][botstrap.BotstrapFlow] instance.
+        To customize this field, simply instantiate this class with your desired color -
+        such as `#!py CliColors(Color.blue)` - and pass it in as the `colors` parameter
+        to the [`BotstrapFlow`][botstrap.BotstrapFlow] constructor. See the example
+        below for more details.
 
-    ??? example "Example - Customizing specific colors"
-        Let's say you want to use cyan as your bot's primary color - but cyan is the
+    ??? example cli-colors-example "Example - Customizing specific colors"
+        Let's say you want to use cyan as your bot's primary color... but cyan is the
         default highlight color, so that might be confusing. Fortunately, it's easy to
         change the highlight color too! This example demonstrates how to change the
         primary color to `cyan`{.cyan} and the highlight color to `pink`{.pink}.
@@ -118,12 +120,21 @@ class CliColors:
         BotstrapFlow(name="cyan-bot", colors=bot_colors).run_bot()
         ```
 
-        ```console title="Console Session"
+        ```{.console .colored-output title="Console Session"}
         $ python bot.py
 
         cyan-bot: You currently don't have a saved default bot token.
         Would you like to add one now? If so, type "yes" or "y":
         ```
+    """
+
+    """ NOTE: The `#!py _: KW_ONLY` "field" is actually just a sentinel value for
+    [`dataclasses`](https://docs.python.org/3/library/dataclasses.html#dataclasses.KW_ONLY).
+
+    - Any fields after a pseudo-field with the type of `KW_ONLY` are marked as
+      keyword-only fields.
+    - These fields signify `#!py __init__()` parameters that must be specified
+      as keywords when the class is instantiated.
     """
 
     primary: Callable[[str], str] = str
@@ -136,7 +147,12 @@ class CliColors:
 
     @classmethod
     def default(cls) -> CliColors:
-        """Returns an instance of this class with default values for all colors."""
+        """Returns an instance of this class with default values for all colors.
+
+        Functions from [`Color`][botstrap.Color] are used as the defaults for all fields
+        except for `primary`, which defaults to `#!py str()` and is essentially a no-op
+        unless overridden.
+        """
         return cls()
 
     @classmethod
