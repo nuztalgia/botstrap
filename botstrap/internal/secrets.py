@@ -86,6 +86,28 @@ class Secret:
         """The minimum length for this secret's password, or `0` if not required."""
         return _MINIMUM_PASSWORD_LENGTH if self.requires_password else 0
 
+    def clear(self) -> None:
+        """Deletes any files containing data related to this secret, if they exist."""
+        for qualifier in _KEY_FILES:
+            key_file = self._get_key_file(qualifier)
+            key_file.unlink(missing_ok=True)
+
+    def read(self, password: Optional[str] = None) -> Optional[str]:
+        """Returns the decrypted data from this secret's file if it exists and is valid.
+
+        Args:
+            password:
+                The password originally used to create this secret, if applicable. This
+                must match the original password, or else the decrypted data will not be
+                valid. If this secret was not created with a password, this argument
+                should be omitted/ignored.
+
+        Returns:
+            The data for this secret if it exists & can be decrypted, otherwise `None`.
+        """
+        data = self._get_fernet(password).decrypt(self.file_path.read_bytes()).decode()
+        return data if self.validate(data) else None
+
     def write(self, data: str, password: Optional[str] = None) -> None:
         """Encrypts and writes the data to a file, optionally protected by a password.
 
@@ -108,28 +130,6 @@ class Secret:
         if not self.validate(data):
             raise ValueError(f'Attempted to write invalid data for "{self.uid}".')
         self.file_path.write_bytes(self._get_fernet(password).encrypt(data.encode()))
-
-    def read(self, password: Optional[str] = None) -> Optional[str]:
-        """Returns the decrypted data from this secret's file if it exists and is valid.
-
-        Args:
-            password:
-                The password originally used to create this secret, if applicable. This
-                must match the original password, or else the decrypted data will not be
-                valid. If this secret was not created with a password, this argument
-                should be omitted/ignored.
-
-        Returns:
-            The data for this secret if it exists & can be decrypted, otherwise `None`.
-        """
-        data = self._get_fernet(password).decrypt(self.file_path.read_bytes()).decode()
-        return data if self.validate(data) else None
-
-    def clear(self) -> None:
-        """Deletes any files containing data related to this secret, if they exist."""
-        for qualifier in _KEY_FILES:
-            key_file = self._get_key_file(qualifier)
-            key_file.unlink(missing_ok=True)
 
     def _get_key_file(self, qualifier: str) -> Path:
         if qualifier not in _KEY_FILES:
@@ -189,10 +189,7 @@ def _get_validator(
 
 def _get_storage_directory(directory_path: str | Path | None) -> Path:
     if not directory_path:
-        try:
-            directory_path = Metadata.get_main_file_path() / ".." / ".botstrap_keys"
-        except OSError as e:
-            raise ValueError("Could not resolve default key storage directory.") from e
+        directory_path = Metadata.get_default_keys_dir()
     elif isinstance(directory_path, str):
         directory_path = Path(directory_path)
 

@@ -1,6 +1,7 @@
 """This is the main Botstrap module, featuring the `BotstrapFlow` class."""
 from __future__ import annotations
 
+from functools import cached_property
 from pathlib import Path
 from typing import Any, Final
 
@@ -49,6 +50,11 @@ class BotstrapFlow(CliManager):
         super().__init__(name, colors, strings)
         self._tokens_by_uid: Final[dict[str, Token]] = {}
         self._active_token: Token | None = None
+
+    @cached_property
+    def _default_token(self) -> Token:
+        """The default bot token. Only created if/when it's accessed. Will be reused."""
+        return Token(self, _DEFAULT_TOKEN_NAME)
 
     def register_token(
         self,
@@ -299,7 +305,7 @@ class BotstrapFlow(CliManager):
         """
         if not self._tokens_by_uid:
             if allow_auto_register_token:
-                self._tokens_by_uid[_DEFAULT_TOKEN_NAME] = self._create_default_token()
+                self._tokens_by_uid[_DEFAULT_TOKEN_NAME] = self._default_token
             else:
                 raise RuntimeError(
                     "There are no registered tokens to retrieve.\nTo fix this, you can "
@@ -399,30 +405,33 @@ class BotstrapFlow(CliManager):
             SystemExit: If Discord login fails, which means the bot can't run. This
                 may be caused by an invalid bot token.
         """
-        token_value = self.retrieve_active_token(
-            allow_auto_register_token=options.pop("allow_auto_register_token", True),
-            allow_auto_parse_args=options.pop("allow_auto_parse_args", True),
-            allow_token_creation=options.pop("allow_token_creation", True),
-        )
-        original_bot_class = bot_class
 
+        def filter_options(**target_options: Any) -> dict[str, Any]:
+            """Pops the given options out of the original `**options` & returns them."""
+            return {
+                option_key: options.pop(option_key, default_value)
+                for option_key, default_value in target_options.items()
+            }
+
+        token_options = filter_options(
+            allow_auto_register_token=True,
+            allow_auto_parse_args=True,
+            allow_token_creation=True,
+        )
+        # The call to `retrieve_active_token()` will (try to) set `self._active_token`.
+        if not (token_value := self.retrieve_active_token(**token_options)):
+            # An appropriate message will have been printed if a token wasn't retrieved.
+            return
+
+        original_bot_class = bot_class
         if isinstance(bot_class, str):
             bot_class = Metadata.import_class(bot_class) or ""
 
         if not isinstance(bot_class, type):
             raise TypeError(f'Unable to instantiate bot class: "{original_bot_class}"')
 
-        if token_value:
-            self._init_bot(token_value, bot_class, **options)
-
-    def _create_default_token(self) -> Token:
-        return Token(
-            self, (uid := _DEFAULT_TOKEN_NAME), display_name=self.colors.lowlight(uid)
-        )
-
-    def _init_bot(self, token_value: str, bot_class: type, **options) -> None:
-        bot = bot_class(**options)
-        token = self._active_token or self._create_default_token()
+        bot = bot_class(**options)  # Token-related `**options` have been filtered out.
+        token = self._active_token or self._default_token
 
         @bot.event
         async def on_connect() -> None:
@@ -446,7 +455,7 @@ class BotstrapFlow(CliManager):
 
     def _manage_tokens(self, tokens: list[Token]) -> None:
         if not any(token for token in tokens if token.uid == _DEFAULT_TOKEN_NAME):
-            tokens.append(self._create_default_token())
+            tokens.append(self._default_token)
 
         while saved_tokens := [token for token in tokens if token.file_path.is_file()]:
             self.cli.print_prefixed_message(self.strings.t_manage_list)
