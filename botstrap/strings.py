@@ -21,7 +21,7 @@ class CliStrings:
     you'd like to change. All constructor arguments correspond to field names and are
     keyword-only.
 
-    ??? info "Info - Understanding fields by their prefix"
+    ??? info "Info - Field name prefixes"
         Each field name begins with a **single-letter prefix** that indicates the
         subject of the string, defined as follows:
 
@@ -36,7 +36,7 @@ class CliStrings:
         indicate the context in which a string should be used. More prefixes may be
         added as Botstrap grows and acquires new features. :person_juggling:
 
-    ??? example "Example - Customizing your bot's Discord login text"
+    ??? example "Example - Customizing the Discord login text"
         ```py title="bot.py" hl_lines="5-6"
         from botstrap import BotstrapFlow, CliStrings
         from string import Template
@@ -56,9 +56,8 @@ class CliStrings:
         ```
 
         **Note:** The strings customized in this example belong to the fields named
-        `m_login` and `m_login_success`. <br> See the following info box for an
-        explanation of `m_` and other prefixes used in the naming of this class's
-        fields.
+        `m_login` and `m_login_success`. <br> See the info box above for an explanation
+        of `m_` and other prefixes used in the naming of this class's fields.
     """
 
     @classmethod
@@ -213,22 +212,24 @@ class CliStrings:
         Responses considered "affirmative" are defined by the `m_affirm_responses`
         field, which is a tuple that consists of the strings "yes" and "y" by default.
 
-        Example:
+        ??? example "Example - Using a custom response formatter"
+            ```pycon
             >>> from botstrap import CliStrings
             >>> pig_latin = lambda text: f"{text[1:]}{text[0]}ay"
             >>> CliStrings.default().get_affirmation_prompt(format_response=pig_latin)
             'If so, type "esyay" or "yay"'
+            ```
 
         Args:
             format_response:
-                A function that takes an affirmative response string and returns a
-                version of that string with any desired custom formatting applied. This
-                may be set to one of the class methods of `Color`, as a simple way to
-                emphasize the valid responses to the prompt.
+                A function that accepts an affirmative response string and returns a
+                version of that string with any desired custom formatting applied.
+                This may be set to one of the class methods of [`Color`][botstrap.Color]
+                for a simple way to emphasize the valid responses to the prompt.
             quote_responses:
-                Whether to wrap each possible affirmative response in double quotes.
-                These quotes are added after `format_response()` is invoked on the
-                response (if provided). Defaults to `True`.
+                Whether to wrap each possible affirmative response in double quotes
+                (`"`). These quotes are added after `format_response` is invoked on
+                the response (if it was provided).
 
         Returns:
             A string prompting the user for an affirmative response.
@@ -267,6 +268,19 @@ def _get_compact_value(value: Template) -> Template:
 
 
 def _get_compact_value(value: Any) -> str | Template | tuple[str, ...]:
+    """Returns a version of the input value with all newlines removed.
+
+    This function may recursively call itself, depending on the type of the input. The
+    return value will always match the type of the input value (unless an unsupported
+    type was passed in, in which case a string will be returned).
+
+    Args:
+        value:
+            A string, `Template` object, or tuple of strings to be "compacted".
+
+    Returns:
+        An object matching the type of the input `value`, but with all newlines removed.
+    """
     if isinstance(value, str):
         value = value.strip("\n")  # First, strip any leading and/or trailing newlines.
         return value.replace("\n", " ")  # Then, replace remaining newlines with spaces.

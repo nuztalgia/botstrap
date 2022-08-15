@@ -61,16 +61,18 @@ class CliManager:
 class CliUtils:
     """A collection of CLI functions that adhere to the UX defined by a `CliManager`.
 
-    Note:
+    ??? tip "Tip - Set up for the examples"
         All of the code examples in this class reference a `CliUtils` instance named
         `cli`, which may be created as follows:
+
         ```pycon
         >>> from botstrap.internal import CliManager
         >>> cli = CliManager(name="cli-demo").cli
         ```
+
         To keep the examples focused and brief, the above definition is only explicitly
-        written out once in this section. However, <u>all</u> of the examples will fail
-        with a `#!py NameError` if the `cli` variable has not been defined.
+        written out once in this section. However, <u>**all**</u> of the examples will
+        fail with a `#!py NameError` if the `cli` variable has not been defined.
     """
 
     def __init__(self, manager: CliManager) -> None:
@@ -89,7 +91,7 @@ class CliUtils:
         If the user responds affirmatively, this function will return without raising
         any errors, allowing program execution to continue normally.
 
-        Example:
+        ??? example
             ```pycon
             >>> cli.confirm_or_exit("Would you like to continue?")
             Would you like to continue? If so, type "yes" or "y":
@@ -111,7 +113,7 @@ class CliUtils:
         # noinspection PyUnresolvedReferences
         """Exits the program in a user-friendly manner.
 
-        Example:
+        ??? example
             ```pycon
             >>> cli.exit_process("Testing the exit_process() function.", is_error=False)
             Testing the exit_process() function. Exiting process.
@@ -121,10 +123,9 @@ class CliUtils:
             Process finished with exit code 0
             ```
 
-            **Note:** Depending on your shell settings, the text in the "Console
-            Session" block may or may not be displayed. However, the behavior of
-            `exit_process()` remains consistent regardless of what is printed after
-            the process ends.
+            **Note:** Depending on your shell settings, the text in the second block
+            may or may not be displayed. However, the behavior of `exit_process()`
+            remains consistent regardless of what is printed after the process ends.
 
         Args:
             reason:
@@ -147,7 +148,7 @@ class CliUtils:
         # noinspection PyUnresolvedReferences
         """Returns a boolean value corresponding to the user's response to a prompt.
 
-        Example:
+        ??? example
             ```pycon
             >>> if cli.get_bool_input("Do you believe in life after love?"):
             ...     print("I can feel something inside me say...")
@@ -189,7 +190,7 @@ class CliUtils:
         [`get_input()`][botstrap.internal.CliUtils.get_input]
         (with the keyword argument `#!py echo_input=False`) instead of this function.
 
-        Example:
+        ??? example
             ```pycon hl_lines="2"
             >>> very_secure_password = cli.get_hidden_input("Enter your password")
             Enter your password: *******
@@ -229,7 +230,7 @@ class CliUtils:
         require sensitive user input with more nuanced console output, consider using
         [`get_hidden_input()`][botstrap.internal.CliUtils.get_hidden_input] instead.
 
-        Example:
+        ??? example
             ```pycon
             >>> print(cli.get_input("Baby shark"))
             Baby shark doo doo doo
@@ -264,7 +265,7 @@ class CliUtils:
         The program name is obtained from the `CliManager` that was provided to
         instantiate this class.
 
-        Example:
+        ??? example
             ```pycon
             >>> cli.print_prefixed_message("What does the fox say?")
             cli-demo: What does the fox say?

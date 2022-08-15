@@ -83,8 +83,8 @@ class BotstrapFlow(CliManager):
             and securely through the CLI only if/when it's actually needed, at which
             point it will be encrypted and saved for future use. :lock:
 
-        ??? tip "Tip - Automatically registering a default token"
-            If <u>**all**</u> of the following statements are true, you may skip this
+        ??? note "Note - Automatically registering a default token"
+            If <u>**all**</u> of the following statements are true, you can skip this
             method and move on to the [next one][botstrap.BotstrapFlow.parse_args]
             in the flow:
 
@@ -168,7 +168,7 @@ class BotstrapFlow(CliManager):
         can be correctly determined from any command-line arguments passed to your
         bot's script.
 
-        ??? tip "Tip - Automatically parsing arguments"
+        ??? note "Note - Automatically parsing arguments"
             If your bot doesn't require the customization afforded by the parameters
             below, you can skip this method as long as you do **not** disable
             `allow_auto_parse_args` in any subsequent method calls to either
@@ -454,6 +454,28 @@ class BotstrapFlow(CliManager):
             self.cli.exit_process(self.strings.m_login_failure)
 
     def _manage_tokens(self, tokens: list[Token]) -> None:
+        """Starts the token management flow, allowing viewing/deletion of saved tokens.
+
+        This method is private because it will be automatically invoked by
+        [`parse_args()`][botstrap.BotstrapFlow.parse_args] when the `--tokens` option
+        is specified on the command line (and if neither `--help` nor `--version` was
+        specified, because those options take priority).
+
+        This method only returns if/when the user has no more files for any of the
+        tokens in the given list (plus the default token, if it wasn't in the list).
+        If the user still has tokens but chooses not to delete any (more) of them,
+        this method will end the process with exit code 0 to indicate success.
+
+        Args:
+            tokens:
+                The tokens that are defined for the bot. If the "default" token is not
+                included, it will be appended (just in case it was previously used).
+                This list determines the locations to check for existing token files.
+
+        Raises:
+            SystemExit: If the user still has saved token files, but chooses to exit
+                the process rather than delete any of them.
+        """
         if not any(token for token in tokens if token.uid == _DEFAULT_TOKEN_NAME):
             tokens.append(self._default_token)
 
