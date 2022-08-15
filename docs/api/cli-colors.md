@@ -7,8 +7,8 @@
       members:
         - default
 
-<!-- prettier-ignore -->
 ??? quote cli-colors-sourcedefs "Definition - All default color values"
+
     ```{.py title="botstrap/colors.py" .line-numbers-off}
     {%
       include "../../botstrap/colors.py"
@@ -16,6 +16,7 @@
       end='\n\n    @classmethod\n    def default'
     %}
     ```
+
     {%
       include "../../botstrap/colors.py"
       start='\n\n    """ NOTE:'

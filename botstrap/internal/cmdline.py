@@ -9,14 +9,20 @@ from botstrap.strings import CliStrings
 
 
 class CliSession:
-    """Maintains UX state to ensure a consistent look and feel for the CLI.
+    """Handles UX state for a program, to ensure a consistent look and feel for its CLI.
 
-    "UX state" is defined by the constructor arguments upon creating an instance of this
-    class. It can subsequently be accessed through the instance's read-only properties.
+    **UX state** consists of a combination of [`CliColors`][botstrap.CliColors] and
+    [`CliStrings`][botstrap.CliStrings]. These are set by the constructor arguments upon
+    creating an instance of this class, and can subsequently be accessed through the
+    instance's read-only properties.
 
-    ??? tip "Tip - Set up for the examples"
-        All of the code examples in this class reference a `CliSession` instance
-        named `cli`, which may be created as follows:
+    This class also provides a number of helper functions for CLI input and output. In
+    order to maintain a consistent UX for your program, these functions should be used
+    for all interactions that require anything beyond a simple `#!py print()` statement.
+
+    ??? info "Info - Prerequisite for the examples"
+        All of the examples in this class reference a `CliSession` variable named `cli`,
+        which may be created as follows:
 
         ```pycon
         >>> from botstrap.internal import CliSession
@@ -25,7 +31,7 @@ class CliSession:
 
         To keep the examples focused and brief, the above definition is only explicitly
         written out once in this section. However, <u>**all**</u> of the examples will
-        fail with a `#!py NameError` if the `cli` variable has not been defined.
+        fail with a `#!py NameError` if the `cli` variable is not defined.
     """
 
     def __init__(
@@ -93,6 +99,10 @@ class CliSession:
         # noinspection PyUnresolvedReferences
         """Exits the program in a user-friendly manner.
 
+        By default, the provided `reason` will be colored either `red`{.red} or
+        `grey`{.grey} (depending on the value of `is_error`) when it is displayed
+        in the console.
+
         ??? example
             ```pycon
             >>> cli.exit_process("Testing the exit_process() function.", is_error=False)
@@ -103,9 +113,10 @@ class CliSession:
             Process finished with exit code 0
             ```
 
-            **Note:** Depending on your shell settings, the text in the second block
-            may or may not be displayed. However, the behavior of `exit_process()`
-            remains consistent regardless of what is printed after the process ends.
+            **Note:** Depending on your shell settings, the text in the second code
+            block (titled "Console Session") may or may not be displayed. This does not
+            change the behavior of this function, which is unaffected by what gets
+            printed after its process is terminated.
 
         Args:
             reason:
@@ -137,6 +148,10 @@ class CliSession:
             Do you believe in life after love? If so, type "yes" or "y": umm...
             I really don't think you're strong enough, no!
             ```
+
+            **Note:** You might have to hit the "Enter" or "Return" key an additional
+            time after pasting this example into the console, to force the interpreter
+            to recognize the end of the `#!py if` statement.
 
         Args:
             question:

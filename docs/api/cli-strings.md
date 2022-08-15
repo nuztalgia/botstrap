@@ -7,13 +7,14 @@
       members:
         - default
 
-<!-- prettier-ignore -->
 ??? quote "Definition - All default string values"
+
     {%
       include "../../botstrap/strings.py"
       start='\n\n    """ NOTE:'
       end='"""\n\n    # region FIELDS'
     %}
+
     ```{.py title="botstrap/strings.py" .line-numbers-off}
     {%
       include "../../botstrap/strings.py"

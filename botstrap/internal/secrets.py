@@ -40,6 +40,23 @@ class Secret:
         the files contains the encrypted `content` of the secret, and the other file
         contains the `fernet` key required to decrypt it. Each of these files is
         useless without the other. :closed_lock_with_key:
+
+    ??? info "Info - Fernet encryption with passwords"
+        Factoring a password into the encryption of a secret can add an extra layer of
+        protection because the password will not be stored anywhere on the file system.
+        This means that even if a malicious actor were to gain access to both the
+        `content.key` and `fernet.key` files of a secret, they still would not be able
+        to decipher the original data.
+
+        If a password is provided when a secret's
+        [`write()`][botstrap.internal.secrets.Secret.write] method is invoked,
+        the specified data will be encrypted using an algorithm based on [this
+        example](https://cryptography.io/en/latest/fernet/#using-passwords-with-fernet)
+        from the Fernet documentation. The password will be run through the
+        [`PBKDF2HMAC`](https://cryptography.io/en/latest/hazmat/primitives/key-derivation-functions/#cryptography.hazmat.primitives.kdf.pbkdf2.PBKDF2HMAC)
+        key derivation function to factor it into the `fernet` key for the secret.
+        It will therefore be required again in order to "complete" the key every
+        time the secret is decrypted.
     """
 
     def __init__(
@@ -110,14 +127,18 @@ class Secret:
         return _MINIMUM_PASSWORD_LENGTH if self.requires_password else 0
 
     def clear(self) -> None:
-        """Deletes all files containing data related to this secret, if any exist.
+        """Deletes files containing data related to this secret, if any exist.
 
-        ??? caution "Caution - Don't lose track of your secrets!"
-            This method **does not** scan the entire system to locate the files for a
-            secret - it only checks the `storage_directory` that was specified when the
-            secret was instantiated. If the `.key` files are moved out of that folder,
-            or if the param is changed to point to a different folder, then the secret
-            will assume it doesn't have any existing files associated with it.
+        This method **does not** scan the entire system to locate the files for a secret
+        - it only checks the `storage_directory` that was specified upon instantiation.
+
+        ??? tip "Tip - Don't scramble your secrets!"
+            If a secret's `.key` files are renamed or moved out of their original
+            directory without a corresponding change to the `uid` and/or
+            `storage_directory` constructor parameters (or vice versa), then the secret
+            will behave as if there are no existing files associated with it.
+            Fortunately, this can easily be resolved by either moving the files back
+            into place or updating the constructor params in your code.
         """
         for qualifier in _KEY_FILES:
             key_file = self._get_key_file(qualifier)
@@ -129,7 +150,7 @@ class Secret:
         The `password` param **must** be provided if this secret was originally
         encrypted with a password, and **must not** be provided if the opposite is true.
         If provided, it must match the original password or else the decrypted data
-        will not be valid.
+        will not be valid and this method will return `None`.
 
         Args:
             password:
@@ -145,20 +166,15 @@ class Secret:
     def write(self, data: str, password: Optional[str] = None) -> None:
         """Encrypts and writes the data to a file, optionally protected by a password.
 
-        ??? note "Note - Using passwords with Fernet"
-            Factoring a password into the encryption of a secret can add an extra layer
-            of protection because the password will not be stored anywhere on the file
-            system. This means that even if a malicious actor were to gain access to
-            both the `content.key` and `fernet.key` files of a secret, they still would
-            not be able to read its original data.
+        If the `password` param is provided, it must be at least `#!py 8` characters
+        long (see [`min_pw_length`][botstrap.internal.secrets.Secret.min_pw_length])
+        and will have to be provided again whenever
+        [`read()`][botstrap.internal.secrets.Secret.read]
+        is invoked to decrypt this secret.
 
-            If a password is provided, this method will use an algorithm based on [this
-            example](https://cryptography.io/en/latest/fernet/#using-passwords-with-fernet)
-            from the Fernet documentation. The password will be run through the
-            [`PBKDF2HMAC`](https://cryptography.io/en/latest/hazmat/primitives/key-derivation-functions/#cryptography.hazmat.primitives.kdf.pbkdf2.PBKDF2HMAC)
-            key derivation function to factor it into the `fernet` key for the secret.
-            It will therefore be required again in order to "complete" the key every
-            time the secret is decrypted.
+        Omitting the `password` parameter means that only the secret's two `.key` files
+        will be required in order to decrypt it. This is both more convenient *and* more
+        dangerous, so choose wisely. :genie:
 
         Args:
             data:
@@ -166,11 +182,8 @@ class Secret:
                 stored in a file.
             password:
                 An optional string that can improve the security of this secret. If
-                provided, it must be at least `#!py 8` characters long, and must be
-                inputted again every time this secret is decrypted. If omitted, a
-                password will not be factored into this secret's encryption, and only
-                the two `.key` files will be required to decrypt it (i.e. no human
-                action needed).
+                omitted, a password will not be factored into the encryption algorithm
+                for this secret.
 
         Raises:
             ValueError: If the `data` is not considered valid according to the
@@ -182,6 +195,7 @@ class Secret:
         self.file_path.write_bytes(self._get_fernet(password).encrypt(data.encode()))
 
     def _get_key_file(self, qualifier: str) -> Path:
+        """Returns the `Path` to the qualified (content/fernet) file for this secret."""
         if qualifier not in _KEY_FILES:
             raise ValueError(f'Invalid key file qualifier: "{qualifier}"')
 
@@ -192,6 +206,7 @@ class Secret:
         return file
 
     def _get_fernet(self, password: Optional[str]) -> Fernet:
+        """Returns a `Fernet` instance for encrypting and decrypting `bytes` data."""
         if self.requires_password:
             if not password:
                 raise ValueError(f'Password is required to read/write "{self.uid}".')
@@ -205,7 +220,6 @@ class Secret:
                 fernet_file.write_bytes(get_initial_bytes())
             return fernet_file.read_bytes()
 
-        # Source: https://cryptography.io/en/latest/fernet/#using-passwords-with-fernet
         if password:
             kdf = PBKDF2HMAC(
                 algorithm=hashes.SHA256(),
@@ -223,6 +237,7 @@ class Secret:
 def _get_validator(
     pattern: str | re.Pattern | Callable[[str], Any] | None
 ) -> Callable[[str], bool]:
+    """Turns the `pattern` into a function that accepts a string and returns a bool."""
     if not pattern:
         pattern = re.compile(".*", re.DOTALL)
     elif isinstance(pattern, str):
@@ -238,6 +253,7 @@ def _get_validator(
 
 
 def _get_storage_directory(directory_path: str | Path | None) -> Path:
+    """Turns the `directory_path` into a usable `Path`, creating the dir if needed."""
     if not directory_path:
         directory_path = Metadata.get_default_keys_dir()
     elif isinstance(directory_path, str):

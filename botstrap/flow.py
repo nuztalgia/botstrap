@@ -83,6 +83,10 @@ class BotstrapFlow(CliSession):
             and securely through the CLI only if/when it's actually needed, at which
             point it will be encrypted and saved for future use. :lock:
 
+            For more technical details about how the token values are encrypted and
+            decrypted, feel free to check out the documentation for the internal
+            [`secrets`](../../internal/secrets) module.
+
         ??? note "Note - Automatically registering a default token"
             If <u>**all**</u> of the following statements are true, you can skip this
             method and move on to the [next one][botstrap.BotstrapFlow.parse_args]
@@ -92,8 +96,8 @@ class BotstrapFlow(CliSession):
               environment, or only has a single configuration, or a similar
               reason along those lines.
             - **It doesn't require password-protection** - the Discord account it
-              controls doesn't have access to any real users or servers that could
-              potentially be damaged if a malicious actor were to gain access to it.
+              uses doesn't have access to any real users or servers that could
+              potentially be damaged if a malicious actor were to gain control.
             - **You do not disable** `allow_auto_register_token` **in any subsequent
               method calls** - it's enabled by default, so unless you explicitly set
               it to `False`, you'll be fine.

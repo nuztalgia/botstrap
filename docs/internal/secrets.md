@@ -7,6 +7,10 @@
       members: false
       show_root_full_path: true
 
+??? attention "Attention - This is part of the `internal` package."
+
+    {% include "index.md" start="**Warning:**" end="???" %}
+
 <!-- prettier-ignore -->
 ::: botstrap.internal.secrets.Secret
     options:
@@ -24,7 +28,7 @@
       show_root_toc_entry: false
 
 <style>
-  /* Hide the duplicate class description from its second inclusion. */
+  /* Hide the duplicate class description (because it was included twice). */
   .doc-class + .doc-class > .doc-contents > :not(.doc-children) {display: none}
 </style>
 
