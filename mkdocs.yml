@@ -36,7 +36,7 @@ nav:
       - Color: api/color.md
   - Internal Modules:
       - internal/index.md
-      - cmdline: internal/cmdline.md
+      - clisession: internal/clisession.md
       - secrets: internal/secrets.md
 
 extra_css:

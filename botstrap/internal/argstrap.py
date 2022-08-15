@@ -3,7 +3,7 @@ from argparse import ArgumentParser, RawTextHelpFormatter
 from typing import Final, Optional
 
 from botstrap.colors import CliColors
-from botstrap.internal.cmdline import CliSession
+from botstrap.internal.clisession import CliSession
 from botstrap.internal.metadata import Metadata
 from botstrap.internal.tokens import Token
 from botstrap.strings import CliStrings

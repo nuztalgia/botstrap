@@ -1,7 +1,7 @@
-## cmdline {#}
+## clisession {#}
 
 <!-- prettier-ignore -->
-::: botstrap.internal.cmdline
+::: botstrap.internal.clisession
     options:
       heading_level: 1
       members: false
@@ -11,6 +11,6 @@
 
     {% include "index.md" start="**Warning:**" end="???" %}
 
-::: botstrap.internal.cmdline.CliSession
+::: botstrap.internal.clisession.CliSession
 
 <link rel="stylesheet" href="../../stylesheets/nav-code.css" />

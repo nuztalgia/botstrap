@@ -5,7 +5,7 @@ from typing import Final
 
 from cryptography.fernet import InvalidToken
 
-from botstrap.internal.cmdline import CliSession
+from botstrap.internal.clisession import CliSession
 from botstrap.internal.secrets import Secret
 
 _LENGTHS: Final[tuple[int, ...]] = (24, 6, 27)
