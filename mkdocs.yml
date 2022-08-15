@@ -37,6 +37,7 @@ nav:
   - Internal Modules:
       - internal/index.md
       - cmdline: internal/cmdline.md
+      - secrets: internal/secrets.md
 
 extra_css:
   - stylesheets/global.css

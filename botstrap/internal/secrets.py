@@ -1,4 +1,4 @@
-"""This module contains a class and helper functions for encrypting/decrypting data."""
+"""This module contains the `Secret` class, which encrypts and decrypts data files."""
 import os
 import re
 from base64 import urlsafe_b64encode
@@ -23,12 +23,23 @@ _KEY_FILES: Final[tuple[str, ...]] = (_CONTENT_FILE, _FERNET_FILE)
 class Secret:
     """Manages read & write operations for files that contain sensitive encrypted data.
 
-    A secret is represented in the file system by two `.key` files, both of which
-    include the secret's `uid` in their file names. One of the files contains the
-    encrypted `content` of the secret, and the other file contains the `fernet` key
-    required to decrypt it. Each file is useless without the other.
+    Each instance of this class represents a unique string containing secret information
+    that must be encrypted before saving it to a file, and subsequently decrypted before
+    it can be accessed again.
 
-    More about Fernet symmetric encryption: https://cryptography.io/en/latest/fernet/
+    ??? question "FAQ - How does the encryption work?"
+        This class uses [Fernet](https://cryptography.io/en/latest/fernet/) symmetric
+        encryption from the [`cryptography`](https://pypi.org/project/cryptography/)
+        package to encrypt and decrypt data, optionally with extra protection in the
+        form of a password. The encrypted data is guaranteed to be unreadable without
+        the **key** that was used to encrypt it. Fernet keys are uniquely generated
+        for each secret at encryption time.
+
+        Each secret is therefore represented in the file system by two separate `.key`
+        files, both of which include the secret's `uid` in their file names. One of
+        the files contains the encrypted `content` of the secret, and the other file
+        contains the `fernet` key required to decrypt it. Each of these files is
+        useless without the other. :closed_lock_with_key:
     """
 
     def __init__(
@@ -53,10 +64,10 @@ class Secret:
                 CLI when referring to this secret. If omitted, the `uid` will be
                 displayed instead.
             storage_directory:
-                Where to store the encrypted `.key` files containing this secret's data.
-                If omitted, the files will be saved in a folder named `.botstrap_keys`,
+                Where to store the encrypted files holding this secret's data. If
+                omitted, the files will be saved in a folder named `.botstrap_keys`,
                 which will be created in the same location as the file containing the
-                `"__main__"` module for the executing script.
+                `#!py "__main__"` module for the executing script.
             valid_pattern:
                 A string, regex pattern, or function for determining whether a provided
                 input string fits the expected pattern for this secret. Will be used to
@@ -78,16 +89,36 @@ class Secret:
 
     @property
     def file_path(self) -> Path:
-        """The `Path` of the file containing this secret's encrypted data."""
+        """The `Path` of the file that may contain this secret's encrypted data.
+
+        This property will only return the `content` file path, as the `fernet` file is
+        irrelevant outside of this class. The return value will be an instance of
+        [`pathlib.Path`](https://docs.python.org/3/library/pathlib.html#concrete-paths),
+        but it is not guaranteed to point to an existing file (e.g. if this secret's
+        data hasn't been created/saved yet, or has been deleted).
+        """
         return self._get_key_file(_CONTENT_FILE)
 
     @property
-    def minimum_password_length(self) -> int:
-        """The minimum length for this secret's password, or `0` if not required."""
+    def min_pw_length(self) -> int:
+        """The minimum length for this secret's password, if one is required.
+
+        For secrets that require a password, this property will return `#!py 8` (chosen
+        arbitrarily to try and balance security vs. convenience). For secrets that don't
+        require a password, this will return `#!py 0`.
+        """
         return _MINIMUM_PASSWORD_LENGTH if self.requires_password else 0
 
     def clear(self) -> None:
-        """Deletes any files containing data related to this secret, if they exist."""
+        """Deletes all files containing data related to this secret, if any exist.
+
+        ??? caution "Caution - Don't lose track of your secrets!"
+            This method **does not** scan the entire system to locate the files for a
+            secret - it only checks the `storage_directory` that was specified when the
+            secret was instantiated. If the `.key` files are moved out of that folder,
+            or if the param is changed to point to a different folder, then the secret
+            will assume it doesn't have any existing files associated with it.
+        """
         for qualifier in _KEY_FILES:
             key_file = self._get_key_file(qualifier)
             key_file.unlink(missing_ok=True)
@@ -95,12 +126,15 @@ class Secret:
     def read(self, password: Optional[str] = None) -> Optional[str]:
         """Returns the decrypted data from this secret's file if it exists and is valid.
 
+        The `password` param **must** be provided if this secret was originally
+        encrypted with a password, and **must not** be provided if the opposite is true.
+        If provided, it must match the original password or else the decrypted data
+        will not be valid.
+
         Args:
             password:
-                The password originally used to create this secret, if applicable. This
-                must match the original password, or else the decrypted data will not be
-                valid. If this secret was not created with a password, this argument
-                should be omitted/ignored.
+                The password originally used to create this secret, if applicable.
+                Otherwise, this should be `None`.
 
         Returns:
             The data for this secret if it exists & can be decrypted, otherwise `None`.
@@ -111,21 +145,37 @@ class Secret:
     def write(self, data: str, password: Optional[str] = None) -> None:
         """Encrypts and writes the data to a file, optionally protected by a password.
 
+        ??? note "Note - Using passwords with Fernet"
+            Factoring a password into the encryption of a secret can add an extra layer
+            of protection because the password will not be stored anywhere on the file
+            system. This means that even if a malicious actor were to gain access to
+            both the `content.key` and `fernet.key` files of a secret, they still would
+            not be able to read its original data.
+
+            If a password is provided, this method will use an algorithm based on [this
+            example](https://cryptography.io/en/latest/fernet/#using-passwords-with-fernet)
+            from the Fernet documentation. The password will be run through the
+            [`PBKDF2HMAC`](https://cryptography.io/en/latest/hazmat/primitives/key-derivation-functions/#cryptography.hazmat.primitives.kdf.pbkdf2.PBKDF2HMAC)
+            key derivation function to factor it into the `fernet` key for the secret.
+            It will therefore be required again in order to "complete" the key every
+            time the secret is decrypted.
+
         Args:
             data:
-                A string containing sensitive information that should be encrypted
-                before being stored in a file.
+                A string containing sensitive information to be encrypted before being
+                stored in a file.
             password:
                 An optional string that can improve the security of this secret. If
-                provided, it must be at least `8` characters long, and must be inputted
-                again every time this secret is decrypted. If omitted, a password will
-                not be factored into this secret's encryption, and only the two `.key`
-                files will be required to decrypt it (i.e. no human action needed).
+                provided, it must be at least `#!py 8` characters long, and must be
+                inputted again every time this secret is decrypted. If omitted, a
+                password will not be factored into this secret's encryption, and only
+                the two `.key` files will be required to decrypt it (i.e. no human
+                action needed).
 
         Raises:
-            ValueError:
-                If the `data` is not considered valid according to the `valid_pattern`
-                parameter that was specified when instantiating this secret.
+            ValueError: If the `data` is not considered valid according to the
+                [`valid_pattern`][botstrap.internal.secrets.Secret.__init__]
+                that was specified when this secret was instantiated.
         """
         if not self.validate(data):
             raise ValueError(f'Attempted to write invalid data for "{self.uid}".')
@@ -147,7 +197,7 @@ class Secret:
                 raise ValueError(f'Password is required to read/write "{self.uid}".')
             elif not isinstance(password, str):
                 raise TypeError(f'Password type must be "str", not "{type(password)}".')
-            elif len(password) < (length := self.minimum_password_length):
+            elif len(password) < (length := self.min_pw_length):
                 raise ValueError(f"Password must be at least {length} characters long.")
 
         def get_extra_bytes(get_initial_bytes: Callable[[], bytes]) -> bytes:

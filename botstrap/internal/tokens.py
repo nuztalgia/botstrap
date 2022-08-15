@@ -136,7 +136,7 @@ def _get_new_bot_token(token: Token) -> str:
 
 def _get_new_password(token: Token) -> str:
     cli, strings = token.manager.cli, token.manager.strings
-    min_length = token.minimum_password_length
+    min_length = token.min_pw_length
 
     print(strings.p_create_info.substitute(token=token))
     print(strings.p_create_cue.substitute(token=token))
