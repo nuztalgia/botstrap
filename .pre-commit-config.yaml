@@ -41,7 +41,7 @@ repos:
       - id: text-unicode-replacement-char
 
   - repo: https://github.com/pre-commit/mirrors-autopep8
-    rev: v1.6.0
+    rev: v1.7.0
     hooks:
       - id: autopep8
         args: ["--ignore=E203", "--in-place", "--max-line-length=88"]
