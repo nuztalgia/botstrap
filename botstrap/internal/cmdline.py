@@ -1,4 +1,4 @@
-"""This module contains two classes for facilitating command-line input and output."""
+"""This module contains the `CliSession` class, which facilitates command-line I/O."""
 from __future__ import annotations
 
 from getpass import getpass
@@ -8,11 +8,24 @@ from botstrap.colors import CliColors
 from botstrap.strings import CliStrings
 
 
-class CliManager:
+class CliSession:
     """Maintains UX state to ensure a consistent look and feel for the CLI.
 
     "UX state" is defined by the constructor arguments upon creating an instance of this
     class. It can subsequently be accessed through the instance's read-only properties.
+
+    ??? tip "Tip - Set up for the examples"
+        All of the code examples in this class reference a `CliSession` instance
+        named `cli`, which may be created as follows:
+
+        ```pycon
+        >>> from botstrap.internal import CliSession
+        >>> cli = CliSession(name="cli-demo")
+        ```
+
+        To keep the examples focused and brief, the above definition is only explicitly
+        written out once in this section. However, <u>**all**</u> of the examples will
+        fail with a `#!py NameError` if the `cli` variable has not been defined.
     """
 
     def __init__(
@@ -21,7 +34,7 @@ class CliManager:
         colors: CliColors = CliColors.default(),
         strings: CliStrings = CliStrings.default(),
     ) -> None:
-        """Initializes a new `CliManager` instance.
+        """Initializes a new `CliSession` instance.
 
         Args:
             name:
@@ -35,54 +48,21 @@ class CliManager:
         self._name: Final[str] = name
         self._colors: Final[CliColors] = colors
         self._strings: Final[CliStrings] = strings
-        self._cli: Final[CliUtils] = CliUtils(self)
 
     @property
     def name(self) -> str:
-        """The name of the program that created this `CliManager`."""
+        """The name of the program that owns this `CliSession`."""
         return self._name
 
     @property
     def colors(self) -> CliColors:
-        """The [`CliColors`][botstrap.CliColors] for this instance."""
+        """The [`CliColors`][botstrap.CliColors] used by this instance."""
         return self._colors
 
     @property
     def strings(self) -> CliStrings:
-        """The [`CliStrings`][botstrap.CliStrings] for this instance."""
+        """The [`CliStrings`][botstrap.CliStrings] used by this instance."""
         return self._strings
-
-    @property
-    def cli(self) -> CliUtils:
-        """The [`CliUtils`][botstrap.internal.CliUtils] for this instance."""
-        return self._cli
-
-
-class CliUtils:
-    """A collection of CLI functions that adhere to the UX defined by a `CliManager`.
-
-    ??? tip "Tip - Set up for the examples"
-        All of the code examples in this class reference a `CliUtils` instance named
-        `cli`, which may be created as follows:
-
-        ```pycon
-        >>> from botstrap.internal import CliManager
-        >>> cli = CliManager(name="cli-demo").cli
-        ```
-
-        To keep the examples focused and brief, the above definition is only explicitly
-        written out once in this section. However, <u>**all**</u> of the examples will
-        fail with a `#!py NameError` if the `cli` variable has not been defined.
-    """
-
-    def __init__(self, manager: CliManager) -> None:
-        """Initializes a new `CliUtils` instance.
-
-        Args:
-            manager:
-                A `CliManager` specifying the UX to be used by the CLI.
-        """
-        self.manager: Final[CliManager] = manager
 
     def confirm_or_exit(self, question: str) -> None:
         # noinspection PyUnresolvedReferences
@@ -107,7 +87,7 @@ class CliUtils:
                 exit code `#!py 0`.
         """
         if not self.get_bool_input(question):
-            self.exit_process(self.manager.strings.m_exit_by_choice, is_error=False)
+            self.exit_process(self.strings.m_exit_by_choice, is_error=False)
 
     def exit_process(self, reason: str, is_error: bool = True) -> None:
         # noinspection PyUnresolvedReferences
@@ -139,9 +119,8 @@ class CliUtils:
                 `#!py 1` to indicate an "abnormal" exit. Otherwise, it will be raised
                 with exit code `#!py 0` to indicate a "successful" exit.
         """
-        colors = self.manager.colors
-        colored_reason = colors.error(reason) if is_error else colors.lowlight(reason)
-        print(f"{colored_reason} {colors.lowlight(self.manager.strings.m_exiting)}")
+        reason = self.colors.error(reason) if is_error else self.colors.lowlight(reason)
+        print(f"{reason} {self.colors.lowlight(self.strings.m_exiting)}")
         raise SystemExit(1 if is_error else 0)
 
     def get_bool_input(self, question: str) -> bool:
@@ -167,11 +146,11 @@ class CliUtils:
         Returns:
             `True` if the user responds affirmatively, otherwise `False`.
         """
-        colored_prompt = self.manager.strings.get_affirmation_prompt(
-            format_response=self.manager.colors.highlight, quote_responses=True
+        colored_prompt = self.strings.get_affirmation_prompt(
+            format_response=self.colors.highlight, quote_responses=True
         )
         result = self.get_input(f"{question} {colored_prompt}:").strip("'\"").lower()
-        return result in self.manager.strings.m_affirm_responses
+        return result in self.strings.m_affirm_responses
 
     def get_hidden_input(
         self,
@@ -187,7 +166,7 @@ class CliUtils:
         This function tries to provide a user-friendly experience without leaking the
         resulting input. If the descriptions in the "Parameters" section below are
         undesirable for your use case, consider using
-        [`get_input()`][botstrap.internal.CliUtils.get_input]
+        [`get_input()`][botstrap.internal.CliSession.get_input]
         (with the keyword argument `#!py echo_input=False`) instead of this function.
 
         ??? example
@@ -211,10 +190,10 @@ class CliUtils:
         Returns:
             The user's response as a string, stripped of leading & trailing whitespace.
         """
-        colored_prompt = self.manager.colors.highlight(f"{prompt}:")
+        colored_prompt = self.colors.highlight(f"{prompt}:")
         result = self.get_input(colored_prompt, echo_input=False)
         if not (output := format_input and format_input(result)):
-            output = self.manager.colors.lowlight("*" * len(result))
+            output = self.colors.lowlight("*" * len(result))
         print(f"\033[F\033[1A{colored_prompt} {output}")  # Overwrite the previous line.
         return result
 
@@ -228,7 +207,7 @@ class CliUtils:
 
         This function does not do anything special to format its console output. If you
         require sensitive user input with more nuanced console output, consider using
-        [`get_hidden_input()`][botstrap.internal.CliUtils.get_hidden_input] instead.
+        [`get_hidden_input()`][botstrap.internal.CliSession.get_hidden_input] instead.
 
         ??? example
             ```pycon
@@ -253,7 +232,7 @@ class CliUtils:
         # Strip all leading and trailing whitespace from the input before returning it.
         return (input() if echo_input else getpass(prompt="")).strip()
 
-    def print_prefixed_message(
+    def print_prefixed(
         self,
         message: str = "",
         is_error: bool = False,
@@ -262,14 +241,11 @@ class CliUtils:
         # noinspection PyUnresolvedReferences
         """Prints a message prefixed by the program name, and optionally an error label.
 
-        The program name is obtained from the `CliManager` that was provided to
-        instantiate this class.
-
         ??? example
             ```pycon
-            >>> cli.print_prefixed_message("What does the fox say?")
+            >>> cli.print_prefixed("What does the fox say?")
             cli-demo: What does the fox say?
-            >>> cli.print_prefixed_message("Wa-pa-pa-pa-pa-pa-pow!", is_error=True)
+            >>> cli.print_prefixed("Wa-pa-pa-pa-pa-pa-pow!", is_error=True)
             cli-demo: error: Wa-pa-pa-pa-pa-pa-pow!
             ```
 
@@ -284,8 +260,8 @@ class CliUtils:
                 Whether to end the printed message with a space instead of a newline,
                 even if `message` is non-empty.
         """
-        name = self.manager.colors.primary(self.manager.name)
-        prefix = self.manager.strings.m_prefix.substitute(program_name=name)
-        error_text = self.manager.strings.m_prefix_error.strip() if is_error else None
+        program_name = self.colors.primary(self.name)
+        program_prefix = self.strings.m_prefix.substitute(program_name=program_name)
+        error_text = self.strings.m_prefix_error.strip() if is_error else None
         end = "\n" if (message and not suppress_newline) else " "
-        print(" ".join(s for s in (prefix, error_text, message) if s), end=end)
+        print(" ".join(s for s in (program_prefix, error_text, message) if s), end=end)

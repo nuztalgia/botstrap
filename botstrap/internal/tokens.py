@@ -5,12 +5,11 @@ from typing import Final
 
 from cryptography.fernet import InvalidToken
 
-from botstrap.internal.cmdline import CliManager
+from botstrap.internal.cmdline import CliSession
 from botstrap.internal.secrets import Secret
 
 _LENGTHS: Final[tuple[int, ...]] = (24, 6, 27)
 _PATTERN: Final[re.Pattern] = re.compile(r"\.".join(r"[\w-]{%i}" % i for i in _LENGTHS))
-_PLACEHOLDER: Final[str] = ".".join("*" * i for i in _LENGTHS)
 
 
 class Token(Secret):
@@ -18,7 +17,7 @@ class Token(Secret):
 
     def __init__(
         self,
-        manager: CliManager,
+        cli: CliSession,
         uid: str,
         requires_password: bool = False,
         display_name: str | None = None,
@@ -27,8 +26,8 @@ class Token(Secret):
         """Initializes a new `Token` instance.
 
         Args:
-            manager:
-                A `CliManager` specifying the UX to be used by the CLI.
+            cli:
+                A `CliSession` providing the UX to be used by the CLI.
             uid:
                 A unique string identifying this token. Will be used in the names of
                 the files containing this token's data.
@@ -52,7 +51,7 @@ class Token(Secret):
             storage_directory=storage_directory,
             valid_pattern=_PATTERN.fullmatch,
         )
-        self.manager: Final[CliManager] = manager
+        self.cli: Final[CliSession] = cli
 
     def resolve(self, allow_token_creation: bool) -> str | None:
         """Returns this token's data, interactively requesting user input if needed.
@@ -79,76 +78,73 @@ class Token(Secret):
         Returns:
             The token value if it exists and can be decrypted, otherwise `None`.
         """
-        cli, strings = self.manager.cli, self.manager.strings
-
         if self.file_path.is_file():
             if self.requires_password:
-                cli.print_prefixed_message(strings.p_cue.substitute(token=self))
-                password = cli.get_hidden_input(strings.p_prompt)
+                self.cli.print_prefixed(self.cli.strings.p_cue.substitute(token=self))
+                password = self.cli.get_hidden_input(self.cli.strings.p_prompt)
             else:
                 password = None
 
             try:
                 return self.read(password=password)
             except (InvalidToken, ValueError):
-                message = strings.t_mismatch.substitute(token=self)
-                cli.print_prefixed_message(message, is_error=True)
+                message = self.cli.strings.t_mismatch.substitute(token=self)
+                self.cli.print_prefixed(message, is_error=True)
                 if self.requires_password:
-                    print(strings.p_mismatch)
+                    print(self.cli.strings.p_mismatch)
                 return None
 
         if not allow_token_creation:
-            message = strings.t_missing.substitute(token=self)
-            cli.print_prefixed_message(message, is_error=True)
+            message = self.cli.strings.t_missing.substitute(token=self)
+            self.cli.print_prefixed(message, is_error=True)
             return None
 
-        cli.print_prefixed_message()
-        cli.confirm_or_exit(strings.t_create.substitute(token=self))
+        self.cli.print_prefixed()
+        self.cli.confirm_or_exit(self.cli.strings.t_create.substitute(token=self))
 
         self.write(
             data=(bot_token := _get_new_bot_token(self)),
             password=_get_new_password(self) if self.requires_password else None,
         )
 
-        print(self.manager.colors.success(strings.t_create_success))
-        cli.confirm_or_exit(strings.t_create_use)
+        print(self.cli.colors.success(self.cli.strings.t_create_success))
+        self.cli.confirm_or_exit(self.cli.strings.t_create_use)
 
         return bot_token
 
 
 def _get_new_bot_token(token: Token) -> str:
-    cli, strings = token.manager.cli, token.manager.strings
+    placeholder = ".".join("*" * i for i in _LENGTHS)
 
     def format_input(user_input: str) -> str:
         # Let the default formatter handle the string if it doesn't look like a token.
-        return _PLACEHOLDER if token.validate(user_input) else ""
+        return placeholder if token.validate(user_input) else ""
 
-    print(strings.t_create_cue)
-    token_input = cli.get_hidden_input(strings.t_prompt, format_input)
+    print(token.cli.strings.t_create_cue)
+    token_input = token.cli.get_hidden_input(token.cli.strings.t_prompt, format_input)
 
     if not token.validate(token_input):
-        print(strings.t_create_hint)
-        print(token.manager.colors.lowlight(f"{strings.t_prompt}: {_PLACEHOLDER}"))
-        cli.exit_process(strings.t_create_mismatch)
+        print(token.cli.strings.t_create_hint)
+        print(token.cli.colors.lowlight(f"{token.cli.strings.t_prompt}: {placeholder}"))
+        token.cli.exit_process(token.cli.strings.t_create_mismatch)
 
     return token_input
 
 
 def _get_new_password(token: Token) -> str:
-    cli, strings = token.manager.cli, token.manager.strings
-    min_length = token.min_pw_length
+    print(token.cli.strings.p_create_info.substitute(token=token))
+    print(token.cli.strings.p_create_cue.substitute(token=token))
 
-    print(strings.p_create_info.substitute(token=token))
-    print(strings.p_create_cue.substitute(token=token))
+    prompt, min_length = token.cli.strings.p_prompt, token.min_pw_length
 
-    while len(password_input := cli.get_hidden_input(strings.p_prompt)) < min_length:
-        hint = strings.p_create_hint.substitute(min_length=min_length)
-        print(token.manager.colors.warning(hint))
-        cli.confirm_or_exit(strings.p_create_retry)
+    while len(password_input := token.cli.get_hidden_input(prompt)) < min_length:
+        hint = token.cli.strings.p_create_hint.substitute(min_length=min_length)
+        print(token.cli.colors.warning(hint))
+        token.cli.confirm_or_exit(token.cli.strings.p_create_retry)
 
-    print(strings.p_confirm_cue)
-    while cli.get_hidden_input(strings.p_prompt) != password_input:
-        print(token.manager.colors.warning(strings.p_confirm_hint))
-        cli.confirm_or_exit(strings.p_confirm_retry)
+    print(token.cli.strings.p_confirm_cue)
+    while token.cli.get_hidden_input(token.cli.strings.p_prompt) != password_input:
+        print(token.cli.colors.warning(token.cli.strings.p_confirm_hint))
+        token.cli.confirm_or_exit(token.cli.strings.p_confirm_retry)
 
     return password_input

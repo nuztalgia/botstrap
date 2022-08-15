@@ -3,7 +3,7 @@ from argparse import ArgumentParser, RawTextHelpFormatter
 from typing import Final, Optional
 
 from botstrap.colors import CliColors
-from botstrap.internal.cmdline import CliManager
+from botstrap.internal.cmdline import CliSession
 from botstrap.internal.metadata import Metadata
 from botstrap.internal.tokens import Token
 from botstrap.strings import CliStrings
@@ -22,7 +22,7 @@ class Argstrap(ArgumentParser):
 
     def __init__(
         self,
-        manager: CliManager,
+        cli: CliSession,
         description: Optional[str],
         version: Optional[str],
         registered_tokens: list[Token],
@@ -30,8 +30,8 @@ class Argstrap(ArgumentParser):
         """Initializes a new `Argstrap` instance.
 
         Args:
-            manager:
-                A `CliManager` specifying the UX to be used by the CLI.
+            cli:
+                A `CliSession` providing the UX to be used by the CLI.
             description:
                 A short human-readable description of the bot. Will be displayed when
                 the `--help` option is passed to the CLI. If omitted, Botstrap will try
@@ -46,29 +46,27 @@ class Argstrap(ArgumentParser):
                 available command-line arguments (e.g. if multiple tokens are supported,
                 a "token id" argument may be specified to select which one to run).
         """
-        prog = Metadata.get_program_command(manager.name)[-1]
+        prog_name = Metadata.get_program_command(cli.name)[-1]
         is_multi_token = len(registered_tokens) > 1
         default_token = registered_tokens[0] if is_multi_token else None
 
         super().__init__(
-            prog=manager.colors.primary(prog),
-            usage=_build_usage_string(manager.colors, prog, version, is_multi_token),
-            description=_build_description_string(manager, description, default_token),
+            prog=cli.colors.primary(prog_name),
+            usage=_build_usage_string(cli.colors, prog_name, version, is_multi_token),
+            description=_build_description_string(cli, description, default_token),
             formatter_class=RawTextHelpFormatter,
             add_help=False,
         )
 
         if is_multi_token:
-            self._add_token_argument(manager.strings, registered_tokens)
+            self._add_token_argument(cli.strings, registered_tokens)
 
-        self._add_option_argument(
-            _TOKENS_KEY, manager.strings.h_tokens, dest=_TOKENS_DEST
-        )
+        self._add_option_argument(_TOKENS_KEY, cli.strings.h_tokens, dest=_TOKENS_DEST)
 
         if version:
-            self._add_option_argument(_VERSION_KEY, manager.strings.h_version)
+            self._add_option_argument(_VERSION_KEY, cli.strings.h_version)
 
-        self._add_option_argument(_HELP_KEY, manager.strings.h_help, action="help")
+        self._add_option_argument(_HELP_KEY, cli.strings.h_help, action="help")
 
     def _add_token_argument(
         self,
@@ -126,22 +124,22 @@ def _build_usage_string(
 
 
 def _build_description_string(
-    manager: CliManager,
+    cli: CliSession,
     description: Optional[str],
     default_token: Optional[Token],
     indentation: str = "  ",
 ) -> str:
-    if (not description) and (info := Metadata.get_package_info(manager.name)):
+    if (not description) and (info := Metadata.get_package_info(cli.name)):
         description = desc if isinstance(desc := info.get("summary"), str) else ""
 
     description = f"{indentation}{description.strip()}\n" if description else ""
     description += indentation
 
     mode_addendum = (
-        default_token and manager.strings.h_desc_mode.substitute(token=default_token)
+        default_token and cli.strings.h_desc_mode.substitute(token=default_token)
     ) or ""
 
-    return description + manager.strings.h_desc.substitute(
-        program_name=" ".join(Metadata.get_program_command(manager.name)),
+    return description + cli.strings.h_desc.substitute(
+        program_name=" ".join(Metadata.get_program_command(cli.name)),
         mode_addendum=f" {mode_addendum.strip()}" if mode_addendum else "",
     )

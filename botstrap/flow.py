@@ -6,14 +6,14 @@ from pathlib import Path
 from typing import Any, Final
 
 from botstrap.colors import CliColors
-from botstrap.internal import Argstrap, CliManager, Metadata, Token
+from botstrap.internal import Argstrap, CliSession, Metadata, Token
 from botstrap.strings import CliStrings
 
 _DEFAULT_PROGRAM_NAME: Final[str] = "bot"
 _DEFAULT_TOKEN_NAME: Final[str] = "default"
 
 
-class BotstrapFlow(CliManager):
+class BotstrapFlow(CliSession):
     """The primary flow for handling bot token storage, retrieval, and management.
 
     This class contains methods that facilitate the simple and secure handling of
@@ -216,7 +216,7 @@ class BotstrapFlow(CliManager):
                 program flow that exits on completion, such as `--help` or `--version`.
         """
         args = Argstrap(
-            manager=self,
+            cli=self,
             description=description,
             version=version,
             registered_tokens=(tokens := list(self._tokens_by_uid.values())),
@@ -325,7 +325,7 @@ class BotstrapFlow(CliManager):
             try:
                 return token.resolve(allow_token_creation=allow_token_creation)
             except KeyboardInterrupt:
-                self.cli.exit_process(self.strings.m_exit_by_interrupt, is_error=False)
+                self.exit_process(self.strings.m_exit_by_interrupt, is_error=False)
 
         return None
 
@@ -436,11 +436,11 @@ class BotstrapFlow(CliManager):
         @bot.event
         async def on_connect() -> None:
             bot_id = self.colors.highlight(getattr(bot, "user", type(bot).__name__))
-            self.cli.print_prefixed_message(
+            self.print_prefixed(
                 self.strings.m_login_success.substitute(bot_id=bot_id, token=token)
             )
 
-        self.cli.print_prefixed_message(
+        self.print_prefixed(
             self.strings.m_login.substitute(token=token),
             suppress_newline=True,
         )
@@ -448,10 +448,10 @@ class BotstrapFlow(CliManager):
         try:
             bot.run(token_value)
         except KeyboardInterrupt:
-            self.cli.exit_process(self.strings.m_exit_by_interrupt, is_error=False)
+            self.exit_process(self.strings.m_exit_by_interrupt, is_error=False)
         except Metadata.import_class("discord.LoginFailure"):  # type: ignore[misc]
-            self.cli.print_prefixed_message(is_error=True)
-            self.cli.exit_process(self.strings.m_login_failure)
+            self.print_prefixed(is_error=True)
+            self.exit_process(self.strings.m_login_failure)
 
     def _manage_tokens(self, tokens: list[Token]) -> None:
         """Starts the token management flow, allowing viewing/deletion of saved tokens.
@@ -480,24 +480,24 @@ class BotstrapFlow(CliManager):
             tokens.append(self._default_token)
 
         while saved_tokens := [token for token in tokens if token.file_path.is_file()]:
-            self.cli.print_prefixed_message(self.strings.t_manage_list)
+            self.print_prefixed(self.strings.t_manage_list)
 
             for count, token in enumerate(saved_tokens, start=1):
                 index = str(token.file_path).rindex(token.uid) + len(token.uid)
                 path = self.colors.lowlight(f"{str(token.file_path)[:index]}.*")
                 print(f"  {count}) {self.colors.highlight(token.uid)} -> {path}")
 
-            self.cli.confirm_or_exit(self.strings.t_delete)
+            self.confirm_or_exit(self.strings.t_delete)
 
             uids = [token.uid for token in saved_tokens]
             prompt = self.strings.t_delete_cue
 
-            while (uid := self.cli.get_input(prompt)) not in uids:
+            while (uid := self.get_input(prompt)) not in uids:
                 print(self.colors.warning(self.strings.t_delete_mismatch))
                 print(self.strings.t_delete_hint.substitute(token_ids=uids))
-                self.cli.confirm_or_exit(self.strings.t_delete_retry)
+                self.confirm_or_exit(self.strings.t_delete_retry)
 
             next(token for token in tokens if token.uid == uid).clear()
             print(self.colors.success(self.strings.t_delete_success))
 
-        self.cli.print_prefixed_message(self.strings.t_manage_none)
+        self.print_prefixed(self.strings.t_manage_none)
