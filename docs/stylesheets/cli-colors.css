@@ -5,7 +5,7 @@
 }
 
 /* Add the primary color (cyan) to the first line of console output text. */
-.cli-colors-example .language-console.colored-output [data-linenos="3 "] + .go {
+.cli-colors-example .colored-output code > :nth-last-child(2) > .go {
   background-image: linear-gradient(
     to right,
     var(--color-cyan) 0%,
@@ -16,7 +16,7 @@
 }
 
 /* Add the highlight color (pink) to the second line of console output text. */
-.cli-colors-example .language-console.colored-output [data-linenos="4 "] + .go {
+.cli-colors-example .colored-output code > :last-child > .go {
   background-image: linear-gradient(
     to right,
     var(--md-code-hl-generic-color) 0%,
@@ -32,7 +32,15 @@
   );
 }
 
-/* Hide the distracting "type: ignore" comment in the source definitions. */
+/* Hide the comment around the annotation in the source definitions box. */
 .cli-colors-sourcedefs .language-py .c1 {
-  display: none;
+  font-size: 0;
+}
+
+/* Restore the annotation "+" button and adjust the size of its tooltip. */
+.cli-colors-sourcedefs .language-py .md-annotation {
+  font-size: 0.55rem;
+}
+.cli-colors-sourcedefs .language-py .md-annotation .md-tooltip {
+  width: 17.5rem;
 }

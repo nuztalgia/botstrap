@@ -25,6 +25,8 @@ theme:
       toggle:
         icon: material/weather-sunny
         name: Switch to light mode
+  features:
+    - content.code.annotate
 
 nav:
   - Home: index.md

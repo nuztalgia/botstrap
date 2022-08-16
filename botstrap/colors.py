@@ -128,17 +128,8 @@ class CliColors:
         ```
     """
 
-    """ NOTE: The `#!py _: KW_ONLY` "field" is actually just a sentinel value for
-    [`dataclasses`](https://docs.python.org/3/library/dataclasses.html#dataclasses.KW_ONLY).
-
-    - Any fields after a pseudo-field with the type of `KW_ONLY` are marked as
-      keyword-only fields.
-    - These fields signify `#!py __init__()` parameters that must be specified
-      as keywords when the class is instantiated.
-    """
-
     primary: Callable[[str], str] = str
-    _: KW_ONLY = None  # type: ignore[assignment]
+    _: KW_ONLY = None  # type: ignore[assignment]  # (1)
     error: Callable[[str], str] = Color.red
     highlight: Callable[[str], str] = Color.cyan
     lowlight: Callable[[str], str] = Color.grey
