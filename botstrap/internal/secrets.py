@@ -126,24 +126,6 @@ class Secret:
         """
         return _MINIMUM_PASSWORD_LENGTH if self.requires_password else 0
 
-    def clear(self) -> None:
-        """Deletes files containing data related to this secret, if any exist.
-
-        This method **does not** scan the entire system to locate the files for a secret
-        - it only checks the `storage_directory` that was specified upon instantiation.
-
-        ??? tip "Tip - Don't scramble your secrets!"
-            If a secret's `.key` files are renamed or moved out of their original
-            directory without a corresponding change to the `uid` and/or
-            `storage_directory` constructor parameters (or vice versa), then the secret
-            will behave as if there are no existing files associated with it.
-            Fortunately, this can easily be resolved by either moving the files back
-            into place or updating the constructor params in your code.
-        """
-        for qualifier in _KEY_FILES:
-            key_file = self._get_key_file(qualifier)
-            key_file.unlink(missing_ok=True)
-
     def read(self, password: Optional[str] = None) -> Optional[str]:
         """Returns the decrypted data from this secret's file if it exists and is valid.
 
@@ -193,6 +175,24 @@ class Secret:
         if not self.validate(data):
             raise ValueError(f'Attempted to write invalid data for "{self.uid}".')
         self.file_path.write_bytes(self._get_fernet(password).encrypt(data.encode()))
+
+    def clear(self) -> None:
+        """Deletes all files containing data related to this secret, if any exist.
+
+        This method **does not** scan the entire system to locate the files for a secret
+        - it only checks the `storage_directory` that was specified upon instantiation.
+
+        !!! tip "Tip - Don't scramble your secrets!"
+            If a secret's `.key` files are renamed or moved out of their original
+            directory without a corresponding change to the `uid` and/or
+            `storage_directory` constructor parameters (or vice versa), then the secret
+            will behave as if there are no existing files associated with it.
+            Fortunately, this can easily be resolved by either moving the files back
+            into place or updating the constructor params in your code.
+        """
+        for qualifier in _KEY_FILES:
+            key_file = self._get_key_file(qualifier)
+            key_file.unlink(missing_ok=True)
 
     def _get_key_file(self, qualifier: str) -> Path:
         """Returns the `Path` to the qualified (content/fernet) file for this secret."""

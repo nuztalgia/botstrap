@@ -2,7 +2,6 @@
 from argparse import ArgumentParser, RawTextHelpFormatter
 from typing import Final, Optional
 
-from botstrap.colors import CliColors
 from botstrap.internal.clisession import CliSession
 from botstrap.internal.metadata import Metadata
 from botstrap.internal.tokens import Token
@@ -46,14 +45,15 @@ class Argstrap(ArgumentParser):
                 available command-line arguments (e.g. if multiple tokens are supported,
                 a "token id" argument may be specified to select which one to run).
         """
+        self._cli = cli
         prog_name = Metadata.get_program_command(cli.name)[-1]
         is_multi_token = len(registered_tokens) > 1
         default_token = registered_tokens[0] if is_multi_token else None
 
         super().__init__(
             prog=cli.colors.primary(prog_name),
-            usage=_build_usage_string(cli.colors, prog_name, version, is_multi_token),
-            description=_build_description_string(cli, description, default_token),
+            usage=self._build_usage_string(prog_name, version, is_multi_token),
+            description=self._build_description_string(description, default_token),
             formatter_class=RawTextHelpFormatter,
             add_help=False,
         )
@@ -93,53 +93,50 @@ class Argstrap(ArgumentParser):
             f"-{name[0]}", f"--{name}", help=help_string, action=action, dest=dest
         )
 
+    def _build_usage_string(
+        self,
+        prog_name: str,
+        version: Optional[str],
+        is_multi_token: bool,
+    ) -> str:
+        usage_components = [self._cli.colors.primary(prog_name)]
 
-def _build_usage_string(
-    colors: CliColors,
-    prog_name: str,
-    version: Optional[str],
-    is_multi_token: bool,
-) -> str:
-    usage_components = [colors.primary(prog_name)]
+        def add_component(
+            display_name: str, *, is_option: bool = True, abbreviate_option: bool = True
+        ) -> None:
+            prefix_chars = 0
+            if is_option:
+                display_name = display_name[0] if abbreviate_option else display_name
+                prefix_chars = 1 if abbreviate_option else 2
+            usage_components.append(f"[{'-' * prefix_chars}{display_name}]")
 
-    def add_component(
-        display_name: str, *, is_option: bool = True, abbreviate_option: bool = True
-    ) -> None:
-        prefix_chars = 0
-        if is_option:
-            display_name = display_name[0] if abbreviate_option else display_name
-            prefix_chars = 1 if abbreviate_option else 2
-        usage_components.append(f"[{'-' * prefix_chars}{display_name}]")
+        add_component(_HELP_KEY, abbreviate_option=False)
+        add_component(_TOKENS_KEY)
 
-    add_component(_HELP_KEY, abbreviate_option=False)
-    add_component(_TOKENS_KEY)
+        if version:
+            add_component(_VERSION_KEY)
 
-    if version:
-        add_component(_VERSION_KEY)
+        if is_multi_token:
+            add_component(self._cli.colors.lowlight(_TOKEN_METAVAR), is_option=False)
 
-    if is_multi_token:
-        add_component(colors.lowlight(_TOKEN_METAVAR), is_option=False)
+        return " ".join(usage_components)
 
-    return " ".join(usage_components)
+    def _build_description_string(
+        self,
+        description: Optional[str],
+        default_token: Optional[Token],
+        indentation: str = "  ",
+    ) -> str:
+        if (not description) and (info := Metadata.get_package_info(self._cli.name)):
+            description = desc if isinstance(desc := info.get("summary"), str) else ""
 
+        description = f"{indentation}{description.strip()}\n" if description else ""
+        description += indentation
 
-def _build_description_string(
-    cli: CliSession,
-    description: Optional[str],
-    default_token: Optional[Token],
-    indentation: str = "  ",
-) -> str:
-    if (not description) and (info := Metadata.get_package_info(cli.name)):
-        description = desc if isinstance(desc := info.get("summary"), str) else ""
+        format_mode_text = self._cli.strings.h_desc_mode.substitute
+        mode_addendum = (default_token and format_mode_text(token=default_token)) or ""
 
-    description = f"{indentation}{description.strip()}\n" if description else ""
-    description += indentation
-
-    mode_addendum = (
-        default_token and cli.strings.h_desc_mode.substitute(token=default_token)
-    ) or ""
-
-    return description + cli.strings.h_desc.substitute(
-        program_name=" ".join(Metadata.get_program_command(cli.name)),
-        mode_addendum=f" {mode_addendum.strip()}" if mode_addendum else "",
-    )
+        return description + self._cli.strings.h_desc.substitute(
+            program_name=" ".join(Metadata.get_program_command(self._cli.name)),
+            mode_addendum=f" {mode_addendum.strip()}" if mode_addendum else "",
+        )
