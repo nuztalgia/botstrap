@@ -1,4 +1,4 @@
-"""This module contains a class and helper functions for handling Discord bot tokens."""
+"""This module contains the `Token` class, which represents a Discord bot token."""
 import re
 from pathlib import Path
 from typing import Final
@@ -13,7 +13,16 @@ _PATTERN: Final[re.Pattern] = re.compile(r"\.".join(r"[\w-]{%i}" % i for i in _L
 
 
 class Token(Secret):
-    """A subclass of `Secret` that represents an individual Discord bot token."""
+    """Represents and handles operations for an individual Discord bot token.
+
+    This class effectively combines the functionality provided by
+    [`Secret`][botstrap.internal.secrets.Secret] (its parent class) and a
+    [`CliSession`][botstrap.internal.clisession.CliSession] (passed in upon
+    instantiation) to deliver a secure and user-friendly interface for managing a
+    bot token. It only has one method -
+    [`resolve()`][botstrap.internal.tokens.Token.resolve]
+    - but currently, that's all it needs.
+    """
 
     def __init__(
         self,
@@ -27,22 +36,22 @@ class Token(Secret):
 
         Args:
             cli:
-                A `CliSession` providing the UX to be used by the CLI.
+                A `CliSession` providing the UX used by the CLI.
             uid:
                 A unique string identifying this token. Will be used in the names of
-                the files containing this token's data.
+                the files holding this token's data.
             requires_password:
-                Whether a password is required in order to create and subsequently
-                retrieve this token.
+                Whether a user-provided password is required to store and subsequently
+                retrieve this token's value.
             display_name:
-                A human-readable string describing this token. Will be displayed in the
-                CLI when referring to this token. If omitted, the `uid` will be
+                A human-readable string describing this token. Will be displayed in
+                the CLI when referring to this token. If omitted, the `uid` will be
                 displayed instead.
             storage_directory:
-                Where to store the encrypted `.key` files containing this token's data.
-                If omitted, the files will be saved in a folder named `.botstrap_keys`,
+                Where to store the encrypted files containing this token's data. If
+                omitted, the files will be saved in a directory named `.botstrap_keys`,
                 which will be created in the same location as the file containing the
-                `"__main__"` module for the executing script.
+                `#!py "__main__"` module for the executing script.
         """
         super().__init__(
             uid=uid,
@@ -53,27 +62,42 @@ class Token(Secret):
         )
         self.cli: Final[CliSession] = cli
 
-    def resolve(self, allow_token_creation: bool) -> str | None:
-        """Returns this token's data, interactively requesting user input if needed.
+    def resolve(self, allow_token_creation: bool = True) -> str | None:
+        """Returns the value of this token, interactively prompting for input if needed.
 
-        The primary advantage of this method over the superclass methods `read()` and
-        `write()` is that it can interact with the user via the CLI and take different
-        code paths according to the input it may receive. This allows it to:
+        The main advantage of this method over the superclass methods
+        [`read()`][botstrap.internal.secrets.Secret.read] and
+        [`write()`][botstrap.internal.secrets.Secret.write] is that it can interact with
+        the user via the CLI and take different code paths according to their input.
 
-          * Automatically retrieve the decrypted token if no password is required
-          * Prompt the user for a password to decrypt the token, if one is required
-          * Notify the user about errors such as password mismatches / nonexistent files
-          * Ask whether the user wants to create a new token file, if one doesn't exist
-          * Walk the user through the process of adding a new token (and password)
-          * Let the user choose whether to exit / continue the process at various points
+        ??? info resolve-info "Info - Tasks performed by this method"
+            Based on a combination of this token's state and the input provided by the
+            user, this method can:
+
+            - [x] Automatically decrypt and return the token's value, if no password
+                  is required
+            - [x] Prompt the user for a password if required by the token, then
+                  return the decrypted value if successful
+            - [x] Ask whether the user wants to create and encrypt a new file for
+                  the token, if it doesn't already exist
+            - [x] Walk the user through the process of creating a new token file
+                  (and its password, if required)
+            - [x] Notify the user about errors (in case of password mismatches,
+                  missing files, etc.)
+            - [x] Let the user choose whether to continue or exit the process at
+                  various points throughout this flow
+
+            This might sound like a lot, but the implementation is actually quite
+            straightforward and (probably) more concise than this description might lead
+            you to believe. Check out the source code <a href="#line-0-120">below</a>
+            to see for yourself. :eyes:
 
         Args:
             allow_token_creation:
-                Whether to prompt the user to create a file for this token, if one
-                doesn't already exist. If `True` and the user responds affirmatively,
-                they will be asked to input the token data, and then create a password
-                for it (if `requires_password` was set to `True` when this token was
-                instantiated).
+                Whether to interactively prompt the user to create (i.e. add and
+                encrypt) the file for this token, if it hasn't already been created.
+                If this is `False` and the file doesn't exist, this method will
+                return `None`.
 
         Returns:
             The token value if it exists and can be decrypted, otherwise `None`.
@@ -103,17 +127,18 @@ class Token(Secret):
         self.cli.confirm_or_exit(self.cli.strings.t_create.substitute(token=self))
 
         self.write(
-            data=(bot_token := _get_new_bot_token(self)),
+            data=(token := _get_new_token(self)),
             password=_get_new_password(self) if self.requires_password else None,
         )
 
         print(self.cli.colors.success(self.cli.strings.t_create_success))
         self.cli.confirm_or_exit(self.cli.strings.t_create_use)
 
-        return bot_token
+        return token
 
 
-def _get_new_bot_token(token: Token) -> str:
+def _get_new_token(token: Token) -> str:
+    """Prompts the user to provide a valid bot token string, and then returns it."""
     placeholder = ".".join("*" * i for i in _LENGTHS)
 
     def format_input(user_input: str) -> str:
@@ -132,6 +157,7 @@ def _get_new_bot_token(token: Token) -> str:
 
 
 def _get_new_password(token: Token) -> str:
+    """Prompts the user to provide a valid password string, and then returns it."""
     print(token.cli.strings.p_create_info.substitute(token=token))
     print(token.cli.strings.p_create_cue.substitute(token=token))
 

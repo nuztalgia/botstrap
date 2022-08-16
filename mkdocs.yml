@@ -38,6 +38,7 @@ nav:
       - internal/index.md
       - clisession: internal/clisession.md
       - secrets: internal/secrets.md
+      - tokens: internal/tokens.md
 
 extra_css:
   - stylesheets/global.css
@@ -76,12 +77,15 @@ markdown_extensions:
       emoji_index: !!python/name:materialx.emoji.twemoji
   - pymdownx.highlight:
       auto_title: true
+      line_spans: line
       linenums: true
       linenums_style: pymdownx-inline
       pygments_lang_class: true
       use_pygments: true
   - pymdownx.inlinehilite
   - pymdownx.superfences
+  - pymdownx.tasklist:
+      custom_checkbox: true
   - toc:
       permalink: ☍
       permalink_title: Link to this section

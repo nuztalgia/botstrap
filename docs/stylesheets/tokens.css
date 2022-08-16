@@ -1,0 +1,20 @@
+/* Adjust the sizing & spacing of the "task list" checkboxes in the info box. */
+.resolve-info .task-list-indicator {
+  font-size: 0.7rem;
+  margin-right: 0.3rem;
+}
+
+/* Hide the contents of the `resolve()` method docstring - it's redundant. */
+.quote code > :not(:first-child, :nth-child(n + 40)) {
+  display: none;
+}
+
+/* Insert a notice that the docstring is hidden after its closing """ quotes. */
+.quote code > :nth-child(40) > .sd::after {
+  content: 'Returns the value of this token... [docstring omitted for brevity]"""';
+}
+
+/* Make the """ unselectable (because the rest of the line isn't selectable). */
+.quote code > :nth-child(40) > .sd {
+  user-select: none;
+}
