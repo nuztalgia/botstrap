@@ -20,27 +20,39 @@
   background-image: linear-gradient(
     to right,
     var(--md-code-hl-generic-color) 0%,
-    var(--md-code-hl-generic-color) 78.57%,
-    var(--color-pink) 78.57%,
-    var(--color-pink) 83.93%,
-    var(--md-code-hl-generic-color) 83.93%,
-    var(--md-code-hl-generic-color) 94.64%,
-    var(--color-pink) 94.64%,
-    var(--color-pink) 96.43%,
-    var(--md-code-hl-generic-color) 96.43%,
-    var(--md-code-hl-generic-color) 100%
+    var(--md-code-hl-generic-color) 75.86%,
+    var(--color-pink) 75.86%,
+    var(--color-pink) 81.03%,
+    var(--md-code-hl-generic-color) 81.03%,
+    var(--md-code-hl-generic-color) 91.38%,
+    var(--color-pink) 91.38%,
+    var(--color-pink) 93.28%,
+    var(--md-code-hl-generic-color) 93.28%,
+    var(--md-code-hl-generic-color) 96.55%,
+    transparent 96.55%,
+    transparent 100%
   );
 }
 
-/* Hide the comment around the annotation in the source definitions box. */
-.cli-colors-sourcedefs .language-py .c1 {
+/* Hide the entire line containing the annotation in the source definitions. */
+.cli-colors-sourcedefs code > :nth-child(2) {
   font-size: 0;
+  user-select: none;
 }
 
-/* Restore the annotation "+" button and adjust the size of its tooltip. */
-.cli-colors-sourcedefs .language-py .md-annotation {
-  font-size: 0.55rem;
+/* Restore the relevant spans and manually re-insert only the desired spaces. */
+.cli-colors-sourcedefs code > :nth-child(2) span:not(.c1) {
+  font-size: 0.544rem;
 }
-.cli-colors-sourcedefs .language-py .md-annotation .md-tooltip {
-  width: 17.5rem;
+.cli-colors-sourcedefs code > :nth-child(2) :is(.p, .o, .kc)::after {
+  content: " ";
+}
+.cli-colors-sourcedefs code > :nth-child(2) .o::before {
+  content: " ";
+}
+
+/* Adjust width of the annotation tooltip and allow its text to be selected. */
+.cli-colors-sourcedefs code .md-annotation .md-tooltip {
+  user-select: text;
+  width: 16.67rem;
 }

@@ -279,7 +279,7 @@ class BotstrapFlow(CliSession):
             BotstrapFlow(name="example-bot").retrieve_active_token()
             ```
 
-            ```console title="Console Session"
+            ```{.console title="Console Session" .colored-output .ends-with-input}
             $ python bot.py
 
             example-bot: You currently don't have a saved default bot token.

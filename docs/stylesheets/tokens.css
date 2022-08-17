@@ -1,10 +1,4 @@
-/* Adjust the sizing & spacing of the "task list" checkboxes in the info box. */
-.resolve-info .task-list-indicator {
-  font-size: 0.7rem;
-  margin-right: 0.3rem;
-}
-
-/* Hide the contents of the `resolve()` method docstring - it's redundant. */
+/* Hide the contents of the `resolve()` method docstring in the code block. */
 .quote code > :not(:first-child, :nth-child(n + 40)) {
   display: none;
 }

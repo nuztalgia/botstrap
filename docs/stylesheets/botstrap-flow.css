@@ -18,3 +18,27 @@
 [id*="__init__"] .fm + .p {
   user-select: none;
 }
+
+/* Color the "yes" and "y" prompt text in the `retrieve_active_token()` example. */
+[id*="retrieve_active_token"] + * .colored-output code > :last-child > .go {
+  background-image: linear-gradient(
+    to right,
+    var(--md-code-hl-generic-color) 0%,
+    var(--md-code-hl-generic-color) 75.86%,
+    var(--color-cyan) 75.86%,
+    var(--color-cyan) 81.03%,
+    var(--md-code-hl-generic-color) 81.03%,
+    var(--md-code-hl-generic-color) 91.38%,
+    var(--color-cyan) 91.38%,
+    var(--color-cyan) 93.28%,
+    var(--md-code-hl-generic-color) 93.28%,
+    var(--md-code-hl-generic-color) 96.55%,
+    transparent 96.55%,
+    transparent 100%
+  );
+}
+
+/* Restore color to .colored-output line that doesn't need a gradient. */
+[id*="retrieve_active_token"] + * .colored-output code > :nth-last-child(2) > .go {
+  background-color: var(--md-code-hl-generic-color);
+}

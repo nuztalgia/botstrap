@@ -8,11 +8,7 @@
   --color-red: #f55;
   --color-yellow: #ff5;
   --emoji-margin: 0.25em;
-}
-
-/* Add some extra horizontal spacing around emoji so they don't look cramped. */
-.twemoji {
-  margin: 0 var(--emoji-margin);
+  --task-list-item-margin: 2em;
 }
 
 /* Prevent user selection of all code block filenames, as well as console and
@@ -35,7 +31,29 @@
   font-weight: bold;
 }
 
-/* Color ALL the things! \o/ */
+/* Append pseudo-element mimicking a blinking caret to marked ".go" elements. */
+.ends-with-input code > :last-child > .go::after {
+  content: " █";
+  animation: 1.5s blink 0s step-end infinite;
+}
+
+/* Define the "blinking caret" animation. */
+@keyframes blink {
+  from,
+  to {
+    color: transparent;
+  }
+  50% {
+    color: var(--md-code-hl-generic-color);
+  }
+}
+
+/* Add some extra horizontal spacing around emoji so they don't look cramped. */
+.twemoji {
+  margin: 0 var(--emoji-margin);
+}
+
+/* Color all the code blocks that are tagged with a color class. */
 code.blue {
   color: var(--color-blue);
 }
@@ -56,4 +74,30 @@ code.red {
 }
 code.yellow {
   color: var(--color-yellow);
+}
+
+/* Adjust the dimensions and position of annotation "+" buttons in code. */
+code .md-annotation [data-md-annotation-id]:before {
+  font-size: 0.64rem;
+  padding-bottom: unset;
+  transform: unset;
+  vertical-align: -0.01rem;
+}
+
+/* Adjust the sizing and spacing of task list items and their checkboxes. */
+[dir="ltr"] .md-typeset .task-list .task-list-item {
+  margin-left: var(--task-list-item-margin);
+}
+[dir="rtl"] .md-typeset .task-list .task-list-item {
+  margin-right: var(--task-list-item-margin);
+}
+[dir="ltr"] .md-typeset .task-list-indicator:before {
+  left: calc(-1 * var(--task-list-item-margin));
+}
+[dir="rtl"] .md-typeset .task-list-indicator:before {
+  right: calc(-1 * var(--task-list-item-margin));
+}
+.md-typeset .task-list-indicator:before {
+  -webkit-mask-size: auto;
+  mask-size: auto;
 }

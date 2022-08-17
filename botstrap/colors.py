@@ -120,7 +120,7 @@ class CliColors:
         BotstrapFlow(name="cyan-bot", colors=bot_colors).run_bot()
         ```
 
-        ```{.console .colored-output title="Console Session"}
+        ```{.console title="Console Session" .colored-output .ends-with-input}
         $ python bot.py
 
         cyan-bot: You currently don't have a saved default bot token.

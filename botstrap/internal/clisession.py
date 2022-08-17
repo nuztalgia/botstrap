@@ -77,7 +77,7 @@ class CliSession:
         If the user responds affirmatively, this function will return without raising
         any errors, allowing program execution to continue normally.
 
-        ??? example
+        ??? example colored-output ends-with-input
             ```pycon
             >>> cli.confirm_or_exit("Would you like to continue?")
             Would you like to continue? If so, type "yes" or "y":
@@ -104,9 +104,9 @@ class CliSession:
         in the console.
 
         ??? example
-            ```pycon
-            >>> cli.exit_process("Testing the exit_process() function.", is_error=False)
-            Testing the exit_process() function. Exiting process.
+            ```{.pycon .colored-output}
+            >>> cli.exit_process("Just testing the 'exit_process()' function!")
+            Just testing the 'exit_process()' function! Exiting process.
             ```
 
             ```console title="Console Session"
@@ -138,7 +138,7 @@ class CliSession:
         # noinspection PyUnresolvedReferences
         """Returns a boolean value corresponding to the user's response to a prompt.
 
-        ??? example
+        ??? example colored-output
             ```pycon
             >>> if cli.get_bool_input("Do you believe in life after love?"):
             ...     print("I can feel something inside me say...")
@@ -184,8 +184,8 @@ class CliSession:
         [`get_input()`][botstrap.internal.CliSession.get_input]
         (with the keyword argument `#!py echo_input=False`) instead of this function.
 
-        ??? example
-            ```pycon hl_lines="2"
+        ??? example colored-output
+            ```pycon
             >>> very_secure_password = cli.get_hidden_input("Enter your password")
             Enter your password: *******
             >>> print(very_secure_password)  # NEVER do this with a real password!
