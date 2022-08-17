@@ -221,9 +221,9 @@ class BotstrapFlow(CliSession):
         """
         args = Argstrap(
             cli=self,
+            tokens=(tokens := list(self._tokens_by_uid.values())),
             description=description,
             version=version,
-            registered_tokens=(tokens := list(self._tokens_by_uid.values())),
         ).parse_args()
 
         if version and args.version:

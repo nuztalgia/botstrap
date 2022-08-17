@@ -1,11 +1,10 @@
-"""This module contains a class and helper functions for parsing command-line args."""
+"""This module contains the `Argstrap` class, which parses arguments for a bot's CLI."""
 from argparse import ArgumentParser, RawTextHelpFormatter
 from typing import Final, Optional
 
 from botstrap.internal.clisession import CliSession
 from botstrap.internal.metadata import Metadata
 from botstrap.internal.tokens import Token
-from botstrap.strings import CliStrings
 
 _HELP_KEY: Final[str] = "help"
 _TOKEN_KEY: Final[str] = "token"
@@ -17,20 +16,30 @@ _TOKENS_DEST: Final[str] = "manage_tokens"
 
 
 class Argstrap(ArgumentParser):
-    """A subclass of `ArgumentParser` that handles Botstrap-specific use cases."""
+    """Parses command-line args and provides part of the CLI for bots that use Botstrap.
+
+    This class extends
+    [`ArgumentParser`](https://docs.python.org/3/library/argparse.html#argparse.ArgumentParser)
+    and operates almost identically, except that it also automatically handles a number
+    of Botstrap-specific command-line options.
+    """
 
     def __init__(
         self,
         cli: CliSession,
-        description: Optional[str],
-        version: Optional[str],
-        registered_tokens: list[Token],
+        tokens: list[Token],
+        description: Optional[str] = None,
+        version: Optional[str] = None,
     ) -> None:
         """Initializes a new `Argstrap` instance.
 
         Args:
             cli:
-                A `CliSession` providing the UX to be used by the CLI.
+                A `CliSession` providing the UX used by the CLI.
+            tokens:
+                The tokens that are defined for the bot. Will be used to determine its
+                available command-line arguments (e.g. if multiple tokens are supported,
+                a "token id" argument may be specified to select which one to use).
             description:
                 A short human-readable description of the bot. Will be displayed when
                 the `--help` option is passed to the CLI. If omitted, Botstrap will try
@@ -38,72 +47,63 @@ class Argstrap(ArgumentParser):
                 will be left blank.
             version:
                 A string representing the current version of the bot. Will be displayed
-                when the `--version` option is passed to the CLI. If omitted, that
-                option will not be present in the bot's CLI.
-            registered_tokens:
-                The tokens that are defined for the bot. Will be used to determine its
-                available command-line arguments (e.g. if multiple tokens are supported,
-                a "token id" argument may be specified to select which one to run).
+                when the `--version` option is specified. If omitted, that option will
+                not be present in the bot's CLI.
         """
-        self._cli = cli
-        prog_name = Metadata.get_program_command(cli.name)[-1]
-        is_multi_token = len(registered_tokens) > 1
-        default_token = registered_tokens[0] if is_multi_token else None
+        self.cli: Final[CliSession] = cli
+        self.tokens: Final[list[Token]] = tokens
+        self.version: Final[Optional[str]] = version
+
+        program_command = Metadata.get_program_command(self.cli.name)
+        program_name = program_command[-1]  # Last arg is the file/module/script name.
 
         super().__init__(
-            prog=cli.colors.primary(prog_name),
-            usage=self._build_usage_string(prog_name, version, is_multi_token),
-            description=self._build_description_string(description, default_token),
+            prog=self.cli.colors.primary(program_name),
+            usage=self._build_usage_string(program_name),
+            description=self._build_description_string(program_command, description),
             formatter_class=RawTextHelpFormatter,
             add_help=False,
         )
 
-        if is_multi_token:
-            self._add_token_argument(cli.strings, registered_tokens)
+        if self._is_multi_token:
+            self.add_argument(
+                _TOKEN_KEY,
+                metavar=_TOKEN_METAVAR,
+                nargs="?",
+                choices=(token_uids := [token.uid for token in self.tokens]),
+                default=token_uids[0],
+                help=self.cli.strings.h_token_id.substitute(token_ids=token_uids),
+            )
 
-        self._add_option_argument(_TOKENS_KEY, cli.strings.h_tokens, dest=_TOKENS_DEST)
+        def add_option_argument(
+            name: str, info: str, action: str = "store_true", dest: Optional[str] = None
+        ) -> None:
+            """Local helper function for adding an optional command-line argument."""
+            self.add_argument(
+                f"-{name[0]}", f"--{name}", help=info, action=action, dest=dest
+            )
 
-        if version:
-            self._add_option_argument(_VERSION_KEY, cli.strings.h_version)
+        # Add available options in order of relevance/usefulness, beginning with `-t`.
+        add_option_argument(_TOKENS_KEY, self.cli.strings.h_tokens, dest=_TOKENS_DEST)
 
-        self._add_option_argument(_HELP_KEY, cli.strings.h_help, action="help")
+        if self.version:
+            add_option_argument(_VERSION_KEY, self.cli.strings.h_version)
 
-    def _add_token_argument(
-        self,
-        strings: CliStrings,
-        valid_tokens: list[Token],
-    ) -> None:
-        self.add_argument(
-            _TOKEN_KEY,
-            metavar=_TOKEN_METAVAR,
-            nargs="?",
-            choices=(uids := [token.uid for token in valid_tokens]),
-            default=uids[0],
-            help=strings.h_token_id.substitute(token_ids=uids),
-        )
+        add_option_argument(_HELP_KEY, self.cli.strings.h_help, action="help")
 
-    def _add_option_argument(
-        self,
-        name: str,
-        help_string: str,
-        action: str = "store_true",
-        dest: Optional[str] = None,
-    ) -> None:
-        self.add_argument(
-            f"-{name[0]}", f"--{name}", help=help_string, action=action, dest=dest
-        )
+    @property
+    def _is_multi_token(self) -> bool:
+        """Returns True if this instance serves a bot that uses more than one token."""
+        return len(self.tokens) > 1
 
-    def _build_usage_string(
-        self,
-        prog_name: str,
-        version: Optional[str],
-        is_multi_token: bool,
-    ) -> str:
-        usage_components = [self._cli.colors.primary(prog_name)]
+    def _build_usage_string(self, program_name: str) -> str:
+        """Returns a str explaining how to run the bot's program on the command line."""
+        usage_components = [self.cli.colors.primary(program_name)]
 
         def add_component(
             display_name: str, *, is_option: bool = True, abbreviate_option: bool = True
         ) -> None:
+            """Local helper function for appending an argument to the usage string."""
             prefix_chars = 0
             if is_option:
                 display_name = display_name[0] if abbreviate_option else display_name
@@ -113,30 +113,32 @@ class Argstrap(ArgumentParser):
         add_component(_HELP_KEY, abbreviate_option=False)
         add_component(_TOKENS_KEY)
 
-        if version:
+        if self.version:
             add_component(_VERSION_KEY)
 
-        if is_multi_token:
-            add_component(self._cli.colors.lowlight(_TOKEN_METAVAR), is_option=False)
+        if self._is_multi_token:
+            add_component(self.cli.colors.lowlight(_TOKEN_METAVAR), is_option=False)
 
         return " ".join(usage_components)
 
     def _build_description_string(
         self,
-        description: Optional[str],
-        default_token: Optional[Token],
+        program_command: list[str],
+        original_desc: Optional[str],
         indentation: str = "  ",
     ) -> str:
-        if (not description) and (info := Metadata.get_package_info(self._cli.name)):
-            description = desc if isinstance(desc := info.get("summary"), str) else ""
+        """Returns a str describing the bot and how to run it with its default token."""
+        default_token = self.tokens[0] if self._is_multi_token else None
+        desc = original_desc or ""
 
-        description = f"{indentation}{description.strip()}\n" if description else ""
-        description += indentation
+        if (not desc) and (info := Metadata.get_package_info(self.cli.name)):
+            desc = summary if isinstance(summary := info.get("summary"), str) else ""
 
-        format_mode_text = self._cli.strings.h_desc_mode.substitute
+        indented_desc = (f"{indentation}{desc.strip()}\n" if desc else "") + indentation
+        format_mode_text = self.cli.strings.h_desc_mode.substitute
         mode_addendum = (default_token and format_mode_text(token=default_token)) or ""
 
-        return description + self._cli.strings.h_desc.substitute(
-            program_name=" ".join(Metadata.get_program_command(self._cli.name)),
+        return indented_desc + self.cli.strings.h_desc.substitute(
+            program_command=" ".join(program_command),
             mode_addendum=f" {mode_addendum.strip()}" if mode_addendum else "",
         )

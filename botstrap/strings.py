@@ -177,7 +177,7 @@ class CliStrings:
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
     h_desc: Template = Template(
-        'Run "${program_name}" with no parameters to start the bot${mode_addendum}.'
+        'Run "${program_command}" with no parameters to start the bot${mode_addendum}.'
     )
     h_token_id: Template = Template(
         "The ID of the token to use to run the bot: ${token_ids}"
