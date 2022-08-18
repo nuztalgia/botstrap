@@ -1,11 +1,13 @@
 """This is the main Botstrap module, featuring the `BotstrapFlow` class."""
 from __future__ import annotations
 
+from dataclasses import asdict
 from pathlib import Path
 from typing import Any, Final
 
 from botstrap.colors import CliColors
 from botstrap.internal import Argstrap, CliSession, Metadata, Token
+from botstrap.options import CliOption
 from botstrap.strings import CliStrings
 
 
@@ -154,6 +156,7 @@ class BotstrapFlow(CliSession):
         *,
         description: str | None = None,
         version: str | None = None,
+        custom_options: dict[str, str | bool | int | float | CliOption] | None = None,
     ) -> BotstrapFlow:
         """Parses any arguments and options passed in via the command line.
 
@@ -210,14 +213,21 @@ class BotstrapFlow(CliSession):
             SystemExit: If a specified command-line option calls for an alternate
                 program flow that exits on completion, such as `--help` or `--version`.
         """
-        # If the command-line args don't specify a token, `self._active_token` will stay
-        # unset, and the default token will be used if/when a token is needed elsewhere.
-        self._active_token = Argstrap(
+        argstrap = Argstrap(
             cli=self,
             tokens=list(self._tokens_by_uid.values()),
             description=description,
             version=version,
-        ).parse_bot_args()  # May raise `SystemExit`, depending on command-line options.
+            **{  # Convert the `custom_options` into a format that Argstrap understands.
+                k: (asdict(v) if isinstance(v, CliOption) else {"default": v})
+                for k, v in (custom_options or {}).items()
+            },
+        )
+        # The following call to `parse_bot_args()` may raise a `SystemExit` depending on
+        # which options were specified on the command line. If it doesn't, then it will
+        # modify the `custom_options` dict in-place (if that parameter was provided) and
+        # set the value of `self._active_token` to a valid `Token` (i.e. not `None`).
+        self._active_token = argstrap.parse_bot_args(custom_options)
         return self
 
     def retrieve_active_token(
@@ -298,20 +308,22 @@ class BotstrapFlow(CliSession):
 
         if not self._active_token:
             if allow_auto_parse_args:
-                self.parse_args()  # Attempt to set `self._active_token`.
+                # This will set `self._active_token`, unless an alternate path is taken.
+                self.parse_args()
             else:
                 raise RuntimeError(
                     "Cannot confirm active token (args were not parsed).\nTo fix this, "
                     "you can allow auto-parse and/or explicitly call `parse_args()`."
                 )
 
-        if token := self._active_token:
-            try:
-                return token.resolve(allow_token_creation=allow_token_creation)
-            except KeyboardInterrupt:
-                self.exit_process(self.strings.m_exit_by_interrupt, is_error=False)
+        if not self._active_token:  # In theory, there's no reason for it not to be set.
+            raise RuntimeError("Something went wrong. Couldn't determine active token.")
 
-        return None
+        try:
+            return self._active_token.resolve(allow_token_creation=allow_token_creation)
+        except KeyboardInterrupt:
+            self.exit_process(self.strings.m_exit_by_interrupt, is_error=False)
+            return None  # Appease mypy, even though this is technically unreachable.
 
     def run_bot(self, bot_class: str | type = "discord.Bot", **options: Any) -> None:
         """Instantiates the bot class and passes the active token to its `run()` method.
@@ -397,14 +409,16 @@ class BotstrapFlow(CliSession):
                 for option_key, default_value in target_options.items()
             }
 
-        token_options = filter_options(
-            allow_auto_register_token=True,
-            allow_auto_parse_args=True,
-            allow_token_creation=True,
-        )
         # The call to `retrieve_active_token()` will (try to) set `self._active_token`.
-        if not (token_value := self.retrieve_active_token(**token_options)):
-            # An appropriate message will have been printed if a token wasn't retrieved.
+        token_value = self.retrieve_active_token(
+            **filter_options(
+                allow_auto_register_token=True,
+                allow_auto_parse_args=True,
+                allow_token_creation=True,
+            )
+        )
+        # An appropriate message will have been shown if either of these is unavailable.
+        if (not token_value) or not (token := self._active_token):
             return
 
         original_bot_class = bot_class
@@ -415,7 +429,6 @@ class BotstrapFlow(CliSession):
             raise TypeError(f'Unable to instantiate bot class: "{original_bot_class}"')
 
         bot = bot_class(**options)  # Token-related `**options` have been filtered out.
-        token = self._active_token or Token.get_default(self)
 
         @bot.event
         async def on_connect() -> None:

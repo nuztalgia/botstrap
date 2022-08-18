@@ -1,6 +1,6 @@
 """This module contains the `Argstrap` class, which parses arguments for a bot's CLI."""
 from argparse import ArgumentParser, RawTextHelpFormatter
-from typing import Final, Optional
+from typing import Any, Final, Optional
 
 from botstrap.internal.clisession import CliSession
 from botstrap.internal.metadata import Metadata
@@ -12,7 +12,6 @@ _TOKENS_KEY: Final[str] = "tokens"
 _VERSION_KEY: Final[str] = "version"
 
 _TOKEN_METAVAR: Final[str] = "<token id>"
-_TOKENS_DEST: Final[str] = "manage_tokens"
 
 
 class Argstrap(ArgumentParser):
@@ -30,6 +29,7 @@ class Argstrap(ArgumentParser):
         tokens: list[Token],
         description: Optional[str] = None,
         version: Optional[str] = None,
+        **custom_options: dict[str, Any],
     ) -> None:
         """Initializes a new `Argstrap` instance.
 
@@ -59,14 +59,15 @@ class Argstrap(ArgumentParser):
 
         super().__init__(
             prog=self.cli.colors.primary(program_name),
-            usage=self._build_usage_string(program_name),
+            usage=self._build_usage_string(program_name, list(custom_options.keys())),
             description=self._build_description_string(program_command, description),
             formatter_class=RawTextHelpFormatter,
+            conflict_handler="resolve",
             add_help=False,
         )
 
         if self._is_multi_token:
-            self.add_argument(
+            self.add_argument(  # This is the only positional argument.
                 _TOKEN_KEY,
                 metavar=_TOKEN_METAVAR,
                 nargs="?",
@@ -75,35 +76,35 @@ class Argstrap(ArgumentParser):
                 help=self.cli.strings.h_token_id.substitute(token_ids=token_uids),
             )
 
-        def add_option_argument(
-            name: str, info: str, action: str = "store_true", dest: Optional[str] = None
-        ) -> None:
-            """Local helper function for adding an optional command-line argument."""
-            self.add_argument(
-                f"-{name[0]}", f"--{name}", help=info, action=action, dest=dest
-            )
+        def add_option(name: str, action: str = "store_true", **kwargs) -> None:
+            """Adds the specified option (and its abbreviated form) to the parser."""
+            self.add_argument(f"-{name[0]}", f"--{name}", action=action, **kwargs)
 
-        # Add available options in order of relevance/usefulness, beginning with `-t`.
-        add_option_argument(_TOKENS_KEY, self.cli.strings.h_tokens, dest=_TOKENS_DEST)
+        # Add custom options before default ones so off-limits names can be overwritten.
+        for option_name, option_kwargs in custom_options.items():
+            add_option(option_name, action="store", **option_kwargs)
+
+        # Add default options in order of relevance/usefulness, beginning with `-t`.
+        add_option(_TOKENS_KEY, help=self.cli.strings.h_tokens)  # For token management.
 
         if self.version:
-            add_option_argument(_VERSION_KEY, self.cli.strings.h_version)
+            add_option(_VERSION_KEY, help=self.cli.strings.h_version)
 
-        add_option_argument(_HELP_KEY, self.cli.strings.h_help, action="help")
+        add_option(_HELP_KEY, action="help", help=self.cli.strings.h_help)
 
     @property
     def _is_multi_token(self) -> bool:
         """Returns True if this instance serves a bot that uses more than one token."""
         return len(self.tokens) > 1
 
-    def _build_usage_string(self, program_name: str) -> str:
+    def _build_usage_string(self, program_name: str, custom_options: list[str]) -> str:
         """Returns a str explaining how to run the bot's program on the command line."""
         usage_components = [self.cli.colors.primary(program_name)]
 
         def add_component(
             display_name: str, *, is_option: bool = True, abbreviate_option: bool = True
         ) -> None:
-            """Local helper function for appending an argument to the usage string."""
+            """Appends the given usage component. Options are abbreviated by default."""
             prefix_chars = 0
             if is_option:
                 display_name = display_name[0] if abbreviate_option else display_name
@@ -111,7 +112,9 @@ class Argstrap(ArgumentParser):
             usage_components.append(f"[{'-' * prefix_chars}{display_name}]")
 
         add_component(_HELP_KEY, abbreviate_option=False)
-        add_component(_TOKENS_KEY)
+
+        for option_name in [*custom_options, _TOKENS_KEY]:
+            add_component(option_name)
 
         if self.version:
             add_component(_VERSION_KEY)
@@ -143,7 +146,7 @@ class Argstrap(ArgumentParser):
             mode_addendum=f" {mode_addendum.strip()}" if mode_addendum else "",
         )
 
-    def parse_bot_args(self) -> Optional[Token]:
+    def parse_bot_args(self, custom_options: Optional[dict[str, Any]] = None) -> Token:
         """Returns the token to use, if it can be determined based on command-line args.
 
         Raises:
@@ -152,19 +155,31 @@ class Argstrap(ArgumentParser):
         """
         args = vars(super().parse_args())
 
-        if self.version and args.pop(_VERSION_KEY, False):
-            print(self.version)
-        elif args.pop(_TOKENS_DEST, False):
-            self.manage_tokens()
-        else:  # The only path that will continue execution of the "main" program flow.
+        def update_options() -> None:
+            """Updates the `custom_options` dict param in-place with the parsed args."""
+            if custom_options:
+                for custom_key in custom_options:
+                    if (custom_key != _TOKEN_KEY) and (custom_key in args):
+                        custom_options[custom_key] = args.pop(custom_key)
+
+        def select_token() -> Token:
+            """Determines the token to use, based on command-line args or defaults."""
             match len(self.tokens):
                 case 0:
-                    return None
+                    return Token.get_default(self.cli)
                 case 1:
                     return self.tokens[0]
                 case _:
                     uid = args.pop(_TOKEN_KEY)  # Guaranteed to be a valid/existing uid.
                     return next(token for token in self.tokens if token.uid == uid)
+
+        if self.version and args.pop(_VERSION_KEY, False):
+            print(self.version)
+        elif args.pop(_TOKENS_KEY, False):
+            self.manage_tokens()
+        else:  # The only path that will continue execution of the "main" program flow.
+            update_options()
+            return select_token()
 
         # Silently and successfully exit if an alternate flow was chosen and completed.
         raise SystemExit(0)
