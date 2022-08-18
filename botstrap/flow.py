@@ -1,16 +1,12 @@
 """This is the main Botstrap module, featuring the `BotstrapFlow` class."""
 from __future__ import annotations
 
-from functools import cached_property
 from pathlib import Path
 from typing import Any, Final
 
 from botstrap.colors import CliColors
 from botstrap.internal import Argstrap, CliSession, Metadata, Token
 from botstrap.strings import CliStrings
-
-_DEFAULT_PROGRAM_NAME: Final[str] = "bot"
-_DEFAULT_TOKEN_NAME: Final[str] = "default"
 
 
 class BotstrapFlow(CliSession):
@@ -46,15 +42,10 @@ class BotstrapFlow(CliSession):
                 vertical spacing for readability. Set this to `CliStrings.compact()` to
                 minimize spacing.
         """
-        name = name or Metadata.guess_program_name() or _DEFAULT_PROGRAM_NAME
+        name = name or Metadata.guess_program_name() or "bot"
         super().__init__(name, colors, strings)
         self._tokens_by_uid: Final[dict[str, Token]] = {}
         self._active_token: Token | None = None
-
-    @cached_property
-    def _default_token(self) -> Token:
-        """The default bot token. Only created if/when it's accessed. Will be reused."""
-        return Token(self, _DEFAULT_TOKEN_NAME)
 
     def register_token(
         self,
@@ -219,27 +210,15 @@ class BotstrapFlow(CliSession):
             SystemExit: If a specified command-line option calls for an alternate
                 program flow that exits on completion, such as `--help` or `--version`.
         """
-        args = Argstrap(
+        # If the command-line args don't specify a token, `self._active_token` will stay
+        # unset, and the default token will be used if/when a token is needed elsewhere.
+        self._active_token = Argstrap(
             cli=self,
-            tokens=(tokens := list(self._tokens_by_uid.values())),
+            tokens=list(self._tokens_by_uid.values()),
             description=description,
             version=version,
-        ).parse_args()
-
-        if version and args.version:
-            print(version)
-        elif args.manage_tokens:
-            self._manage_tokens(tokens)
-        else:
-            # If no tokens were manually registered, don't assign the active token here.
-            # The default token will be used if/when a token is needed by other methods.
-            if tokens:
-                self._active_token = (
-                    tokens[0] if (len(tokens) == 1) else self._tokens_by_uid[args.token]
-                )
-            return self  # This is the only path that will continue program execution.
-
-        raise SystemExit(0)  # Exit successfully if another path was taken & completed.
+        ).parse_bot_args()  # May raise `SystemExit`, depending on command-line options.
+        return self
 
     def retrieve_active_token(
         self,
@@ -309,7 +288,8 @@ class BotstrapFlow(CliSession):
         """
         if not self._tokens_by_uid:
             if allow_auto_register_token:
-                self._tokens_by_uid[_DEFAULT_TOKEN_NAME] = self._default_token
+                default_token = Token.get_default(self)
+                self._tokens_by_uid[default_token.uid] = default_token
             else:
                 raise RuntimeError(
                     "There are no registered tokens to retrieve.\nTo fix this, you can "
@@ -318,7 +298,7 @@ class BotstrapFlow(CliSession):
 
         if not self._active_token:
             if allow_auto_parse_args:
-                self.parse_args()
+                self.parse_args()  # Attempt to set `self._active_token`.
             else:
                 raise RuntimeError(
                     "Cannot confirm active token (args were not parsed).\nTo fix this, "
@@ -435,7 +415,7 @@ class BotstrapFlow(CliSession):
             raise TypeError(f'Unable to instantiate bot class: "{original_bot_class}"')
 
         bot = bot_class(**options)  # Token-related `**options` have been filtered out.
-        token = self._active_token or self._default_token
+        token = self._active_token or Token.get_default(self)
 
         @bot.event
         async def on_connect() -> None:
@@ -456,52 +436,3 @@ class BotstrapFlow(CliSession):
         except Metadata.import_class("discord.LoginFailure"):  # type: ignore[misc]
             self.print_prefixed(is_error=True)
             self.exit_process(self.strings.m_login_failure)
-
-    def _manage_tokens(self, tokens: list[Token]) -> None:
-        """Starts the token management flow, allowing viewing/deletion of saved tokens.
-
-        This method is private because it will be automatically invoked by
-        [`parse_args()`][botstrap.BotstrapFlow.parse_args] when the `--tokens` option
-        is specified on the command line (and if neither `--help` nor `--version` was
-        specified, because those options take priority).
-
-        This method only returns if/when the user has no more files for any of the
-        tokens in the given list (plus the default token, if it wasn't in the list).
-        If the user still has tokens but chooses not to delete any (more) of them,
-        this method will end the process with exit code 0 to indicate success.
-
-        Args:
-            tokens:
-                The tokens that are defined for the bot. If the "default" token is not
-                included, it will be appended (just in case it was previously used).
-                This list determines the locations to check for existing token files.
-
-        Raises:
-            SystemExit: If the user still has saved token files, but chooses to exit
-                the process rather than delete any of them.
-        """
-        if not any(token for token in tokens if token.uid == _DEFAULT_TOKEN_NAME):
-            tokens.append(self._default_token)
-
-        while saved_tokens := [token for token in tokens if token.file_path.is_file()]:
-            self.print_prefixed(self.strings.t_manage_list)
-
-            for count, token in enumerate(saved_tokens, start=1):
-                index = str(token.file_path).rindex(token.uid) + len(token.uid)
-                path = self.colors.lowlight(f"{str(token.file_path)[:index]}.*")
-                print(f"  {count}) {self.colors.highlight(token.uid)} -> {path}")
-
-            self.confirm_or_exit(self.strings.t_delete)
-
-            uids = [token.uid for token in saved_tokens]
-            prompt = self.strings.t_delete_cue
-
-            while (uid := self.get_input(prompt)) not in uids:
-                print(self.colors.warning(self.strings.t_delete_mismatch))
-                print(self.strings.t_delete_hint.substitute(token_ids=uids))
-                self.confirm_or_exit(self.strings.t_delete_retry)
-
-            next(token for token in tokens if token.uid == uid).clear()
-            print(self.colors.success(self.strings.t_delete_success))
-
-        self.print_prefixed(self.strings.t_manage_none)

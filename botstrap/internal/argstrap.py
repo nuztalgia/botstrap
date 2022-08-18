@@ -142,3 +142,63 @@ class Argstrap(ArgumentParser):
             program_command=" ".join(program_command),
             mode_addendum=f" {mode_addendum.strip()}" if mode_addendum else "",
         )
+
+    def parse_bot_args(self) -> Optional[Token]:
+        """Returns the token to use, if it can be determined based on command-line args.
+
+        Raises:
+            SystemExit: If a specified command-line option calls for an alternate
+                program flow that exits on completion, such as `--help` or `--version`.
+        """
+        args = vars(super().parse_args())
+
+        if self.version and args.pop(_VERSION_KEY, False):
+            print(self.version)
+        elif args.pop(_TOKENS_DEST, False):
+            self.manage_tokens()
+        else:  # The only path that will continue execution of the "main" program flow.
+            match len(self.tokens):
+                case 0:
+                    return None
+                case 1:
+                    return self.tokens[0]
+                case _:
+                    uid = args.pop(_TOKEN_KEY)  # Guaranteed to be a valid/existing uid.
+                    return next(token for token in self.tokens if token.uid == uid)
+
+        # Silently and successfully exit if an alternate flow was chosen and completed.
+        raise SystemExit(0)
+
+    def manage_tokens(self) -> None:
+        """Starts the token management flow, allowing viewing/deletion of saved tokens.
+
+        Raises:
+            SystemExit: If the user still has saved tokens, but chooses to exit the
+                process rather than delete any of them.
+        """
+        default_token = Token.get_default(self.cli)
+        if not any(t for t in self.tokens if t.uid == default_token.uid):
+            self.tokens.append(default_token)
+
+        while saved_tokens := [t for t in self.tokens if t.file_path.is_file()]:
+            self.cli.print_prefixed(self.cli.strings.t_manage_list)
+
+            for count, token in enumerate(saved_tokens, start=1):
+                index = str(token.file_path).rindex(token.uid) + len(token.uid)
+                path = self.cli.colors.lowlight(f"{str(token.file_path)[:index]}.*")
+                print(f"  {count}) {self.cli.colors.highlight(token.uid)} -> {path}")
+
+            self.cli.confirm_or_exit(self.cli.strings.t_delete)
+
+            uids = [token.uid for token in saved_tokens]
+            prompt = self.cli.strings.t_delete_cue
+
+            while (uid := self.cli.get_input(prompt)) not in uids:
+                print(self.cli.colors.warning(self.cli.strings.t_delete_mismatch))
+                print(self.cli.strings.t_delete_hint.substitute(token_ids=uids))
+                self.cli.confirm_or_exit(self.cli.strings.t_delete_retry)
+
+            next(t for t in self.tokens if t.uid == uid).clear()
+            print(self.cli.colors.success(self.cli.strings.t_delete_success))
+
+        self.cli.print_prefixed(self.cli.strings.t_manage_none)

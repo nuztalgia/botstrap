@@ -19,6 +19,11 @@
       show_signature_annotations: false
 
 <!-- prettier-ignore -->
+::: botstrap.internal.tokens.Token.get_default
+    options:
+      heading_level: 3
+
+<!-- prettier-ignore -->
 ::: botstrap.internal.tokens.Token.resolve
     options:
       heading_level: 3

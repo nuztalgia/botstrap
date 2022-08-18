@@ -1,4 +1,6 @@
 """This module contains the `Token` class, which represents a Discord bot token."""
+from __future__ import annotations
+
 import re
 from pathlib import Path
 from typing import Final
@@ -18,10 +20,8 @@ class Token(Secret):
     This class effectively combines the functionality provided by
     [`Secret`][botstrap.internal.secrets.Secret] (its parent class) and a
     [`CliSession`][botstrap.internal.clisession.CliSession] (passed in upon
-    instantiation) to deliver a secure and user-friendly interface for managing a
-    bot token. It only has one method -
-    [`resolve()`][botstrap.internal.tokens.Token.resolve]
-    - but currently, that's all it needs.
+    instantiation) to deliver a secure and user-friendly interface for creating and
+    accessing token files.
     """
 
     def __init__(
@@ -62,6 +62,19 @@ class Token(Secret):
         )
         self.cli: Final[CliSession] = cli
 
+    @classmethod
+    def get_default(cls, cli: CliSession) -> Token:
+        """Creates and returns a default token for the provided `CliSession`.
+
+        This token will use the string literal `#!py "default"` for its `uid`,
+        and will rely on the default values for all subsequent
+        [`__init__()`][botstrap.internal.tokens.Token.__init__] parameters.
+
+        Returns:
+            A token named `#!py "default"`, created with the default constructor params.
+        """
+        return cls(cli, uid="default")
+
     def resolve(self, allow_token_creation: bool = True) -> str | None:
         """Returns the value of this token, interactively prompting for input if needed.
 
@@ -89,7 +102,7 @@ class Token(Secret):
 
             This might sound like a lot, but the implementation is actually quite
             straightforward and (probably) more concise than this description might lead
-            you to believe. Check out the source code <a href="#line-0-120">below</a>
+            you to believe. Check out the source code <a href="#line-0-78">below</a>
             to see for yourself. :eyes:
 
         Args:
