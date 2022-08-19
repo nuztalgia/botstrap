@@ -1,6 +1,6 @@
 """This module contains the `Argstrap` class, which parses arguments for a bot's CLI."""
 from argparse import ArgumentParser, RawTextHelpFormatter
-from typing import Any, Final, Optional
+from typing import Any, Callable, Final, Optional
 
 from botstrap.internal.clisession import CliSession
 from botstrap.internal.metadata import Metadata
@@ -53,6 +53,7 @@ class Argstrap(ArgumentParser):
         self.cli: Final[CliSession] = cli
         self.tokens: Final[list[Token]] = tokens
         self.version: Final[Optional[str]] = version
+        self._custom_callbacks: Final[dict[str, Callable[[Any], None]]] = {}
 
         program_command = Metadata.get_program_command(self.cli.name)
         program_name = program_command[-1]  # Last arg is the file/module/script name.
@@ -82,6 +83,7 @@ class Argstrap(ArgumentParser):
 
         # Add custom options before default ones so off-limits names can be overwritten.
         for option_name, option_kwargs in custom_options.items():
+            self._custom_callbacks[option_name] = option_kwargs.pop("callback")
             add_option(option_name, **option_kwargs)
 
         # Add default options in order of relevance/usefulness, beginning with `-t`.
@@ -146,7 +148,7 @@ class Argstrap(ArgumentParser):
             mode_addendum=f" {mode_addendum.strip()}" if mode_addendum else "",
         )
 
-    def parse_bot_args(self, custom_options: Optional[dict[str, Any]] = None) -> Token:
+    def parse_bot_args(self) -> Token:
         """Returns the token to use, if it can be determined based on command-line args.
 
         Raises:
@@ -155,31 +157,26 @@ class Argstrap(ArgumentParser):
         """
         args = vars(super().parse_args())
 
-        def update_options() -> None:
-            """Updates the `custom_options` dict param in-place with the parsed args."""
-            if custom_options:
-                for custom_key in custom_options:
-                    if (custom_key != _TOKEN_KEY) and (custom_key in args):
-                        custom_options[custom_key] = args.pop(custom_key)
-
-        def select_token() -> Token:
-            """Determines the token to use, based on command-line args or defaults."""
-            match len(self.tokens):
-                case 0:
-                    return Token.get_default(self.cli)
-                case 1:
-                    return self.tokens[0]
-                case _:
-                    uid = args.pop(_TOKEN_KEY)  # Guaranteed to be a valid/existing uid.
-                    return next(token for token in self.tokens if token.uid == uid)
-
         if self.version and args.pop(_VERSION_KEY, False):
             print(self.version)
         elif args.pop(_TOKENS_KEY, False):
             self.manage_tokens()
-        else:  # The only path that will continue execution of the "main" program flow.
-            update_options()
-            return select_token()
+        else:
+            # First, determine the token to use, based on command-line args or defaults.
+            if not self.tokens:
+                token = Token.get_default(self.cli)
+            elif len(self.tokens) == 1:
+                token = self.tokens[0]
+            else:
+                # Pop _TOKEN_KEY out so an error is raised if any custom options use it.
+                # It's guaranteed to exist and be a valid uid iff len(self.tokens) > 1.
+                token = next(t for t in self.tokens if t.uid == args.pop(_TOKEN_KEY))
+
+            # Then, invoke the callbacks for all custom options, if any were specified.
+            for option_name, callback in self._custom_callbacks.items():
+                callback(args.pop(option_name))  # Pass in the value of the parsed arg.
+
+            return token  # This is the only path that will continue program execution.
 
         # Silently and successfully exit if an alternate flow was chosen and completed.
         raise SystemExit(0)

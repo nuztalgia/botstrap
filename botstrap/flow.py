@@ -224,9 +224,9 @@ class BotstrapFlow(CliSession):
         )
         # The following call to `parse_bot_args()` may raise a `SystemExit` depending on
         # which options were specified on the command line. If it doesn't, then it will
-        # modify the `custom_options` dict in-place (if that parameter was provided) and
-        # set the value of `self._active_token` to a valid `Token` (i.e. not `None`).
-        self._active_token = argstrap.parse_bot_args(custom_options)
+        # invoke all `callback` functions for `custom_options` (if any were provided)
+        # and set the value of `self._active_token` to a valid `Token` (i.e. not None).
+        self._active_token = argstrap.parse_bot_args()
         return self
 
     def retrieve_active_token(
