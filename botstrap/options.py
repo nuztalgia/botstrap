@@ -2,31 +2,8 @@
 from __future__ import annotations
 
 import argparse
-from dataclasses import asdict, dataclass
+from dataclasses import dataclass
 from typing import Any, Callable, ClassVar, Iterable
-
-from botstrap import Color
-
-
-def option_to_arg_dict(option: Option) -> dict[str, Any]:
-    """Returns the `Option` as a `dict` that can be understood by argstrap/argparse."""
-    if (option_dict := asdict(option)).pop("is_flag"):
-        return {
-            "action": "store_true",
-            **{k: v for k, v in option_dict.items() if k not in ("default", "choices")},
-        }
-    else:
-        return {
-            "action": "store",
-            "type": type(option.default),
-            "choices": option.choices or None,
-            **{k: v for k, v in option_dict.items() if k != "choices"},
-        }
-
-
-def show_unused_value(value: Any) -> None:
-    """Prints the unused `value` to the console in red text, to flag the problem."""
-    print(Color.red(f"UNUSED OPTION VALUE: '{value}' ({type(value)})"))
 
 
 @dataclass(eq=False, frozen=True, kw_only=True)
@@ -38,21 +15,26 @@ class Option:
 
     def __post_init__(self) -> None:
         """Ensures all fields are valid in order to prevent problems down the line."""
-        if self.is_flag and (self.default or self.choices):
-            raise ValueError("`is_flag` cannot be used with `default` or `choices`.")
+        if self.flag and (self.default or self.choices):
+            raise ValueError("'flag' cannot be used alongside 'default' or 'choices'.")
 
         if self.default == argparse.SUPPRESS:
-            raise ValueError(f'"{self.default}" is not a valid value for `default`.')
+            raise ValueError(f"\"{self.default}\" is not a valid value for 'default'.")
 
         if (option_type := type(self.default)) not in (str, int, float):
-            raise TypeError(f'"{option_type}" is not a valid type for `default`.')
+            raise TypeError(
+                f"{option_type} is not a valid type for 'default'. "
+                f"Expected one of {str}, {int}, or {float}."
+            )
 
         if any((type(choice) != option_type) for choice in self.choices):
-            raise TypeError(f'All items in `choices` must be of type "{option_type}".')
+            raise TypeError(
+                f"All elements in 'choices' must be {option_type} to match 'default'."
+            )
 
     # region FIELDS
 
-    is_flag: bool = False
+    flag: bool = False
     """Whether this option represents a boolean flag (i.e. an on/off switch).
 
     A **flag** is the most basic type of option. It doesn't require another command-line
@@ -85,7 +67,7 @@ class Option:
 
     Note that the value of this field **must** be a `#!py str`, an `#!py int`,
     or a `#!py float`. To create an option with a `#!py bool` value type, use the
-    [`is_flag`][botstrap.Option.is_flag] field.
+    [`flag`][botstrap.Option.flag] field.
     """
 
     choices: Iterable[str | int | float] = ()
@@ -100,12 +82,12 @@ class Option:
     (see [`default`][botstrap.Option.default]) will be considered "acceptable".
     """
 
-    callback: Callable[[Any], None] = show_unused_value
+    callback: Callable[[Any], None] = print
     """A function that will be invoked with the value of this option after it's parsed.
 
     The function should accept a single parameter whose type matches that of the
     [`default`][botstrap.Option.default] value, or a `#!py bool` if
-    [`is_flag`][botstrap.Option.is_flag] was set to `True`. For brevity and ease of use,
+    [`flag`][botstrap.Option.flag] was set to `True`. For brevity and ease of use,
     the parameter is type-hinted as `Any`, but you may assume it will be called with a
     value of the appropriate type.
 

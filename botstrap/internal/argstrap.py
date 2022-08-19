@@ -1,17 +1,22 @@
 """This module contains the `Argstrap` class, which parses arguments for a bot's CLI."""
+import re
 from argparse import ArgumentParser, RawTextHelpFormatter
 from typing import Any, Callable, Final, Optional
 
 from botstrap.internal.clisession import CliSession
 from botstrap.internal.metadata import Metadata
 from botstrap.internal.tokens import Token
+from botstrap.options import Option
 
 _HELP_KEY: Final[str] = "help"
 _TOKEN_KEY: Final[str] = "token"
 _TOKENS_KEY: Final[str] = "tokens"
 _VERSION_KEY: Final[str] = "version"
 
-_TOKEN_METAVAR: Final[str] = "<token id>"
+_TOKEN_METAVAR: Final[str] = "token id"
+
+_HELP_PATTERN: Final[re.Pattern] = re.compile(r"(^|[^%])(%)([^%(]|$)")
+_HELP_REPLACEMENT: Final[str] = r"\1\2\2\3"  # Escape the "%" by including it twice.
 
 
 class Argstrap(ArgumentParser):
@@ -29,7 +34,7 @@ class Argstrap(ArgumentParser):
         tokens: list[Token],
         description: Optional[str] = None,
         version: Optional[str] = None,
-        **custom_options: dict[str, Any],
+        **custom_options: Option,
     ) -> None:
         """Initializes a new `Argstrap` instance.
 
@@ -74,11 +79,11 @@ class Argstrap(ArgumentParser):
         if self._is_multi_token:
             self.add_argument(  # This is the only positional argument.
                 _TOKEN_KEY,
-                metavar=_TOKEN_METAVAR,
                 nargs="?",
                 choices=(token_uids := [token.uid for token in self.tokens]),
                 default=token_uids[0],
                 help=self.cli.strings.h_token_id.substitute(token_ids=token_uids),
+                metavar=self._format_metavar(_TOKEN_METAVAR, lowlight=False),
             )
 
         def add_option(name: str, action: str = "store_true", **kwargs) -> None:
@@ -86,9 +91,11 @@ class Argstrap(ArgumentParser):
             self.add_argument(f"-{name[0]}", f"--{name}", action=action, **kwargs)
 
         # Add custom options before default ones so off-limits names can be overwritten.
-        for option_name, option_kwargs in custom_options.items():
-            self._custom_callbacks[option_name] = option_kwargs.pop("callback")
-            add_option(option_name, **option_kwargs)
+        for option_key, option in custom_options.items():
+            add_option(
+                option_key.replace("_", "-"),
+                **self._process_custom_option(option_key, option),
+            )
 
         # Add default options in order of relevance/usefulness, beginning with `-t`.
         add_option(_TOKENS_KEY, help=self.cli.strings.h_tokens)  # For token management.
@@ -102,6 +109,11 @@ class Argstrap(ArgumentParser):
     def _is_multi_token(self) -> bool:
         """Returns True if this instance serves a bot that uses more than one token."""
         return len(self.tokens) > 1
+
+    def _format_metavar(self, placeholder_text: str, lowlight: bool = True) -> str:
+        """Returns the placeholder text, surrounded by chevrons & optionally colored."""
+        metavar = f"<{placeholder_text}>"
+        return self.cli.colors.lowlight(metavar) if lowlight else metavar
 
     def _build_usage_string(self, program_name: str, custom_options: list[str]) -> str:
         """Returns a str explaining how to run the bot's program on the command line."""
@@ -126,7 +138,7 @@ class Argstrap(ArgumentParser):
             add_component(_VERSION_KEY)
 
         if self._is_multi_token:
-            add_component(self.cli.colors.lowlight(_TOKEN_METAVAR), is_option=False)
+            add_component(self._format_metavar(_TOKEN_METAVAR), is_option=False)
 
         return " ".join(usage_components)
 
@@ -151,6 +163,32 @@ class Argstrap(ArgumentParser):
             program_command=" ".join(program_command),
             mode_addendum=f" {mode_addendum.strip()}" if mode_addendum else "",
         )
+
+    def _process_custom_option(self, option_key: str, option: Option) -> dict[str, Any]:
+        """Registers a callback and returns the Option in add_argument **kwargs form."""
+        option_kwargs: dict[str, Any] = {
+            "action": "store_true" if option.flag else "store",
+            "help": _HELP_PATTERN.sub(_HELP_REPLACEMENT, option.help or ""),
+        }
+        if not option.flag:  # Non-flag options require more information.
+            option_kwargs["default"] = option.default
+            option_kwargs["type"] = (option_type := type(option.default))
+            option_kwargs["choices"] = option.choices or None
+            option_kwargs["metavar"] = self._format_metavar(option_type.__name__)
+
+        def fallback_callback(option_value: Any) -> None:
+            """Raises a nicely-formatted RuntimeError for options without a callback."""
+            indentation = " " * len(f"{RuntimeError.__name__}: ")
+            raise RuntimeError(
+                f"Custom option '{option_key}' did not set a callback.\n"
+                f"{indentation}Option type:  '{type(option_value).__name__}'\n"
+                f"{indentation}Parsed value: '{option_value}'"
+            )
+
+        self._custom_callbacks[option_key] = (
+            option.callback if (option.callback != print) else fallback_callback
+        )
+        return option_kwargs
 
     def parse_bot_args(self) -> Token:
         """Parses command-line args, calls option callbacks, & returns the active token.

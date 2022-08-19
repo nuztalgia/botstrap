@@ -6,7 +6,7 @@ from typing import Any, Final
 
 from botstrap.colors import CliColors
 from botstrap.internal import Argstrap, CliSession, Metadata, Token
-from botstrap.options import Option, option_to_arg_dict
+from botstrap.options import Option
 from botstrap.strings import CliStrings
 
 
@@ -155,7 +155,7 @@ class BotstrapFlow(CliSession):
         *,
         description: str | None = None,
         version: str | None = None,
-        custom_options: dict[str, Option] | None = None,
+        **custom_options: Option,
     ) -> BotstrapFlow:
         """Parses any arguments and options passed in via the command line.
 
@@ -222,7 +222,7 @@ class BotstrapFlow(CliSession):
                 A string representing the current version of your bot. Will be displayed
                 when the `--version` or `-v` option is specified on the command line.
                 If omitted, the `-v` option will not be available in your bot's CLI.
-            custom_options:
+            **custom_options:
                 A dictionary defining your bot's custom command-line options (see the
                 <a href="#parse-args-tip">tip</a> for more info). If omitted, only the
                 default Botstrap-provided options will be available in your bot's CLI.
@@ -239,10 +239,7 @@ class BotstrapFlow(CliSession):
             tokens=list(self._tokens_by_uid.values()),
             description=description,
             version=version,
-            **{  # Convert the `custom_options` into a format that Argstrap recognizes.
-                name: option_to_arg_dict(option)
-                for name, option in (custom_options or {}).items()
-            },
+            **custom_options,
         )
         # The following call to `parse_bot_args()` may raise a `SystemExit` depending on
         # which options were specified on the command line. If it doesn't, then it will
