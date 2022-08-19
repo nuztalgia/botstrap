@@ -34,8 +34,10 @@ nav:
       - CliColors: api/cli-colors.md
       - CliStrings: api/cli-strings.md
       - Color: api/color.md
+      - Option: api/option.md
   - Internal Modules:
       - internal/index.md
+      - argstrap: internal/argstrap.md
       - clisession: internal/clisession.md
       - secrets: internal/secrets.md
       - tokens: internal/tokens.md

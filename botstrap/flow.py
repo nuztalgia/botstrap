@@ -165,6 +165,23 @@ class BotstrapFlow(CliSession):
         can be correctly determined from any command-line arguments passed to your
         bot's script.
 
+        ??? tip "Tip - Define your own command-line options!"
+            <div id="parse-args-tip"/>
+            By default, your bot's CLI will include options for `--tokens` and `--help`
+            (and `--version`, if you specify a version string). However, you aren't
+            limited to just those three options - this method accepts a `custom_options`
+            parameter, which allows you to define as many as you want! :tada:
+
+            To define custom command-line options, you will have to create a
+            `#!py dict[str, Option]` - that is, a dictionary where the **keys** are
+            strings defining the names of the options, and the **values** are instances
+            of [`Option`][botstrap.Option] (a simple model for defining the option's
+            behavior) - and pass it in as the `custom_options` parameter when you call
+            this method.
+
+            For more details, check out the documentation for the
+            [`Option`][botstrap.Option] class.
+
         ??? note "Note - Automatically parsing arguments"
             If your bot doesn't require the customization afforded by the parameters
             below, you can skip this method as long as you do **not** disable
@@ -197,13 +214,18 @@ class BotstrapFlow(CliSession):
         Args:
             description:
                 A short human-readable description of your bot. Will be displayed when
-                the `--help` option is passed to the CLI. If omitted, Botstrap will try
-                to fill this field from package metadata. If unsuccessful, this line
-                will be left blank.
+                the `--help` or `-h` option is specified on the command line.
+                If omitted, Botstrap will try to fill this field from package metadata.
+                If this is unsuccessful, the `-h` option will only display your bot's
+                usage instructions.
             version:
                 A string representing the current version of your bot. Will be displayed
-                when the `--version` option is passed to the CLI. If omitted, that
-                option will not be present in your bot's CLI.
+                when the `--version` or `-v` option is specified on the command line.
+                If omitted, the `-v` option will not be available in your bot's CLI.
+            custom_options:
+                A dictionary defining your bot's custom command-line options (see the
+                <a href="#parse-args-tip">tip</a> for more info). If omitted, only the
+                default Botstrap-provided options will be available in your bot's CLI.
 
         Returns:
             This `BotstrapFlow` instance, for chaining method calls.

@@ -8,6 +8,7 @@
 - [`CliColors`](cli-colors)
 - [`CliStrings`](cli-strings)
 - [`Color`](color)
+- [`Option`](option)
 
 For more details, see the documentation for each class. [Start here.](./botstrap-flow)
 

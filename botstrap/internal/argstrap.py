@@ -19,8 +19,8 @@ class Argstrap(ArgumentParser):
 
     This class extends
     [`ArgumentParser`](https://docs.python.org/3/library/argparse.html#argparse.ArgumentParser)
-    and operates almost identically, except that it also automatically handles a number
-    of Botstrap-specific command-line options.
+    and can operate similarly, but its primary use is to automatically handle both
+    Botstrap-specific and custom-defined command-line options.
     """
 
     def __init__(
@@ -49,6 +49,10 @@ class Argstrap(ArgumentParser):
                 A string representing the current version of the bot. Will be displayed
                 when the `--version` option is specified. If omitted, that option will
                 not be present in the bot's CLI.
+            **custom_options:
+                A dictionary defining the bot's custom-defined command-line options.
+                If omitted, only the default Botstrap options will be available in the
+                bot's CLI.
         """
         self.cli: Final[CliSession] = cli
         self.tokens: Final[list[Token]] = tokens
@@ -149,7 +153,10 @@ class Argstrap(ArgumentParser):
         )
 
     def parse_bot_args(self) -> Token:
-        """Returns the token to use, if it can be determined based on command-line args.
+        """Parses command-line args, calls option callbacks, & returns the active token.
+
+        Returns:
+            The token that should be decrypted and then plugged into the bot to run it.
 
         Raises:
             SystemExit: If a specified command-line option calls for an alternate
@@ -183,6 +190,23 @@ class Argstrap(ArgumentParser):
 
     def manage_tokens(self) -> None:
         """Starts the token management flow, allowing viewing/deletion of saved tokens.
+
+        This is automatically invoked by
+        [`parse_bot_args()`][botstrap.internal.argstrap.Argstrap.parse_bot_args] when
+        the `--tokens` option is specified on the command line (and if neither `-h`
+        nor `-v` was specified, because those options take priority).
+
+        ??? note "Note - Exiting this method"
+            This method will only `#!py return` if/when the user has **no more files**
+            for any of the [`tokens`][botstrap.internal.argstrap.Argstrap.__init__] that
+            were specified upon instantiation of this class. If the `#!py "default"`
+            token wasn't included in that original list of tokens, it will be appended
+            for the purposes of this method, just in case the user has existing files
+            associated with it.
+
+            If the user still has existing token files but chooses not to delete any
+            of them, this method will **end the process** with exit code `#!py 0` to
+            indicate that this flow was completed successfully.
 
         Raises:
             SystemExit: If the user still has saved tokens, but chooses to exit the
