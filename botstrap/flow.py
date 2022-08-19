@@ -1,13 +1,12 @@
 """This is the main Botstrap module, featuring the `BotstrapFlow` class."""
 from __future__ import annotations
 
-from dataclasses import asdict
 from pathlib import Path
 from typing import Any, Final
 
 from botstrap.colors import CliColors
 from botstrap.internal import Argstrap, CliSession, Metadata, Token
-from botstrap.options import CliOption
+from botstrap.options import Option, option_to_arg_dict
 from botstrap.strings import CliStrings
 
 
@@ -156,7 +155,7 @@ class BotstrapFlow(CliSession):
         *,
         description: str | None = None,
         version: str | None = None,
-        custom_options: dict[str, str | bool | int | float | CliOption] | None = None,
+        custom_options: dict[str, Option] | None = None,
     ) -> BotstrapFlow:
         """Parses any arguments and options passed in via the command line.
 
@@ -218,9 +217,9 @@ class BotstrapFlow(CliSession):
             tokens=list(self._tokens_by_uid.values()),
             description=description,
             version=version,
-            **{  # Convert the `custom_options` into a format that Argstrap understands.
-                k: (asdict(v) if isinstance(v, CliOption) else {"default": v})
-                for k, v in (custom_options or {}).items()
+            **{  # Convert the `custom_options` into a format that Argstrap recognizes.
+                name: option_to_arg_dict(option)
+                for name, option in (custom_options or {}).items()
             },
         )
         # The following call to `parse_bot_args()` may raise a `SystemExit` depending on

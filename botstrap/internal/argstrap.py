@@ -82,7 +82,7 @@ class Argstrap(ArgumentParser):
 
         # Add custom options before default ones so off-limits names can be overwritten.
         for option_name, option_kwargs in custom_options.items():
-            add_option(option_name, action="store", **option_kwargs)
+            add_option(option_name, **option_kwargs)
 
         # Add default options in order of relevance/usefulness, beginning with `-t`.
         add_option(_TOKENS_KEY, help=self.cli.strings.h_tokens)  # For token management.
