@@ -65,19 +65,47 @@ class Argstrap(ArgumentParser):
         self._custom_callbacks: Final[dict[str, Callable[[Any], None]]] = {}
 
         program_command = Metadata.get_program_command(self.cli.name)
-        program_name = program_command[-1]  # Last arg is the file/module/script name.
+        program_name = self.cli.colors.primary(program_command[-1])
 
         super().__init__(
-            prog=self.cli.colors.primary(program_name),
-            usage=self._build_usage_string(program_name, list(custom_options.keys())),
+            prog=program_name,
             description=self._build_description_string(program_command, description),
             formatter_class=RawTextHelpFormatter,
-            conflict_handler="resolve",
             add_help=False,
         )
 
-        if self._is_multi_token:
-            self.add_argument(  # This is the only positional argument.
+        usage_components = [program_name]  # Will be combined to form the usage string.
+        option_abbrs = _assign_option_abbrs(*custom_options)  # Includes defaults too.
+
+        def add_usage_component(name: str) -> None:
+            """Formats the given name and appends it to the usage_components list."""
+            if (component := f"[{name}]") in usage_components:
+                raise RuntimeError(f"Duplicate usage component: {component}")
+            usage_components.append(component)
+
+        def add_option(key: str, action: str = "store_true", **kwargs) -> None:
+            """Adds the given option (and its abbr) to the parser and usage string."""
+            abbr = f"-{option_abbrs[key]}" if option_abbrs.get(key) else ""
+            name = "--" + key.lower().strip("_").replace("_", "-")
+            self.add_argument(*[s for s in (abbr, name) if s], action=action, **kwargs)
+            add_usage_component(abbr if (abbr and (key != _HELP_KEY)) else name)
+
+        # First, add any/all custom-defined options (probably the most relevant ones).
+        for option_key, option in custom_options.items():
+            add_option(option_key, **self._process_custom_option(option_key, option))
+
+        # Then add the default options, in order of their usefulness when viewing "-h".
+        add_option(_TOKENS_KEY, help=self.cli.strings.h_tokens)  # Add token mgmt first.
+
+        if self.version:  # Only if a version string was specified.
+            add_option(_VERSION_KEY, help=self.cli.strings.h_version)
+
+        # Add "--help" as the last option (it won't be abbreviated in the usage string).
+        add_option(_HELP_KEY, action="help", help=self.cli.strings.h_help)
+
+        # Finally, add the positional "token id" argument iff there's more than 1 token.
+        if len(self.tokens) > 1:
+            self.add_argument(  # Note that this is "add_argument", not "add_option".
                 _TOKEN_KEY,
                 nargs="?",
                 choices=(token_uids := [token.uid for token in self.tokens]),
@@ -85,62 +113,15 @@ class Argstrap(ArgumentParser):
                 help=self.cli.strings.h_token_id.substitute(token_ids=token_uids),
                 metavar=self._format_metavar(_TOKEN_METAVAR, lowlight=False),
             )
+            add_usage_component(self._format_metavar(_TOKEN_METAVAR))  # Lowlight on.
 
-        def add_option(name: str, action: str = "store_true", **kwargs) -> None:
-            """Adds the specified option (and its abbreviated form) to the parser."""
-            self.add_argument(f"-{name[0]}", f"--{name}", action=action, **kwargs)
-
-        # Add custom options before default ones so off-limits names can be overwritten.
-        for option_key, option in custom_options.items():
-            add_option(
-                option_key.replace("_", "-"),
-                **self._process_custom_option(option_key, option),
-            )
-
-        # Add default options in order of relevance/usefulness, beginning with `-t`.
-        add_option(_TOKENS_KEY, help=self.cli.strings.h_tokens)  # For token management.
-
-        if self.version:
-            add_option(_VERSION_KEY, help=self.cli.strings.h_version)
-
-        add_option(_HELP_KEY, action="help", help=self.cli.strings.h_help)
-
-    @property
-    def _is_multi_token(self) -> bool:
-        """Returns True if this instance serves a bot that uses more than one token."""
-        return len(self.tokens) > 1
+        # Join all the components together to produce the complete usage string.
+        self.usage = " ".join(usage_components)
 
     def _format_metavar(self, placeholder_text: str, lowlight: bool = True) -> str:
         """Returns the placeholder text, surrounded by chevrons & optionally colored."""
         metavar = f"<{placeholder_text}>"
         return self.cli.colors.lowlight(metavar) if lowlight else metavar
-
-    def _build_usage_string(self, program_name: str, custom_options: list[str]) -> str:
-        """Returns a str explaining how to run the bot's program on the command line."""
-        usage_components = [self.cli.colors.primary(program_name)]
-
-        def add_component(
-            display_name: str, *, is_option: bool = True, abbreviate_option: bool = True
-        ) -> None:
-            """Appends the given usage component. Options are abbreviated by default."""
-            prefix_chars = 0
-            if is_option:
-                display_name = display_name[0] if abbreviate_option else display_name
-                prefix_chars = 1 if abbreviate_option else 2
-            usage_components.append(f"[{'-' * prefix_chars}{display_name}]")
-
-        add_component(_HELP_KEY, abbreviate_option=False)
-
-        for option_name in [*custom_options, _TOKENS_KEY]:
-            add_component(option_name)
-
-        if self.version:
-            add_component(_VERSION_KEY)
-
-        if self._is_multi_token:
-            add_component(self._format_metavar(_TOKEN_METAVAR), is_option=False)
-
-        return " ".join(usage_components)
 
     def _build_description_string(
         self,
@@ -149,7 +130,7 @@ class Argstrap(ArgumentParser):
         indentation: str = "  ",
     ) -> str:
         """Returns a str describing the bot and how to run it with its default token."""
-        default_token = self.tokens[0] if self._is_multi_token else None
+        default_token = self.tokens[0] if (len(self.tokens) > 1) else None
         desc = original_desc or ""
 
         if (not desc) and (info := Metadata.get_package_info(self.cli.name)):
@@ -217,7 +198,7 @@ class Argstrap(ArgumentParser):
                 # It's guaranteed to exist and be a valid uid iff len(self.tokens) > 1.
                 token = next(t for t in self.tokens if t.uid == args.pop(_TOKEN_KEY))
 
-            # Then, invoke the callbacks for all custom options, if any were specified.
+            # Then, invoke the callbacks for any/all custom-defined options.
             for option_name, callback in self._custom_callbacks.items():
                 callback(args.pop(option_name))  # Pass in the value of the parsed arg.
 
@@ -276,3 +257,32 @@ class Argstrap(ArgumentParser):
             print(self.cli.colors.success(self.cli.strings.t_delete_success))
 
         self.cli.print_prefixed(self.cli.strings.t_manage_none)
+
+
+def _assign_option_abbrs(*custom_option_keys: str) -> dict[str, Optional[str]]:
+    """Returns a mapping of option keys to abbreviations. Values (abbrs) are unique."""
+    assigned_options: dict[str, Optional[str]] = {}
+
+    def add_option_keys(
+        *keys: str, allow_existing_keys: bool = False, add_abbrs: bool = False
+    ) -> None:
+        """Adds options to map. By default, forbids dupe keys and doesn't add abbrs."""
+        for key in keys:
+            if (key in assigned_options) and (not allow_existing_keys):
+                raise ValueError(f"'{key}' is not a unique command-line option name.")
+            elif add_abbrs and ((abbr := key[0]) not in assigned_options.values()):
+                assigned_options[key] = abbr
+            else:
+                assigned_options[key] = None
+
+    # First, assign keys and abbrs that are strictly reserved by the default options.
+    add_option_keys(_HELP_KEY, add_abbrs=True)
+    add_option_keys(_TOKEN_KEY, _TOKENS_KEY, _VERSION_KEY)  # Abbrs are not reserved.
+
+    # Then, try to assign keys and abbrs for any/all custom-defined options.
+    add_option_keys(*custom_option_keys, add_abbrs=True)
+
+    # Last, try to add abbrs for the default keys that were assigned without abbrs.
+    add_option_keys(_TOKENS_KEY, _VERSION_KEY, allow_existing_keys=True, add_abbrs=True)
+
+    return assigned_options
