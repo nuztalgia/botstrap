@@ -152,7 +152,6 @@ class BotstrapFlow(CliSession):
 
     def parse_args(
         self,
-        *,
         description: str | None = None,
         version: str | None = None,
         **custom_options: Option,
@@ -168,19 +167,22 @@ class BotstrapFlow(CliSession):
         ??? tip "Tip - Define your own command-line options!"
             <div id="parse-args-tip"/>
             By default, your bot's CLI will include options for `--tokens` and `--help`
-            (and `--version`, if you specify a version string). However, you aren't
-            limited to just those three options - this method accepts a `custom_options`
-            parameter, which allows you to define as many as you want! :tada:
+            (and `--version`, if you specify a version). However, you aren't limited to
+            just those three - this method accepts `#!py **custom_options`, which means
+            you can define as many as you want! :tada:
 
-            To define custom command-line options, you will have to create a
-            `#!py dict[str, Option]` - that is, a dictionary where the **keys** are
-            strings defining the names of the options, and the **values** are instances
-            of [`Option`][botstrap.Option] (a simple model for defining the option's
-            behavior) - and pass it in as the `custom_options` parameter when you call
-            this method.
+            To define custom command-line options, simply create instances of
+            [`Option`][botstrap.Option] and pass them into this method as keyword
+            arguments. The names you choose for your keyword arguments will determine
+            the names of the options. For example, an argument named `my_custom_flag`
+            will create the command-line option `--my-custom-flag`. It will also add the
+            alias `-m`, unless that alias has already been claimed by another option
+            starting with "m". Option names and aliases must be unique, and priority is
+            assigned according to the [order](https://peps.python.org/pep-0468/)
+            of `#!py **custom_options`.
 
-            For more details, check out the documentation for the
-            [`Option`][botstrap.Option] class.
+            See the documentation for the [`Option`][botstrap.Option] class
+            for more details about defining custom options.
 
         ??? note "Note - Automatically parsing arguments"
             If your bot doesn't require the customization afforded by the parameters
@@ -223,7 +225,7 @@ class BotstrapFlow(CliSession):
                 when the `--version` or `-v` option is specified on the command line.
                 If omitted, the `-v` option will not be available in your bot's CLI.
             **custom_options:
-                A dictionary defining your bot's custom command-line options (see the
+                Keyword args defining your bot's custom command-line options (see the
                 <a href="#parse-args-tip">tip</a> for more info). If omitted, only the
                 default Botstrap-provided options will be available in your bot's CLI.
 
@@ -355,8 +357,8 @@ class BotstrapFlow(CliSession):
         while preserving most, if not all, of the flexibility afforded by your chosen
         [Discord
         library](https://discord.com/developers/docs/topics/community-resources) -
-        as long as you're using one of the Python ones. :snake: See the descriptions
-        below for more details.
+        as long as you're using one of the Python ones, of course. :snake: See the
+        parameter descriptions below for more details.
 
         ??? example "Example - The simplest use case"
             This example makes the following assumptions:

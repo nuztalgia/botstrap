@@ -70,6 +70,10 @@ class Token(Secret):
         and will rely on the default values for all subsequent
         [`__init__()`][botstrap.internal.tokens.Token.__init__] parameters.
 
+        Args:
+            cli:
+                A `CliSession` providing the UX used by the CLI.
+
         Returns:
             A token named `#!py "default"`, created with the default constructor params.
         """
@@ -102,7 +106,7 @@ class Token(Secret):
 
             This might sound like a lot, but the implementation is actually quite
             straightforward and (probably) more concise than this description might lead
-            you to believe. Check out the source code <a href="#line-0-78">below</a>
+            you to believe. Check out the source code <a href="#line-0-82">below</a>
             to see for yourself. :eyes:
 
         Args:

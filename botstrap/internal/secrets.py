@@ -55,8 +55,8 @@ class Secret:
         from the Fernet documentation. The password will be run through the
         [`PBKDF2HMAC`](https://cryptography.io/en/latest/hazmat/primitives/key-derivation-functions/#cryptography.hazmat.primitives.kdf.pbkdf2.PBKDF2HMAC)
         key derivation function to factor it into the `fernet` key for the secret.
-        It will therefore be required again in order to "complete" the key every
-        time the secret is decrypted.
+        It will therefore be required again in order to "complete" the key
+        **every time** the secret is decrypted.
     """
 
     def __init__(
@@ -111,7 +111,7 @@ class Secret:
         This property will only return the `content` file path, as the `fernet` file is
         irrelevant outside of this class. The return value will be an instance of
         [`pathlib.Path`](https://docs.python.org/3/library/pathlib.html#concrete-paths),
-        but it is not guaranteed to point to an existing file (e.g. if this secret's
+        but it is **not** guaranteed to point to an existing file (e.g. if this secret's
         data hasn't been created/saved yet, or has been deleted).
         """
         return self._get_key_file(_CONTENT_FILE)
@@ -179,8 +179,10 @@ class Secret:
     def clear(self) -> None:
         """Deletes all files containing data related to this secret, if any exist.
 
-        This method **does not** scan the entire system to locate the files for a secret
-        - it only checks the `storage_directory` that was specified upon instantiation.
+        This method **does not** scan the entire system to
+        locate the files for a secret - it only checks the
+        [`storage_directory`][botstrap.internal.secrets.Secret.__init__]
+        that was specified upon instantiation.
 
         !!! tip "Tip - Don't scramble your secrets!"
             If a secret's `.key` files are renamed or moved out of their original
@@ -188,7 +190,7 @@ class Secret:
             `storage_directory` constructor parameters (or vice versa), then the secret
             will behave as if there are no existing files associated with it.
             Fortunately, this can easily be resolved by either moving the files back
-            into place or updating the constructor params in your code.
+            into place or updating the constructor parameters in your code.
         """
         for qualifier in _KEY_FILES:
             key_file = self._get_key_file(qualifier)

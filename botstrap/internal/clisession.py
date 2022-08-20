@@ -9,7 +9,7 @@ from botstrap.strings import CliStrings
 
 
 class CliSession:
-    """Handles UX state for a program, to ensure a consistent look and feel for its CLI.
+    """Defines UX state for a program, to ensure a consistent look and feel for its CLI.
 
     **UX state** consists of a combination of [`CliColors`][botstrap.CliColors] and
     [`CliStrings`][botstrap.CliStrings]. These are set by the constructor arguments upon
@@ -194,9 +194,8 @@ class CliSession:
 
         Args:
             prompt:
-                A short human-readable prompt for the user. Will be automatically
-                highlighted if colors are enabled, and then followed by a colon (`:`)
-                and a space.
+                A short human-readable prompt for the user. Will always be followed by a
+                colon (`:`) and a space, and will be highlighted if colors are enabled.
             format_input:
                 A function that accepts the raw input and returns a string that can be
                 safely displayed. If omitted, the input will be displayed as a sequence
@@ -226,8 +225,8 @@ class CliSession:
 
         ??? example
             ```pycon
-            >>> print(cli.get_input("Baby shark"))
-            Baby shark doo doo doo
+            >>> print(cli.get_input("Baby shark,"))
+            Baby shark, doo doo doo
             doo doo doo
             ```
 
@@ -260,8 +259,8 @@ class CliSession:
             ```pycon
             >>> cli.print_prefixed("What does the fox say?")
             cli-demo: What does the fox say?
-            >>> cli.print_prefixed("Wa-pa-pa-pa-pa-pa-pow!", is_error=True)
-            cli-demo: error: Wa-pa-pa-pa-pa-pa-pow!
+            >>> cli.print_prefixed("Ring-ding-ding-ding-dingeringeding!", is_error=True)
+            cli-demo: error: Ring-ding-ding-ding-dingeringeding!
             ```
 
         Args:

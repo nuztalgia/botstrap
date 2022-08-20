@@ -1,4 +1,4 @@
-"""This module contains a class that acts a namespace for metadata helper functions."""
+"""This module contains the `Metadata` class, which provides metadata-related utils."""
 import sys
 from email.errors import MessageError
 from importlib import import_module
@@ -35,7 +35,6 @@ class Metadata:
         if (not package_name) and not (package_name := _MAIN_MODULE.__package__ or ""):
             package_name = vars(_MAIN_MODULE).get("__requires__", "")
         try:
-            # noinspection PyUnresolvedReferences
             return (package_name and metadata(package_name).json) or {}
         except (MessageError, PackageNotFoundError):
             return {}
@@ -43,7 +42,6 @@ class Metadata:
     @classmethod
     def get_program_command(cls, name: str) -> list[str]:
         """Returns a `str` list mirroring the command used to run the current script."""
-        # noinspection PyArgumentList, PyUnresolvedReferences
         if name in entry_points(group="console_scripts").names:
             return [name]
         else:

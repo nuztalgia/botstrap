@@ -104,10 +104,11 @@ class CliColors:
 
         To customize this field, simply instantiate this class with your desired color -
         such as `#!py CliColors(Color.blue)` - and pass it in as the `colors` parameter
-        to the [`BotstrapFlow`][botstrap.BotstrapFlow] constructor. See the example
-        below for more details.
+        to the [`BotstrapFlow`][botstrap.BotstrapFlow] constructor. See the
+        <a href="#cli-colors-example">example</a> below for more details.
 
     ??? example cli-colors-example "Example - Customizing specific colors"
+        <div id="cli-colors-example"/>
         Let's say you want to use cyan as your bot's primary color... but cyan is the
         default highlight color, so that might be confusing. Fortunately, it's easy to
         change the highlight color too! This example demonstrates how to change the
@@ -150,7 +151,7 @@ class CliColors:
     def off(cls) -> CliColors:
         """Returns an instance of this class with all colors disabled.
 
-        In other words, the values of all fields are effectively no-ops - functions
+        In other words, the values of all fields will effectively be no-ops - functions
         that simply call `#!py str()` on their inputs without adding any formatting
         characters. This means that any text printed to the console will be displayed
         in its original (un-styled) color.

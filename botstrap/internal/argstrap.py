@@ -20,7 +20,7 @@ _HELP_REPLACEMENT: Final[str] = r"\1\2\2\3"  # Escape the "%" by including it tw
 
 
 class Argstrap(ArgumentParser):
-    """Parses command-line args and provides part of the CLI for bots that use Botstrap.
+    """Parses command-line args and provides a CLI framework for bots that use Botstrap.
 
     This class extends
     [`ArgumentParser`](https://docs.python.org/3/library/argparse.html#argparse.ArgumentParser)
@@ -55,7 +55,7 @@ class Argstrap(ArgumentParser):
                 when the `--version` option is specified. If omitted, that option will
                 not be present in the bot's CLI.
             **custom_options:
-                A dictionary defining the bot's custom-defined command-line options.
+                Keyword args specifying the bot's custom-defined command-line options.
                 If omitted, only the default Botstrap options will be available in the
                 bot's CLI.
         """
@@ -65,6 +65,7 @@ class Argstrap(ArgumentParser):
         self._custom_callbacks: Final[dict[str, Callable[[Any], None]]] = {}
 
         program_command = Metadata.get_program_command(self.cli.name)
+        # The last item on the command line is (usually?) the file/module/script name.
         program_name = self.cli.colors.primary(program_command[-1])
 
         super().__init__(
@@ -83,10 +84,11 @@ class Argstrap(ArgumentParser):
                 raise RuntimeError(f"Duplicate usage component: {component}")
             usage_components.append(component)
 
-        def add_option(key: str, action: str = "store_true", **kwargs) -> None:
+        def add_option(key: str, action: str = "store_true", **kwargs: Any) -> None:
             """Adds the given option (and its abbr) to the parser and usage string."""
             abbr = f"-{option_abbrs[key]}" if option_abbrs.get(key) else ""
             name = "--" + key.lower().strip("_").replace("_", "-")
+            # noinspection PyTypeChecker
             self.add_argument(*[s for s in (abbr, name) if s], action=action, **kwargs)
             add_usage_component(abbr if (abbr and (key != _HELP_KEY)) else name)
 
@@ -126,12 +128,12 @@ class Argstrap(ArgumentParser):
     def _build_description_string(
         self,
         program_command: list[str],
-        original_desc: Optional[str],
+        original_description: Optional[str],
         indentation: str = "  ",
     ) -> str:
         """Returns a str describing the bot and how to run it with its default token."""
         default_token = self.tokens[0] if (len(self.tokens) > 1) else None
-        desc = original_desc or ""
+        desc = original_description or ""
 
         if (not desc) and (info := Metadata.get_package_info(self.cli.name)):
             desc = summary if isinstance(summary := info.get("summary"), str) else ""
@@ -172,10 +174,10 @@ class Argstrap(ArgumentParser):
         return option_kwargs
 
     def parse_bot_args(self) -> Token:
-        """Parses command-line args, calls option callbacks, & returns the active token.
+        """Parses command-line args, calls option callbacks, & returns the token to use.
 
         Returns:
-            The token that should be decrypted and then plugged into the bot to run it.
+            The token that should be decrypted and then plugged in to run the bot.
 
         Raises:
             SystemExit: If a specified command-line option calls for an alternate
@@ -183,9 +185,9 @@ class Argstrap(ArgumentParser):
         """
         args = vars(super().parse_args())
 
-        if self.version and args.pop(_VERSION_KEY, False):
+        if self.version and args.pop(_VERSION_KEY):
             print(self.version)
-        elif args.pop(_TOKENS_KEY, False):
+        elif args.pop(_TOKENS_KEY):
             self.manage_tokens()
         else:
             # First, determine the token to use, based on command-line args or defaults.
@@ -194,8 +196,7 @@ class Argstrap(ArgumentParser):
             elif len(self.tokens) == 1:
                 token = self.tokens[0]
             else:
-                # Pop _TOKEN_KEY out so an error is raised if any custom options use it.
-                # It's guaranteed to exist and be a valid uid iff len(self.tokens) > 1.
+                # _TOKEN_KEY is guaranteed to be in args iff there's more than 1 token.
                 token = next(t for t in self.tokens if t.uid == args.pop(_TOKEN_KEY))
 
             # Then, invoke the callbacks for any/all custom-defined options.
