@@ -1,0 +1,9 @@
+/* Hide the duplicate class description (because it was included twice). */
+.doc-class + .doc-class > .doc-contents > :not(.doc-children) {
+  display: none;
+}
+
+/* Hide the default "None" values in __init__ (because they're distracting). */
+[id*="__init__"] :is(.kc, .n + .o) {
+  display: none;
+}
