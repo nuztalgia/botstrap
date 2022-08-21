@@ -95,7 +95,7 @@ class CliSession:
         if not self.get_bool_input(question):
             self.exit_process(self.strings.m_exit_by_choice, is_error=False)
 
-    def exit_process(self, reason: str, is_error: bool = True) -> None:
+    def exit_process(self, reason: str = "", is_error: bool = True) -> None:
         # noinspection PyUnresolvedReferences
         """Exits the program in a user-friendly manner.
 
@@ -120,7 +120,8 @@ class CliSession:
 
         Args:
             reason:
-                A simple explanation for why the program is ending.
+                A human-readable explanation for why the program is ending. If omitted,
+                the program will exit silently.
             is_error:
                 Whether the program is ending due to an error. Determines its exit code
                 and the color of the displayed `reason` text.
@@ -130,8 +131,11 @@ class CliSession:
                 `#!py 1` to indicate an "abnormal" exit. Otherwise, it will be raised
                 with exit code `#!py 0` to indicate a "successful" exit.
         """
-        reason = self.colors.error(reason) if is_error else self.colors.lowlight(reason)
-        print(f"{reason} {self.colors.lowlight(self.strings.m_exiting)}")
+        if text := reason:
+            print(
+                f"{self.colors.error(text) if is_error else self.colors.lowlight(text)}"
+                f" {self.colors.lowlight(self.strings.m_exiting)}"
+            )
         raise SystemExit(1 if is_error else 0)
 
     def get_bool_input(self, question: str) -> bool:
@@ -161,9 +165,7 @@ class CliSession:
         Returns:
             `True` if the user responds affirmatively, otherwise `False`.
         """
-        colored_prompt = self.strings.get_affirmation_prompt(
-            format_response=self.colors.highlight, quote_responses=True
-        )
+        colored_prompt = self.strings.get_affirmation_prompt(self.colors.highlight)
         result = self.get_input(f"{question} {colored_prompt}:").strip("'\"").lower()
         return result in self.strings.m_affirm_responses
 

@@ -22,6 +22,7 @@ class CliStrings:
     keyword-only.
 
     ??? info "Info - Field name prefixes"
+        <div id="prefix-info"/>
         Each field name begins with a **single-letter prefix** that indicates the
         subject of the string, defined as follows:
 
@@ -56,8 +57,9 @@ class CliStrings:
         ```
 
         **Note:** The strings customized in this example belong to the fields named
-        `m_login` and `m_login_success`. <br> See the info box above for an explanation
-        of `m_` and other prefixes used in the naming of this class's fields.
+        `m_login` and `m_login_success`.<br>See the info box
+        <a href="#prefix-info">above</a> for an explanation of `m_` and other prefixes
+        used in the naming of this class's fields.
     """
 
     @classmethod
@@ -81,7 +83,7 @@ class CliStrings:
         default_items = asdict(cls.default()).items()
         return cls(**{key: _get_compact_value(value) for key, value in default_items})
 
-    """ NOTE: This class defines **a lot** of fields.
+    """ NOTE: This class defines *a lot* of fields.
     To keep things organized, they're split up according to the following categories:
 
     1. Basic `#!py str` values (a.k.a. string literals)
@@ -90,8 +92,8 @@ class CliStrings:
     4. `tuple` objects containing any number of strings
 
     Within each of these sections, fields are sorted alphabetically, with an extra
-    newline separating each prefix group. See the info box in the class description
-    for an explanation of field name prefixes.
+    newline separating each prefix group. See the <a href="#prefix-info">info box</a>
+    in the class description for an explanation of field name prefixes.
     """
 
     # region FIELDS
@@ -105,10 +107,12 @@ class CliStrings:
     h_version: str = "Display the current bot version."
 
     m_affirm_cue: str = "If so, type"
+    m_conj_and: str = "and"
     m_conj_or: str = "or"
     m_exit_by_choice: str = "\nReceived a non-affirmative response."
     m_exit_by_interrupt: str = "\n\nReceived a keyboard interrupt."
     m_exiting: str = "Exiting process.\n"
+    m_list_sep: str = ", "
     m_login_failure: str = (
         "Failed to log in. Make sure your bot token is configured properly."
     )
@@ -135,8 +139,8 @@ class CliStrings:
     t_create_success: str = "\nYour token has been successfully encrypted and saved."
     t_create_use: str = "\nDo you want to use this token to run your bot now?"
     t_delete: str = "\nWould you like to permanently delete any of these tokens?"
-    t_delete_cue: str = "Please enter the ID of the token to delete:"
-    t_delete_mismatch: str = "\nThat doesn't match any of your saved tokens."
+    t_delete_cue: str = "Please enter the number next to the token you want to delete:"
+    t_delete_mismatch: str = "\nThat number doesn't match any of the above tokens."
     t_delete_retry: str = "\nWould you like to try again?"
     t_delete_success: str = "\nToken successfully deleted."
     t_manage_list: str = "You currently have the following bot tokens saved:"
@@ -180,7 +184,7 @@ class CliStrings:
         'Run "${program_command}" with no parameters to start the bot${mode_addendum}.'
     )
     h_token_id: Template = Template(
-        "The ID of the token to use to run the bot: ${token_ids}"
+        "The ID of the token to use to run the bot.\nValid options are ${token_ids}."
     )
 
     m_login_success: Template = Template(
@@ -192,7 +196,7 @@ class CliStrings:
         "\nYour password must be at least ${min_length} characters long."
     )
 
-    t_delete_hint: Template = Template("Expected one of: ${token_ids}")
+    t_delete_hint: Template = Template("(Expected ${token_nums}.)")
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     #   Section #4  -  `tuple` objects containing any number of strings
@@ -202,15 +206,82 @@ class CliStrings:
 
     # endregion FIELDS
 
-    def get_affirmation_prompt(
+    def join_choices(
         self,
-        format_response: Callable[[str], str] | None = None,
-        quote_responses: bool = True,
+        choices: Iterable[str],
+        format_choice: Callable[[str], str] | None = None,
+        quote_choices: bool = True,
+        conjunction: str | None = None,
+        separator: str | None = None,
+    ) -> str:
+        """Returns a string containing the choices joined together in natural language.
+
+        ??? example "Example - Joining lists of varying length"
+            ```pycon
+            >>> from botstrap import CliStrings
+            >>> strings = CliStrings.default()
+            >>> strings.join_choices(["head"])
+            '"head"'
+            >>> strings.join_choices(["head", "shoulders"])
+            '"head" or "shoulders"'
+            >>> strings.join_choices(["head", "shoulders", "knees"])
+            '"head", "shoulders", or "knees"'
+            >>> strings.join_choices(parts := ["head", "shoulders", "knees", "toes"])
+            '"head", "shoulders", "knees", or "toes"'
+            >>> strings.join_choices(parts, quote_choices=False)
+            'head, shoulders, knees, or toes'
+            ```
+
+        Args:
+            choices:
+                The strings to be joined together, representing the valid choices for
+                a given situation.
+            format_choice:
+                A function that accepts a string containing a single choice, and returns
+                a version of that string with any desired custom formatting applied.
+            quote_choices:
+                Whether to wrap each possible choice in double quotes (`"`) after
+                formatting it.
+            conjunction:
+                The string to insert between the last two choices, for lists of length
+                `#!py 2` or more. If omitted, will default to `m_conj_or`, whose default
+                value is `#!py "or"`.
+            separator:
+                The string to insert between each choice, for lists of length `#!py 3`
+                or more. If omitted, will default to `m_list_sep`, whose default value
+                is `#!py ", "`.
+
+        Returns:
+            A string containing the choices joined together in natural language.
+        """
+
+        def get_display_choice(choice: str):
+            if format_choice:
+                choice = format_choice(choice)
+            if quote_choices:
+                choice = f'"{choice.strip()}"'
+            return choice
+
+        choices = [get_display_choice(choice) for choice in choices]
+        conjunction = conjunction or self.m_conj_or
+        separator = separator or self.m_list_sep
+
+        return (
+            f" {conjunction} ".join(choices)
+            if len(choices) < 3
+            else f"{separator.join(choices[:-1])}{separator}{conjunction} {choices[-1]}"
+        )
+
+    def get_affirmation_prompt(
+        self, format_response: Callable[[str], str] | None = None
     ) -> str:
         """Returns a string prompting the user for an affirmative response.
 
         Responses considered "affirmative" are defined by the `m_affirm_responses`
         field, which is a tuple that consists of the strings "yes" and "y" by default.
+        Under the hood, this method simply calls
+        [`join_choices()`][botstrap.CliStrings.join_choices] with the appropriate
+        parameters, and then prepends `m_affirm_cue` to create an affirmation prompt.
 
         ??? example "Example - Using a custom response formatter"
             ```pycon
@@ -224,31 +295,12 @@ class CliStrings:
             format_response:
                 A function that accepts an affirmative response string and returns a
                 version of that string with any desired custom formatting applied.
-                This may be set to one of the class methods of [`Color`][botstrap.Color]
-                for a simple way to emphasize the valid responses to the prompt.
-            quote_responses:
-                Whether to wrap each possible affirmative response in double quotes
-                (`"`). These quotes are added after `format_response` is invoked on
-                the response (if it was provided).
 
         Returns:
             A string prompting the user for an affirmative response.
         """
-
-        def get_display_response(response: str):
-            if format_response:
-                response = format_response(response)
-            if quote_responses:
-                response = f'"{response.strip()}"'
-            return response
-
-        responses = [get_display_response(resp) for resp in self.m_affirm_responses]
-        conj, sep = self.m_conj_or.strip(), ", "
-
-        return f"{self.m_affirm_cue.strip()} " + (
-            f" {conj} ".join(responses)
-            if len(responses) < 3
-            else f"{sep.join(responses[:-1])}{sep}{conj} {responses[-1]}"
+        return f"{self.m_affirm_cue.strip()} " + self.join_choices(
+            choices=self.m_affirm_responses, format_choice=format_response
         )
 
 

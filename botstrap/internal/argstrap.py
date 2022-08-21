@@ -13,8 +13,6 @@ _TOKEN_KEY: Final[str] = "token"
 _TOKENS_KEY: Final[str] = "tokens"
 _VERSION_KEY: Final[str] = "version"
 
-_TOKEN_METAVAR: Final[str] = "token id"
-
 _HELP_PATTERN: Final[re.Pattern] = re.compile(r"(^|[^%])(%)([^%(]|$)")
 _HELP_REPLACEMENT: Final[str] = r"\1\2\2\3"  # Escape the "%" by including it twice.
 
@@ -107,23 +105,22 @@ class Argstrap(ArgumentParser):
 
         # Finally, add the positional "token id" argument iff there's more than 1 token.
         if len(self._tokens) > 1:
+            joined_uids = self.cli.strings.join_choices(
+                token_uids := [token.uid for token in self._tokens],
+                conjunction=self.cli.strings.m_conj_and,
+            )
             self.add_argument(  # Note that this is "add_argument", not "add_option".
                 _TOKEN_KEY,
                 nargs="?",
-                choices=(token_uids := [token.uid for token in self._tokens]),
+                choices=token_uids,
                 default=token_uids[0],
-                help=self.cli.strings.h_token_id.substitute(token_ids=token_uids),
-                metavar=self._format_metavar(_TOKEN_METAVAR, lowlight=False),
+                help=self.cli.strings.h_token_id.substitute(token_ids=joined_uids),
+                metavar=(token_metavar := "<token id>"),
             )
-            add_usage_component(self._format_metavar(_TOKEN_METAVAR))  # Lowlight on.
+            add_usage_component(self.cli.colors.lowlight(token_metavar))
 
         # Join all the components together to produce the complete usage string.
         self.usage = " ".join(usage_components)
-
-    def _format_metavar(self, placeholder_text: str, lowlight: bool = True) -> str:
-        """Returns the placeholder text, surrounded by chevrons & optionally colored."""
-        metavar = f"<{placeholder_text}>"
-        return self.cli.colors.lowlight(metavar) if lowlight else metavar
 
     def _build_description_string(
         self,
@@ -155,9 +152,9 @@ class Argstrap(ArgumentParser):
         }
         if not option.flag:  # Non-flag options require more information.
             option_kwargs["default"] = option.default
-            option_kwargs["type"] = (option_type := type(option.default))
+            option_kwargs["type"] = (_type := type(option.default))
             option_kwargs["choices"] = option.choices or None
-            option_kwargs["metavar"] = self._format_metavar(option_type.__name__)
+            option_kwargs["metavar"] = self.cli.colors.lowlight(f"<{_type.__name__}>")
 
         def fallback_callback(option_value: Any) -> None:
             """Raises a nicely-formatted RuntimeError for options without a callback."""
@@ -286,7 +283,11 @@ class Argstrap(ArgumentParser):
 
         # Check whether to switch to the token mgmt flow, which will exit on completion.
         if args.get(_TOKENS_KEY):
-            self.manage_tokens()
+            try:
+                self.manage_tokens()
+            except KeyboardInterrupt:
+                exit_reason = self.cli.strings.m_exit_by_interrupt
+                self.cli.exit_process(exit_reason, is_error=False)
 
         # Return the token to use, based on command-line args (if present) or defaults.
         if token_uid := args.get(_TOKEN_KEY):
@@ -324,30 +325,47 @@ class Argstrap(ArgumentParser):
             SystemExit: When the user cannot (or does not want to) delete any more
                 token files.
         """
+        ansi_pattern = re.compile(r"(\x9B|\x1B\[)[0-?]*[ -/]*[@-~]")
         default_token = Token.get_default(self.cli)
-        if not any(t for t in self._tokens if t.uid == default_token.uid):
-            self._tokens.append(default_token)
 
+        if not any(t for t in self._tokens if t.uid == default_token.uid):
+            self._tokens.append(default_token)  # Just in case the user has it stored.
+
+        # Keep looping as long as the list of "tokens with existing files" is not empty.
         while saved_tokens := [t for t in self._tokens if t.file_path.is_file()]:
             self.cli.print_prefixed(self.cli.strings.t_manage_list)
+            enumeration = {str(n): t for n, t in enumerate(saved_tokens, start=1)}
+            token_width = max(len(ansi_pattern.sub("", str(t))) for t in saved_tokens)
 
-            for count, token in enumerate(saved_tokens, start=1):
+            # Print a numbered line for each token, displaying its name and file path.
+            for token_num, token in enumeration.items():
+                num = self.cli.colors.highlight(token_num)
+                padding = " " * (token_width - len(ansi_pattern.sub("", str(token))))
                 index = str(token.file_path).rindex(token.uid) + len(token.uid)
                 path = self.cli.colors.lowlight(f"{str(token.file_path)[:index]}.*")
-                print(f"  {count}) {self.cli.colors.highlight(token.uid)} -> {path}")
+                print(f"  {num}. {token}{padding} ->  {path}")
 
+            # "Would you like to permanently delete any of these tokens?" Yes or exit.
             self.cli.confirm_or_exit(self.cli.strings.t_delete)
 
-            uids = [token.uid for token in saved_tokens]
             prompt = self.cli.strings.t_delete_cue
+            joined_nums = self.cli.strings.join_choices(
+                token_nums := enumeration.keys(),
+                format_choice=self.cli.colors.highlight,
+            )
 
-            while (uid := self.cli.get_input(prompt)) not in uids:
-                print(self.cli.colors.warning(self.cli.strings.t_delete_mismatch))
-                print(self.cli.strings.t_delete_hint.substitute(token_ids=uids))
+            # Keep looping until the input is valid, or until the user decides to stop.
+            while (token_num := self.cli.get_input(prompt)) not in token_nums:
+                invalid_input_text = (
+                    self.cli.colors.warning(self.cli.strings.t_delete_mismatch),
+                    self.cli.strings.t_delete_hint.substitute(token_nums=joined_nums),
+                )
+                print(" ".join(invalid_input_text))
                 self.cli.confirm_or_exit(self.cli.strings.t_delete_retry)
 
-            next(t for t in self._tokens if t.uid == uid).clear()
+            enumeration[token_num].clear()  # Token files are permanently deleted.
             print(self.cli.colors.success(self.cli.strings.t_delete_success))
 
+        # The user has no more saved bot tokens (or had none to begin with).
         self.cli.print_prefixed(self.cli.strings.t_manage_none)
-        raise SystemExit(0)  # Successful exit.
+        self.cli.exit_process(is_error=False)
