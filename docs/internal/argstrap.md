@@ -28,4 +28,5 @@
       show_source: true
 
 <link rel="stylesheet" href="../../stylesheets/argstrap.css" />
+<link rel="stylesheet" href="../../stylesheets/manage-tokens.css" />
 <link rel="stylesheet" href="../../stylesheets/nav-code.css" />
