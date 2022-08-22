@@ -1,7 +1,7 @@
 """This module contains the `Argstrap` class, which parses arguments for a bot's CLI."""
 import re
 from argparse import ArgumentParser, RawTextHelpFormatter
-from typing import Any, Callable, Final, Optional
+from typing import Any, Final, Optional
 
 from botstrap.internal.clisession import CliSession
 from botstrap.internal.metadata import Metadata
@@ -20,10 +20,19 @@ _HELP_REPLACEMENT: Final[str] = r"\1\2\2\3"  # Escape the "%" by including it tw
 class Argstrap(ArgumentParser):
     """Parses command-line args and provides a CLI framework for bots that use Botstrap.
 
-    This class extends
-    [`ArgumentParser`](https://docs.python.org/3/library/argparse.html#argparse.ArgumentParser)
-    and can operate similarly, but its primary use is to automatically handle both
-    Botstrap-specific and custom-defined command-line options.
+    This class extends [`ArgumentParser`][1] and can operate similarly, but its primary
+    purpose is to automatically handle the command-line arguments expected by Botstrap.
+    These may be the default options provided out-of-the-box (such as `--help` and
+    `--tokens`), or custom ones defined for individual bots with the help of the
+    [`Option`](../../api/option) class.
+
+    The portion of the program flow handled by this class is quite self-contained - its
+    only method that gets called externally (aside from the constructor) is
+    [`parse_bot_args()`][botstrap.internal.Argstrap.parse_bot_args]. Nevertheless,
+    detailed documentation and source code snippets are provided for every method,
+    because **all of them** contain logic that is fundamental to how Botstrap operates.
+
+    [1]: https://docs.python.org/3/library/argparse.html#argparse.ArgumentParser
     """
 
     def __init__(
@@ -59,21 +68,32 @@ class Argstrap(ArgumentParser):
         """
         self.cli: Final[CliSession] = cli
         self._tokens: Final[list[Token]] = tokens
-        self._custom_callbacks: Final[dict[str, Callable[[Any], None]]] = {}
+        self._custom_keys: Final[list[str]] = []  # Keys are added as they're validated.
+
+        if not description:
+            summary = Metadata.get_package_info(self.cli.name).get("summary")
+            description = summary if isinstance(summary, str) else ""
 
         program_command = Metadata.get_program_command(self.cli.name)
-        # The last item on the command line is (usually?) the file/module/script name.
-        program_name = self.cli.colors.primary(program_command[-1])
+        mode_addendum = (
+            (is_multi_token := len(tokens) > 1)
+            and (" " + self.cli.strings.h_desc_mode.substitute(token=tokens[0]).strip())
+        ) or ""
+        description = (
+            (description and f"  {description.strip()}\n") + "  "
+        ) + self.cli.strings.h_desc.substitute(
+            program_command=" ".join(program_command), mode_addendum=mode_addendum
+        )
 
         super().__init__(
-            prog=program_name,
-            description=self._build_description_string(program_command, description),
+            prog=(prog := self.cli.colors.primary(program_command[-1])),
+            description=description,
             formatter_class=RawTextHelpFormatter,
             add_help=False,
-        )  # "usage" wasn't specified because it will be built & set during this method.
+        )
 
-        usage_components = [program_name]  # Will be combined to form the usage string.
-        abbreviations = self.assign_arg_abbrs(*custom_options)  # Includes defaults too.
+        usage_components = [prog]  # Will later be combined to form the `usage` string.
+        abbreviations = self.assign_arg_abbrs(*custom_options)  # Assigns defaults too.
 
         def add_usage_component(name: str) -> None:
             """Formats the provided name and appends it to the usage_components list."""
@@ -91,7 +111,20 @@ class Argstrap(ArgumentParser):
 
         # First, add any/all custom-defined (a.k.a. probably the most relevant) options.
         for option_key, option in custom_options.items():
-            add_option(option_key, **self._process_custom_option(option_key, option))
+            option_dict: dict[str, Any] = {
+                "action": "store_true" if option.flag else "store",
+                "help": _HELP_PATTERN.sub(_HELP_REPLACEMENT, option.help or ""),
+            }  # Translating the option to the format expected by add_argument().
+
+            if not option.flag:  # Non-flag options require more information.
+                option_dict["default"] = option.default
+                option_dict["type"] = (_type := type(option.default))
+                option_dict["choices"] = option.choices or None
+                option_dict["metavar"] = self.cli.colors.lowlight(f"<{_type.__name__}>")
+
+            # Add the custom option to the CLI and keep track of its key for later use.
+            add_option(option_key, **option_dict)
+            self._custom_keys.append(option_key)
 
         # Then add the default options, in order of their usefulness when viewing "-h".
         add_option(_TOKENS_KEY, help=self.cli.strings.h_tokens)  # Add "--tokens" first.
@@ -104,7 +137,7 @@ class Argstrap(ArgumentParser):
         add_option(_HELP_KEY, action="help", help=self.cli.strings.h_help)
 
         # Finally, add the positional "token id" argument iff there's more than 1 token.
-        if len(self._tokens) > 1:
+        if is_multi_token:
             joined_uids = self.cli.strings.join_choices(
                 token_uids := [token.uid for token in self._tokens],
                 conjunction=self.cli.strings.m_conj_and,
@@ -121,54 +154,6 @@ class Argstrap(ArgumentParser):
 
         # Join all the components together to produce the complete usage string.
         self.usage = " ".join(usage_components)
-
-    def _build_description_string(
-        self,
-        program_command: list[str],
-        original_description: Optional[str],
-        indentation: str = "  ",
-    ) -> str:
-        """Returns a str describing the bot and how to run it with its default token."""
-        default_token = self._tokens[0] if (len(self._tokens) > 1) else None
-        desc = original_description or ""
-
-        if (not desc) and (info := Metadata.get_package_info(self.cli.name)):
-            desc = summary if isinstance(summary := info.get("summary"), str) else ""
-
-        indented_desc = (f"{indentation}{desc.strip()}\n" if desc else "") + indentation
-        format_mode_text = self.cli.strings.h_desc_mode.substitute
-        mode_addendum = (default_token and format_mode_text(token=default_token)) or ""
-
-        return indented_desc + self.cli.strings.h_desc.substitute(
-            program_command=" ".join(program_command),
-            mode_addendum=f" {mode_addendum.strip()}" if mode_addendum else "",
-        )
-
-    def _process_custom_option(self, option_key: str, option: Option) -> dict[str, Any]:
-        """Registers a callback and returns the Option in add_argument **kwargs form."""
-        option_kwargs: dict[str, Any] = {
-            "action": "store_true" if option.flag else "store",
-            "help": _HELP_PATTERN.sub(_HELP_REPLACEMENT, option.help or ""),
-        }
-        if not option.flag:  # Non-flag options require more information.
-            option_kwargs["default"] = option.default
-            option_kwargs["type"] = (_type := type(option.default))
-            option_kwargs["choices"] = option.choices or None
-            option_kwargs["metavar"] = self.cli.colors.lowlight(f"<{_type.__name__}>")
-
-        def fallback_callback(option_value: Any) -> None:
-            """Raises a nicely-formatted RuntimeError for options without a callback."""
-            indentation = " " * len(f"{RuntimeError.__name__}: ")
-            raise RuntimeError(
-                f"Custom option '{option_key}' did not set a callback.\n"
-                f"{indentation}Option type:  '{type(option_value).__name__}'\n"
-                f"{indentation}Parsed value: '{option_value}'"
-            )
-
-        self._custom_callbacks[option_key] = (
-            option.callback if (option.callback != print) else fallback_callback
-        )
-        return option_kwargs
 
     # noinspection PyMethodMayBeStatic
     def assign_arg_abbrs(self, *custom_keys: str) -> dict[str, Optional[str]]:
@@ -193,11 +178,14 @@ class Argstrap(ArgumentParser):
 
             - The **value** for each key will either be a single-character `#!py str`
               containing the first letter of the argument name, or `None` if a
-              "higher-priority" argument starting with the same letter was previously
-              added to the `#!py dict`. Values that represent abbreviations (i.e. all
-              `#!py str` values) are **guaranteed to be unique**.
+              higher-[priority](./#abbr-priority) argument starting with the same letter
+              was previously added to the `#!py dict`.
+
+            - Values that represent abbreviations (i.e. all `#!py str` values) are
+              **guaranteed to be unique**.
 
         ??? note "Note - Determining abbreviation priority"
+            <div id="abbr-priority"/>
             Ideally, all command-line arguments/options would all start with different
             letters, and would all be conveniently and intuitively abbreviated.
             Since that won't always be the case, this method reserves letters for
@@ -207,9 +195,9 @@ class Argstrap(ArgumentParser):
                 common abbreviation for command-line tools, so it is given top priority.
 
             2.  Then, abbreviations for **custom-defined options** are reserved in the
-                same order in which the keyword arguments were originally passed in. For
-                example, with three custom options named `--hoo`, `--bar`, and `--baz`,
-                the only resulting new abbreviation would be `-b` for `--bar`.
+                same [order][3] in which the keyword arguments were originally passed
+                in. For example, with three custom options named `--hoo`, `--bar`, and
+                `--baz`, the only resulting new abbreviation would be `-b` for `--bar`.
 
             3.  Last, if `-t` and/or `-v` have not been reserved yet, they are assigned
                 to `--tokens` and `--version` respectively. These are default options
@@ -224,6 +212,7 @@ class Argstrap(ArgumentParser):
 
         [1]: https://docs.python.org/3/library/argparse.html#the-add-argument-method
         [2]: https://docs.python.org/3/whatsnew/3.6.html#new-dict-implementation
+        [3]: https://peps.python.org/pep-0468/
 
         Args:
             *custom_keys:
@@ -263,25 +252,19 @@ class Argstrap(ArgumentParser):
 
         return assigned_options
 
-    def parse_bot_args(self) -> Token:
-        """Parses command-line args, calls option callbacks, & returns the token to use.
+    def parse_bot_args(self) -> tuple[Token, Option.Results]:
+        """Parses command-line args and returns the results along with the active token.
 
         Returns:
-            The token that should be decrypted and then plugged in to run the bot.
+            A tuple containing the active `Token` and the `Results` for custom options.
 
         Raises:
-            RuntimeError: If a custom-defined [`Option`](../../api/option) was parsed,
-                but it did not properly set its `callback` attribute.
             SystemExit: If a parsed option calls for an alternate program flow that
                 exits on completion (e.g. `--tokens`).
         """
         args = vars(super().parse_args())
 
-        # Invoke the callbacks for any/all custom-defined options.
-        for option_name, callback in self._custom_callbacks.items():
-            callback(args.get(option_name))  # Pass in the value of the parsed arg.
-
-        # Check whether to switch to the token mgmt flow, which will exit on completion.
+        # Check whether to switch to token management flow, which exits on completion.
         if args.get(_TOKENS_KEY):
             try:
                 self.manage_tokens()
@@ -289,13 +272,16 @@ class Argstrap(ArgumentParser):
                 exit_reason = self.cli.strings.m_exit_by_interrupt
                 self.cli.exit_process(exit_reason, is_error=False)
 
-        # Return the token to use, based on command-line args (if present) or defaults.
+        # Select the token to use, based on command-line args (if present) or defaults.
         if token_uid := args.get(_TOKEN_KEY):
-            return next(t for t in self._tokens if t.uid == token_uid)
+            token = next(t for t in self._tokens if t.uid == token_uid)
         elif len(self._tokens) == 1:
-            return self._tokens[0]
+            token = self._tokens[0]
         else:
-            return Token.get_default(self.cli)
+            token = Token.get_default(self.cli)
+
+        # Return the token for Botstrap, and the parsed custom options for the user.
+        return token, Option.Results(*self._custom_keys, **args)
 
     def manage_tokens(self) -> None:
         """Starts the token management flow for viewing and deleting saved token files.

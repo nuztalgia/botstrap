@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Any, Final
+from typing import Any, Final, cast
 
 from botstrap.colors import CliColors
 from botstrap.internal import Argstrap, CliSession, Metadata, Token
@@ -90,7 +90,7 @@ class BotstrapFlow(CliSession):
             - **It doesn't require password-protection** - the Discord account it
               uses doesn't have access to any real users or servers that could
               potentially be damaged if a malicious actor were to gain control.
-            - **You do not disable** `allow_auto_register_token` **in any subsequent
+            - **You do not disable** `allow_token_registration` **in any subsequent
               method calls** - it's enabled by default, so unless you explicitly set
               it to `False`, you'll be fine.
 
@@ -100,8 +100,8 @@ class BotstrapFlow(CliSession):
             file containing the `#!py "__main__"` module of your bot's script.
 
         ??? example "Example - Registering multiple tokens"
-            This example uses [`Color`][botstrap.Color] functions to make the tokens
-            more easily identifiable when they're mentioned in the CLI.
+            This example uses [`Color`](../color) functions to make the tokens more
+            easily identifiable when they're mentioned in the CLI.
 
             ```py title="bot.py"
             from botstrap import BotstrapFlow, Color
@@ -152,10 +152,11 @@ class BotstrapFlow(CliSession):
 
     def parse_args(
         self,
+        *,
         description: str | None = None,
         version: str | None = None,
-        **custom_options: Option,
-    ) -> BotstrapFlow:
+        **options: Option,
+    ) -> Option.Results:
         """Parses any arguments and options passed in via the command line.
 
         This should only be invoked after **all** of your bot's tokens are declared
@@ -164,33 +165,38 @@ class BotstrapFlow(CliSession):
         can be correctly determined from any command-line arguments passed to your
         bot's script.
 
+        After reading through the rest of this method's documentation, you should decide
+        whether your bot requires the extra customization it provides. **If not**, you
+        may safely skip ahead to the next step in the flow. Behind the scenes, this
+        method will automatically be called in order to identify the active token and
+        to provide the default command-line options.
+
         ??? tip "Tip - Define your own command-line options!"
-            <div id="parse-args-tip"/>
+            <div id="custom-options"/>
             By default, your bot's CLI will include options for `--tokens` and `--help`
             (and `--version`, if you specify a version). However, you aren't limited to
-            just those three - this method accepts `#!py **custom_options`, which means
-            you can define as many as you want! :tada:
+            those three - this method can accept as many `#!py **options` as you want
+            to define! :tada:
 
-            To define custom command-line options, simply create instances of
-            [`Option`][botstrap.Option] and pass them into this method as keyword
-            arguments. The names you choose for your keyword arguments will determine
-            the names of the options. For example, an argument named `my_custom_flag`
-            will create the command-line option `--my-custom-flag`. It will also add the
-            alias `-m`, unless that alias has already been claimed by another option
-            starting with "m". Option names and aliases must be unique, and priority is
-            assigned according to the [order](https://peps.python.org/pep-0468/)
-            of `#!py **custom_options`.
+            To add custom command-line options, simply create [`Option`](../option)
+            objects and pass them in as keyword arguments when you call this method. The
+            **names** you choose for your keyword arguments will determine the names of
+            the options. For example, an argument named `my_custom_flag` will create the
+            command-line option `--my-custom-flag`.
 
-            See the documentation for the [`Option`][botstrap.Option] class
-            for more details about defining custom options.
+            ---
+            For more information, check out:
 
-        ??? note "Note - Automatically parsing arguments"
-            If your bot doesn't require the customization afforded by the parameters
-            below, you can skip this method as long as you do **not** disable
-            `allow_auto_parse_args` in any subsequent method calls to either
-            [`retrieve_active_token()`][botstrap.BotstrapFlow.retrieve_active_token] or
-            [`run_bot()`][botstrap.BotstrapFlow.run_bot]. It's enabled by default, so
-            unless you explicitly set it to `False`, you'll be fine.
+            - The **API reference** for [`Option`](../option). It includes examples and
+              goes into detail about the fields you need to specify when defining your
+              own custom options.
+            - The documentation for this method's **return type**,
+              [`Option.Results`][botstrap.Option.Results]. (It only occupies a short
+              section at the very bottom, so it might be easy to miss.)
+            - ... and if you're curious about how **option abbreviations** (such as `-h`
+              and `-v`) are allotted, you can venture into the internal documentation to
+              read [this note](../../internal/argstrap#abbr-priority), which explains
+              this process and the reasoning behind it.
 
         ??? example "Example - Customizing your bot's description"
             ```py title="bot.py"
@@ -224,13 +230,13 @@ class BotstrapFlow(CliSession):
                 A string representing the current version of your bot. Will be displayed
                 when the `--version` or `-v` option is specified on the command line.
                 If omitted, the `-v` option will not be available in your bot's CLI.
-            **custom_options:
+            **options:
                 Keyword args defining your bot's custom command-line options (see the
-                <a href="#parse-args-tip">tip</a> for more info). If omitted, only the
-                default Botstrap-provided options will be available in your bot's CLI.
+                [tip](./#custom-options) for more info). If none are provided, then
+                only the default options will be available in your bot's CLI.
 
         Returns:
-            This `BotstrapFlow` instance, for chaining method calls.
+            An object with attribute names & values corresponding to the parsed options.
 
         Raises:
             SystemExit: If a specified command-line option calls for an alternate
@@ -241,21 +247,19 @@ class BotstrapFlow(CliSession):
             tokens=list(self._tokens_by_uid.values()),
             description=description,
             version=version,
-            **custom_options,
+            **options,
         )
         # The following call to `parse_bot_args()` may raise a `SystemExit` depending on
         # which options were specified on the command line. If it doesn't, then it will
-        # invoke all `callback` functions for `custom_options` (if any were provided)
-        # and set the value of `self._active_token` to a valid `Token` (i.e. not None).
-        self._active_token = argstrap.parse_bot_args()
-        return self
+        # set the value of `self._active_token` to a valid `Token` (i.e. not `None`).
+        self._active_token, results = argstrap.parse_bot_args()
+        return results
 
     def retrieve_active_token(
         self,
         *,
-        allow_auto_register_token: bool = True,
-        allow_auto_parse_args: bool = True,
         allow_token_creation: bool = True,
+        allow_token_registration: bool = True,
     ) -> str | None:
         """Returns the value of the active token, if it exists and can be decrypted.
 
@@ -296,28 +300,23 @@ class BotstrapFlow(CliSession):
             ```
 
         Args:
-            allow_auto_register_token:
-                Whether to automatically register a basic `#!py "default"` token
-                if no tokens have been explicitly defined with
-                [`register_token()`][botstrap.BotstrapFlow.register_token].
-            allow_auto_parse_args:
-                Whether to automatically parse command-line options and args if
-                [`parse_args()`][botstrap.BotstrapFlow.parse_args]
-                has not been explicitly invoked.
             allow_token_creation:
                 Whether to interactively prompt to create (i.e. add and encrypt)
                 a new token if the active token has not already been created.
+            allow_token_registration:
+                Whether to automatically register a basic `#!py "default"` token
+                if no tokens have been explicitly defined with
+                [`register_token()`][botstrap.BotstrapFlow.register_token].
 
         Returns:
             The active token value if it exists and can be decrypted, otherwise `None`.
 
         Raises:
             RuntimeError: If no tokens have been registered and
-                `allow_auto_register_token` is `False`, <br>**OR** if
-                args have not been parsed and `allow_auto_parse_args` is `False`.
+                `allow_token_registration` is set to `False`.
         """
         if not self._tokens_by_uid:
-            if allow_auto_register_token:
+            if allow_token_registration:
                 default_token = Token.get_default(self)
                 self._tokens_by_uid[default_token.uid] = default_token
             else:
@@ -327,20 +326,12 @@ class BotstrapFlow(CliSession):
                 )
 
         if not self._active_token:
-            if allow_auto_parse_args:
-                # This will set `self._active_token`, unless an alternate path is taken.
-                self.parse_args()
-            else:
-                raise RuntimeError(
-                    "Cannot confirm active token (args were not parsed).\nTo fix this, "
-                    "you can allow auto-parse and/or explicitly call `parse_args()`."
-                )
-
-        if not self._active_token:  # In theory, there's no reason for it not to be set.
-            raise RuntimeError("Something went wrong. Couldn't determine active token.")
+            # This call to `parse_args()` will either set `self._active_token` to a
+            # valid `Token`, or switch to an alternate flow and then exit the process.
+            self.parse_args()
 
         try:
-            return self._active_token.resolve(allow_token_creation=allow_token_creation)
+            return cast(Token, self._active_token).resolve(allow_token_creation)
         except KeyboardInterrupt:
             self.exit_process(self.strings.m_exit_by_interrupt, is_error=False)
             return None  # Appease mypy, even though this is technically unreachable.
@@ -355,21 +346,16 @@ class BotstrapFlow(CliSession):
 
         These two parameters provide a straightforward solution for complex use cases
         while preserving most, if not all, of the flexibility afforded by your chosen
-        [Discord
-        library](https://discord.com/developers/docs/topics/community-resources) -
-        as long as you're using one of the Python ones, of course. :snake: See the
-        parameter descriptions below for more details.
+        [Discord library][1] - as long as you're using one of the Python ones, of
+        course. :snake: See the parameter descriptions below for more details.
 
         ??? example "Example - The simplest use case"
             This example makes the following assumptions:
 
             - You're using one of the more common Python libraries for Discord:
-              either [discord.py](https://github.com/Rapptz/discord.py)
-              or [Pycord](https://github.com/Pycord-Development/pycord).
+              either [discord.py][2] or [Pycord][3].
             - Your bot does not subclass `discord.Bot`.
-              (**Note:** Subclassing is often useful.
-              [This guide](https://guide.pycord.dev/popular-topics/subclassing-bots/)
-              explains why.)
+              (**Note:** Subclassing is often useful. [This guide][4] explains why.)
             - You've already completed the CLI flow to set up the `#!py "default"`
               token for your bot.
 
@@ -389,6 +375,11 @@ class BotstrapFlow(CliSession):
             bot: default: Successfully logged in as "BasicBot#1234".
             ```
 
+        [1]: https://discord.com/developers/docs/topics/community-resources
+        [2]: https://github.com/Rapptz/discord.py
+        [3]: https://github.com/Pycord-Development/pycord
+        [4]: https://guide.pycord.dev/popular-topics/subclassing-bots/
+
         Args:
             bot_class:
                 The fully-qualified class name or the `#!py type` of your bot.
@@ -407,11 +398,12 @@ class BotstrapFlow(CliSession):
 
                 2. The remaining args will be passed to the constructor of `bot_class`
                 upon instantiation. A common use case for this is specifying any special
-                [`intents`](https://discord.com/developers/docs/topics/gateway#privileged-intents)
-                your bot might need.
+                [`intents`][1] your bot might need.
 
                 Any options that aren't specified will simply use the default values
                 defined by their respective methods.
+
+                [1]: https://discord.com/developers/docs/topics/gateway#gateway-intents
 
         Raises:
             ImportError: If `bot_class` is a `#!py str` that refers to a type that
@@ -431,11 +423,7 @@ class BotstrapFlow(CliSession):
 
         # The call to `retrieve_active_token()` will (try to) set `self._active_token`.
         token_value = self.retrieve_active_token(
-            **filter_options(
-                allow_auto_register_token=True,
-                allow_auto_parse_args=True,
-                allow_token_creation=True,
-            )
+            **filter_options(allow_token_creation=True, allow_token_registration=True)
         )
         # An appropriate message will have been shown if either of these is unavailable.
         if (not token_value) or not (token := self._active_token):

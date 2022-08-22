@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import argparse
 from dataclasses import dataclass
-from typing import Any, Callable, ClassVar, Iterable
+from typing import Any, ClassVar, Iterable
 
 
 @dataclass(eq=False, frozen=True, kw_only=True)
@@ -50,9 +50,6 @@ class Option:
           [`choices`][botstrap.Option.choices] fields when instantiating this class -
           unless you intend to use their default values.
 
-        - This field has no effect on [`callback`][botstrap.Option.callback], which
-          should **always** be provided in order to avoid a `#!py RuntimeError`.
-
         - This field has no effect on [`help`][botstrap.Option.help], which should
           **always** be provided for a user-friendly experience! :sparkles:
     """
@@ -82,30 +79,45 @@ class Option:
     [`default`][botstrap.Option.default] value will be considered "acceptable".
     """
 
-    callback: Callable[[Any], None] = print
-    """A function that will be invoked with the value of this option after it's parsed.
-
-    The function should accept a single parameter whose type matches that of the
-    [`default`][botstrap.Option.default] value, or a `#!py bool` if
-    [`flag`][botstrap.Option.flag] was set to `True`. For brevity and ease of use,
-    the parameter is type-hinted as `Any`, but you may assume it will be called with a
-    value of the appropriate type.
-
-    If this field is omitted, then this whole `Option` will essentially **do nothing**.
-    To flag this problem when it occurs, a `#!py RuntimeError` will be raised upon
-    parsing an option that hasn't set this field.
-    """
-
     help: str | None = None
     """A string containing a brief description of this option.
 
     This text will be displayed alongside the entry for this option when `--help` (or
     `-h`) is specified on the command line. If omitted, the entry for this option will
     appear without any help text. To prevent this option from being listed in the help
-    menu, set this field to `Option.HIDE_HELP`.
+    menu, set this field to [`Option.HIDE_HELP`][botstrap.Option.HIDE_HELP].
     """
 
     # endregion FIELDS
 
     HIDE_HELP: ClassVar[str] = argparse.SUPPRESS
-    """A constant used as the value for `help` to hide an option's `-h` menu entry."""
+    """Hides an option's `-h` menu entry when used as the value for the `help` field."""
+
+    class Results(argparse.Namespace):
+        """A simple class to hold the final parsed values for command-line options.
+
+        This class, like its [parent][1], is essentially just an `#!py object` with a
+        readable string representation. The names of its attributes will match the names
+        you choose for your `Option` objects when passing them as keyword arguments to
+        [`parse_args()`][botstrap.BotstrapFlow.parse_args].
+
+        If you prefer to work with a `#!py dict` representation of your parsed option
+        values, simply pass your instance of this class to the built-in Python function
+        [`vars()`][2].
+
+        [1]: https://docs.python.org/3/library/argparse.html#the-namespace-object
+        [2]: https://docs.python.org/3/library/functions.html#vars
+        """
+
+        def __init__(self, *allowed_keys: str, **kwargs: Any) -> None:
+            """Initializes a new `Option.Results` instance.
+
+            Args:
+                *allowed_keys:
+                    The names of the attributes that are assignable to this object.
+                **kwargs:
+                    The attribute names and corresponding values to assign to this
+                    object. Only attributes whose names are present in `*allowed_keys`
+                    will be assigned.
+            """
+            super().__init__(**{k: kwargs[k] for k in kwargs if k in allowed_keys})
