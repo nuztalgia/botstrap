@@ -20,8 +20,8 @@ h2[id$="Argstrap"] + .doc-contents > .quote {
 }
 
 /* Restore the rest of the code in the blocks for the non-constructor methods. */
-.doc-heading[id*="assign_arg_abbrs"] + * > .quote code > :nth-child(n + 70),
-.doc-heading[id*="parse_bot_args"] + * > .quote code > :nth-child(n + 2),
-.doc-heading[id*="manage_tokens"] + * > .quote code > :nth-child(n + 57) {
+.doc-heading[id*="assign_arg_abbrs"] + * > .quote code > :nth-child(n + 65),
+.doc-heading[id*="parse_bot_args"] + * > .quote code > :nth-child(n + 26),
+.doc-heading[id*="manage_tokens"] + * > .quote code > :nth-child(n + 63) {
   display: inline;
 }

@@ -8,6 +8,7 @@ from botstrap.internal.metadata import Metadata
 from botstrap.internal.tokens import Token
 from botstrap.options import Option
 
+# Default/reserved command-line argument names.
 _HELP_KEY: Final[str] = "help"
 _TOKEN_KEY: Final[str] = "token"
 _TOKENS_KEY: Final[str] = "tokens"
@@ -26,11 +27,11 @@ class Argstrap(ArgumentParser):
     `--tokens`), or custom ones defined for individual bots with the help of the
     [`Option`](../../api/option) class.
 
-    The portion of the program flow handled by this class is quite self-contained - its
-    only method that gets called externally (aside from the constructor) is
-    [`parse_bot_args()`][botstrap.internal.Argstrap.parse_bot_args]. Nevertheless,
-    detailed documentation and source code snippets are provided for every method,
-    because **all of them** contain logic that is fundamental to how Botstrap operates.
+    The portion of the program flow handled by this class is fairly self-contained -
+    its only method that gets called externally, aside from its (quite intricate)
+    constructor, is [`parse_bot_args()`][botstrap.internal.Argstrap.parse_bot_args].
+    Nevertheless, detailed documentation and source code comments are provided for
+    every method, because they all contain logic that is key to how Botstrap operates.
 
     [1]: https://docs.python.org/3/library/argparse.html#argparse.ArgumentParser
     """
@@ -68,21 +69,22 @@ class Argstrap(ArgumentParser):
         """
         self.cli: Final[CliSession] = cli
         self._tokens: Final[list[Token]] = tokens
-        self._custom_keys: Final[list[str]] = []  # Keys are added as they're validated.
+        self._custom_keys: Final[tuple[str, ...]] = tuple(
+            custom_key.lower().strip("_") for custom_key in custom_options.keys()
+        )  # Custom keys are lower-cased and stripped of leading/trailing underscores.
 
-        if not description:
+        if not description:  # Try to set it from package metadata, if available.
             summary = Metadata.get_package_info(self.cli.name).get("summary")
-            description = summary if isinstance(summary, str) else ""
+            description = summary if isinstance(summary, str) else None
+        description = f"  {description.strip()}\n" if description else ""
 
+        # Assemble the pieces to create a well-formatted & informative "-h" description.
         program_command = Metadata.get_program_command(self.cli.name)
-        mode_addendum = (
-            (is_multi_token := len(tokens) > 1)
-            and (" " + self.cli.strings.h_desc_mode.substitute(token=tokens[0]).strip())
-        ) or ""
-        description = (
-            (description and f"  {description.strip()}\n") + "  "
-        ) + self.cli.strings.h_desc.substitute(
-            program_command=" ".join(program_command), mode_addendum=mode_addendum
+        mode_addendum = (is_multi_token := len(self._tokens) > 1) and (
+            " " + self.cli.strings.h_desc_mode.substitute(token=self._tokens[0]).strip()
+        )
+        description += "  " + self.cli.strings.h_desc.substitute(
+            program_command=" ".join(program_command), mode_addendum=mode_addendum or ""
         )
 
         super().__init__(
@@ -92,8 +94,8 @@ class Argstrap(ArgumentParser):
             add_help=False,
         )
 
-        usage_components = [prog]  # Will later be combined to form the `usage` string.
-        abbreviations = self.assign_arg_abbrs(*custom_options)  # Assigns defaults too.
+        usage_components = [prog]  # Will later be joined to form the self.usage field.
+        abbreviations = self.assign_arg_abbrs()  # Definitive mapping of keys -> abbrs.
 
         def add_usage_component(name: str) -> None:
             """Formats the provided name and appends it to the usage_components list."""
@@ -103,37 +105,32 @@ class Argstrap(ArgumentParser):
 
         def add_option(key: str, action: str = "store_true", **kwargs: Any) -> None:
             """Adds the option (and its abbr) to the parser and to usage_components."""
+            name = f"--{key.replace('_', '-')}"
             abbr = f"-{abbreviations[key]}" if abbreviations.get(key) else ""
-            name = "--" + key.lower().strip("_").replace("_", "-")
             # noinspection PyTypeChecker
             self.add_argument(*[s for s in (abbr, name) if s], action=action, **kwargs)
             add_usage_component(abbr if (abbr and (key != _HELP_KEY)) else name)
 
         # First, add any/all custom-defined (a.k.a. probably the most relevant) options.
-        for option_key, option in custom_options.items():
+        for i, option in enumerate(custom_options.values()):
             option_dict: dict[str, Any] = {
                 "action": "store_true" if option.flag else "store",
                 "help": _HELP_PATTERN.sub(_HELP_REPLACEMENT, option.help or ""),
-            }  # Translating the option to the format expected by add_argument().
-
-            if not option.flag:  # Non-flag options require more information.
+            }
+            if not option.flag:
                 option_dict["default"] = option.default
                 option_dict["type"] = (_type := type(option.default))
                 option_dict["choices"] = option.choices or None
                 option_dict["metavar"] = self.cli.colors.lowlight(f"<{_type.__name__}>")
-
-            # Add the custom option to the CLI and keep track of its key for later use.
-            add_option(option_key, **option_dict)
-            self._custom_keys.append(option_key)
+            add_option(self._custom_keys[i], **option_dict)  # (Use the sanitized key.)
 
         # Then add the default options, in order of their usefulness when viewing "-h".
-        add_option(_TOKENS_KEY, help=self.cli.strings.h_tokens)  # Add "--tokens" first.
+        add_option(_TOKENS_KEY, help=self.cli.strings.h_tokens)
 
-        if version:  # Only add "--version" if a version string was specified.
+        if version:
             h_version = self.cli.strings.h_version
             add_option(_VERSION_KEY, action="version", version=version, help=h_version)
 
-        # Add "--help" as the last option (it won't be abbreviated in the usage string).
         add_option(_HELP_KEY, action="help", help=self.cli.strings.h_help)
 
         # Finally, add the positional "token id" argument iff there's more than 1 token.
@@ -142,7 +139,7 @@ class Argstrap(ArgumentParser):
                 token_uids := [token.uid for token in self._tokens],
                 conjunction=self.cli.strings.m_conj_and,
             )
-            self.add_argument(  # Note that this is "add_argument", not "add_option".
+            self.add_argument(  # (Note that this is "add_argument", not "add_option".)
                 _TOKEN_KEY,
                 nargs="?",
                 choices=token_uids,
@@ -155,15 +152,14 @@ class Argstrap(ArgumentParser):
         # Join all the components together to produce the complete usage string.
         self.usage = " ".join(usage_components)
 
-    # noinspection PyMethodMayBeStatic
-    def assign_arg_abbrs(self, *custom_keys: str) -> dict[str, Optional[str]]:
+    def assign_arg_abbrs(self) -> dict[str, Optional[str]]:
         """Returns a dictionary mapping arg/option keys to their possible abbreviations.
 
-        This method is called by the constructor in order to determine which
-        command-line args are eligible to be abbreviated, and what those abbrs should
-        be. It has no purpose after [`__init__()`][botstrap.internal.Argstrap.__init__]
-        is finished, by which point all of the available command-line arguments
-        (including abbreviations) will have been set using the superclass method
+        This method is called by [`__init__()`][botstrap.internal.Argstrap.__init__] in
+        order to determine which command-line arguments are eligible to be abbreviated,
+        and what those abbreviations should be. It has no purpose after the constructor
+        finishes - at that point, all the available command-line arguments/options
+        (and their abbrs) will have been decided and set using the superclass method
         [`add_argument()`][1].
 
         ??? info "Info - Contents of the resulting `dict`"
@@ -181,12 +177,12 @@ class Argstrap(ArgumentParser):
               higher-[priority](./#abbr-priority) argument starting with the same letter
               was previously added to the `#!py dict`.
 
-            - Values that represent abbreviations (i.e. all `#!py str` values) are
-              **guaranteed to be unique**.
+            - Values that represent abbreviations (i.e. all of the `#!py str` values)
+              are guaranteed to be **unique**.
 
         ??? note "Note - Determining abbreviation priority"
             <div id="abbr-priority"/>
-            Ideally, all command-line arguments/options would all start with different
+            Ideally, the command-line arguments/options would all start with different
             letters, and would all be conveniently and intuitively abbreviated.
             Since that won't always be the case, this method reserves letters for
             abbreviations according to the following priority:
@@ -207,17 +203,12 @@ class Argstrap(ArgumentParser):
                 `-v`, and would have to use the full name of the `--version` option.
 
             This procedure ensures that all abbreviations are uniquely assigned, and
-            that they are (hopefully) delegated to the most useful options for each
+            that they are (hopefully) delegated to the most valuable options for each
             individual bot. :four_leaf_clover:
 
         [1]: https://docs.python.org/3/library/argparse.html#the-add-argument-method
         [2]: https://docs.python.org/3/whatsnew/3.6.html#new-dict-implementation
         [3]: https://peps.python.org/pep-0468/
-
-        Args:
-            *custom_keys:
-                All of the keys specified for custom command-line options
-                (i.e. the names of the `#!py **custom_options` keyword args).
 
         Returns:
             A dictionary mapping argument/option names to their possible abbreviations.
@@ -241,19 +232,35 @@ class Argstrap(ArgumentParser):
                     assigned_options[key] = None
 
         # First, assign the keys & abbrs that are strictly reserved by default options.
-        add_options(_HELP_KEY, add_abbrs=True)  # "-h" is the only reserved abbr.
+        add_options(_HELP_KEY, add_abbrs=True)
         add_options(_TOKEN_KEY, _TOKENS_KEY, _VERSION_KEY)
 
         # Then, try to assign keys and abbreviations for any/all custom-defined options.
-        add_options(*custom_keys, add_abbrs=True)
+        add_options(*self._custom_keys, add_abbrs=True)
 
-        # Last, try to add abbrs for default keys that were assigned (above) w/o abbrs.
+        # Last, try to add abbrs for the default options that can use them (-t and -v).
         add_options(_TOKENS_KEY, _VERSION_KEY, allow_existing_keys=True, add_abbrs=True)
 
         return assigned_options
 
     def parse_bot_args(self) -> tuple[Token, Option.Results]:
         """Parses command-line args and returns the results along with the active token.
+
+        This method relies on [`parse_args()`][1] for most of the heavy lifting to do
+        with parsing command-line arguments and switching to the `--help` or `--version`
+        paths if those options are detected. On its own, it does a similar check for
+        `--tokens`, which will result in a call to
+        [`manage_tokens()`][botstrap.internal.Argstrap.manage_tokens].
+
+        If no default options are provided to trigger an alternate program flow, this
+        method will select the [active][botstrap.BotstrapFlow.retrieve_active_token]
+        token, either based on the "token id" argument (if it was specified) or a
+        reasonable default. It will package the [`Token`](../tokens) along with an
+        [`Option.Results`][botstrap.Option.Results] containing the parsed values for
+        any custom options that were defined, and return both objects together in a
+        `#!py tuple`.
+
+        [1]: https://docs.python.org/3/library/argparse.html#the-parse-args-method
 
         Returns:
             A tuple containing the active `Token` and the `Results` for custom options.
@@ -286,18 +293,21 @@ class Argstrap(ArgumentParser):
     def manage_tokens(self) -> None:
         """Starts the token management flow for viewing and deleting saved token files.
 
-        This is automatically invoked by
+        This method is automatically invoked by
         [`parse_bot_args()`][botstrap.internal.Argstrap.parse_bot_args] when the
-        `--tokens` option is specified on the command line (and if neither
-        `-h` nor `-v` was specified, because those options take priority).
+        `--tokens` option is specified on the command line. In terms of diverting the
+        program flow, it takes precedence over any custom options (if applicable)
+        but yields to both `--help` and `--version`.
+
+        Once this method is called, there's no `#!py return`ing to the original program
+        flow - the process is guaranteed to exit when this method finishes. For more
+        details, expand the boxes below.
 
         ??? note "Note - Exiting from this method"
-            Once this method is invoked, there's no `#!py return`ing to the "main"
-            program flow. The process is guaranteed to end with exit code `#!py 0`
-            (to indicate that this flow finished successfully) when one of the
-            following things happens:
+            The process will end with exit code `#!py 0` (to indicate success) when one
+            of the following things happens:
 
-            - The user has **no more files** for any of the
+            - The user has **no existing files** for any of the
               [`tokens`][botstrap.internal.Argstrap.__init__] in the list that was
               provided when this class was instantiated. If the `#!py "default"` token
               wasn't included in that original list, it will be appended for the
@@ -306,6 +316,9 @@ class Argstrap(ArgumentParser):
 
             - The user still has existing token files, but **chooses not to delete**
               any (more) of them.
+
+            There are currently no cases in which this process ends with a
+            non-`#!py 0` exit code.
 
         ??? example "Example - Deleting a saved token"
             ```{.console title="Console Session" .annotate .colored-output}
@@ -344,7 +357,8 @@ class Argstrap(ArgumentParser):
         default_token = Token.get_default(self.cli)
 
         if not any(t for t in self._tokens if t.uid == default_token.uid):
-            self._tokens.append(default_token)  # Just in case the user has it stored.
+            # Add the default token just in case it's stored. (No effect if it isn't.)
+            self._tokens.append(default_token)
 
         # Keep looping as long as the list of "tokens with existing files" is not empty.
         while saved_tokens := [t for t in self._tokens if t.file_path.is_file()]:
@@ -355,10 +369,10 @@ class Argstrap(ArgumentParser):
             # Print a numbered line for each token, displaying its name and file path.
             for token_num, token in enumeration.items():
                 num = self.cli.colors.highlight(token_num)
-                padding = " " * (token_width - len(ansi_pattern.sub("", str(token))))
+                padding = token_width - len(ansi_pattern.sub("", str(token)))
                 index = str(token.file_path).rindex(token.uid) + len(token.uid)
                 path = self.cli.colors.lowlight(f"{str(token.file_path)[:index]}.*")
-                print(f"  {num}. {token}{padding} ->  {path}")
+                print(f"  {num}. {token}{' ' * padding} ->  {path}")
 
             # "Would you like to permanently delete any of these tokens?" Yes or exit.
             self.cli.confirm_or_exit(self.cli.strings.t_delete)
@@ -369,7 +383,7 @@ class Argstrap(ArgumentParser):
                 format_choice=self.cli.colors.highlight,
             )
 
-            # Keep looping until the input is valid, or until the user decides to stop.
+            # Loop until the user either inputs a valid token number or decides to stop.
             while (token_num := self.cli.get_input(prompt)) not in token_nums:
                 invalid_input_text = (
                     self.cli.colors.warning(self.cli.strings.t_delete_mismatch),
@@ -378,7 +392,7 @@ class Argstrap(ArgumentParser):
                 print(" ".join(invalid_input_text))
                 self.cli.confirm_or_exit(self.cli.strings.t_delete_retry)
 
-            enumeration[token_num].clear()  # Token files are permanently deleted.
+            enumeration[token_num].clear()  # The token files are permanently deleted.
             print(self.cli.colors.success(self.cli.strings.t_delete_success))
 
         # The user has no more saved bot tokens (or had none to begin with).
