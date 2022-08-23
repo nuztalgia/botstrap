@@ -77,8 +77,8 @@ class CliSession:
         If the user responds affirmatively, this function will return without raising
         any errors, allowing program execution to continue normally.
 
-        ??? example colored-output ends-with-input
-            ```pycon
+        ??? example "Example - Deciding whether to continue or exit"
+            ```{.pycon .colored-output .ends-with-input}
             >>> cli.confirm_or_exit("Would you like to continue?")
             Would you like to continue? If so, type "yes" or "y":
             ```
@@ -103,7 +103,7 @@ class CliSession:
         `grey`{.grey} (depending on the value of `is_error`) when it is displayed
         in the console.
 
-        ??? example
+        ??? example "Example - Exiting with an error message"
             ```{.pycon .colored-output}
             >>> cli.exit_process("Just testing the 'exit_process()' function!")
             Just testing the 'exit_process()' function! Exiting process.
@@ -142,8 +142,8 @@ class CliSession:
         # noinspection PyUnresolvedReferences
         """Returns a boolean value corresponding to the user's response to a prompt.
 
-        ??? example colored-output
-            ```pycon
+        ??? example "Example - Printing output based on user input"
+            ```{.pycon .colored-output}
             >>> if cli.get_bool_input("Do you believe in life after love?"):
             ...     print("I can feel something inside me say...")
             ... else:
@@ -186,8 +186,8 @@ class CliSession:
         [`get_input()`][botstrap.internal.CliSession.get_input]
         (with the keyword argument `#!py echo_input=False`) instead of this function.
 
-        ??? example colored-output
-            ```pycon
+        ??? example "Example - Obtaining input that should be hidden"
+            ```{.pycon .colored-output}
             >>> very_secure_password = cli.get_hidden_input("Enter your password")
             Enter your password: *******
             >>> print(very_secure_password)  # NEVER do this with a real password!
@@ -225,7 +225,7 @@ class CliSession:
         require sensitive user input with more nuanced console output, consider using
         [`get_hidden_input()`][botstrap.internal.CliSession.get_hidden_input] instead.
 
-        ??? example
+        ??? example "Example - Obtaining and echoing user input"
             ```pycon
             >>> print(cli.get_input("Baby shark,"))
             Baby shark, doo doo doo
@@ -257,7 +257,7 @@ class CliSession:
         # noinspection PyUnresolvedReferences
         """Prints a message prefixed by the program name, and optionally an error label.
 
-        ??? example
+        ??? example "Example - Printing program prefix labels"
             ```pycon
             >>> cli.print_prefixed("What does the fox say?")
             cli-demo: What does the fox say?

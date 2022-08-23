@@ -9,7 +9,7 @@
 
 ??? attention "Attention - This is part of the `internal` package."
 
-    {% include "index.md" start="**Warning:**" end="???" %}
+    {% include "index.md" start="**Note:**" end="???" %}
 
 <!-- prettier-ignore -->
 ::: botstrap.internal.secrets.Secret
@@ -17,8 +17,6 @@
       members:
         - __init__
       show_signature_annotations: false
-
-<!-- prettier-ignore -->
 ::: botstrap.internal.secrets.Secret
     options:
       heading_level: 3
@@ -27,9 +25,6 @@
       show_root_heading: false
       show_root_toc_entry: false
 
-<style>
-  /* Hide the duplicate class description (because it was included twice). */
-  .doc-class + .doc-class > .doc-contents > :not(.doc-children) {display: none}
-</style>
-
+<link rel="stylesheet" href="../../stylesheets/secrets.css" />
+<link rel="stylesheet" href="../../stylesheets/dupe-hidden.css" />
 <link rel="stylesheet" href="../../stylesheets/nav-code.css" />

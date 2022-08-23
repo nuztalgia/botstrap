@@ -9,7 +9,7 @@
 
 ??? attention "Attention - This is part of the `internal` package."
 
-    {% include "index.md" start="**Warning:**" end="???" %}
+    {% include "index.md" start="**Note:**" end="???" %}
 
 <!-- prettier-ignore -->
 ::: botstrap.internal.argstrap.Argstrap
@@ -28,5 +28,6 @@
       show_source: true
 
 <link rel="stylesheet" href="../../stylesheets/argstrap.css" />
+<link rel="stylesheet" href="../../stylesheets/dupe-hidden.css" />
 <link rel="stylesheet" href="../../stylesheets/manage-tokens.css" />
 <link rel="stylesheet" href="../../stylesheets/nav-code.css" />

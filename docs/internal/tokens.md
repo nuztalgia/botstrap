@@ -9,7 +9,7 @@
 
 ??? attention "Attention - This is part of the `internal` package."
 
-    {% include "index.md" start="**Warning:**" end="???" %}
+    {% include "index.md" start="**Note:**" end="???" %}
 
 <!-- prettier-ignore -->
 ::: botstrap.internal.tokens.Token
@@ -17,13 +17,9 @@
       members:
         - __init__
       show_signature_annotations: false
-
-<!-- prettier-ignore -->
 ::: botstrap.internal.tokens.Token.get_default
     options:
       heading_level: 3
-
-<!-- prettier-ignore -->
 ::: botstrap.internal.tokens.Token.resolve
     options:
       heading_level: 3

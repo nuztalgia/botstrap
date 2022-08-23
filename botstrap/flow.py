@@ -81,8 +81,7 @@ class BotstrapFlow(CliSession):
 
         ??? note "Note - Automatically registering a default token"
             If <u>**all**</u> of the following statements are true, you can skip this
-            method and move on to the [next one][botstrap.BotstrapFlow.parse_args]
-            in the flow:
+            method and move on to the [next step](./#botstrap-flowchart) in the flow:
 
             - **Your bot only uses one token** - it only needs to run in one
               environment, or only has a single configuration, or a similar
@@ -167,9 +166,9 @@ class BotstrapFlow(CliSession):
 
         After reading through the rest of this method's documentation, you should decide
         whether your bot requires the extra customization it provides. **If not**, you
-        may safely skip ahead to the next step in the flow. Behind the scenes, this
-        method will automatically be called in order to identify the active token and
-        to provide the default command-line options.
+        may safely skip ahead to the [next step](./#botstrap-flowchart) in the flow.
+        Behind the scenes, this method will be called automatically with the default
+        params.
 
         ??? tip "Tip - Define your own command-line options!"
             <div id="custom-options"/>
@@ -368,7 +367,7 @@ class BotstrapFlow(CliSession):
             BotstrapFlow().run_bot()
             ```
 
-            ```console title="Console Session"
+            ```{.console title="Console Session" .colored-output}
             $ python bot.py
 
             bot: default: Attempting to log in to Discord...

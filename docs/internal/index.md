@@ -6,7 +6,7 @@
 
 !!! danger "Here Be Dragons"
 
-    **Warning:** The contents of this package may not be as thoroughly
+    **Note:** The contents of this package may not be as thoroughly
     documented as the public API and are subject to change at any time. They're
     included here for the sake of information-sharing and transparency, but
     probably won't be very helpful unless you're specifically curious about

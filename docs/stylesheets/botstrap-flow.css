@@ -1,26 +1,31 @@
-/* Hide excessive/distracting info in all doc headers except for __init__. */
-.doc-heading:not([id*="__init__"])
+/* Hide excessive/distracting info in all doc headers except for `__init__()`. */
+.doc-heading:not([id$="__init__"])
   span:not(:first-child, .p, .p + :is(.n, .o), .n:nth-last-child(2)) {
   display: none;
 }
 
-/* Hide everything except the name and opening paren in the __init__ header. */
-[id*="__init__"] .fm + .p ~ * {
+/* Hide everything except the name and opening paren in the `__init__()` header. */
+[id$="__init__"] .fm + .p ~ * {
   display: none;
 }
 
-/* Add a closing paren after the opening paren in the __init__ header. */
-[id*="__init__"] .fm + .p::after {
+/* Add a closing paren after the opening paren in the `__init__()` header. */
+[id$="__init__"] .fm + .p::after {
   content: ")";
 }
 
 /* Make opening paren unselectable (because closing paren isn't selectable). */
-[id*="__init__"] .fm + .p {
+[id$="__init__"] .fm + .p {
   user-select: none;
 }
 
+/* Restore the default color to the lines that don't need fancy coloring. */
+:is([id$="_token"], [id$="_bot"]) + * .colored-output code > :nth-last-child(2) > .go {
+  background-color: var(--md-code-hl-generic-color);
+}
+
 /* Color the "yes" and "y" prompt text in the `retrieve_active_token()` example. */
-[id*="retrieve_active_token"] + * .colored-output code > :last-child > .go {
+[id$="retrieve_active_token"] + * .colored-output code > :last-child > .go {
   background-image: linear-gradient(
     to right,
     var(--md-code-hl-generic-color) 0%,
@@ -38,7 +43,15 @@
   );
 }
 
-/* Restore color to .colored-output line that doesn't need a gradient. */
-[id*="retrieve_active_token"] + * .colored-output code > :nth-last-child(2) > .go {
-  background-color: var(--md-code-hl-generic-color);
+/* Color the bot's Discord handle text in the `run_bot()` example. */
+[id$="run_bot"] + * .colored-output code > :last-child > .go {
+  background-image: linear-gradient(
+    to right,
+    var(--md-code-hl-generic-color) 0%,
+    var(--md-code-hl-generic-color) 73.21%,
+    var(--color-cyan) 73.21%,
+    var(--color-cyan) 96.43%,
+    var(--md-code-hl-generic-color) 96.43%,
+    var(--md-code-hl-generic-color) 100%
+  );
 }

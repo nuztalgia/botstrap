@@ -1,5 +1,21 @@
+/* Hide parentheses in headings for properties, so they don't look like methods. */
+.doc-heading:is([id$="name"], [id$="colors"], [id$="strings"]) > code > .p {
+  display: none;
+}
+
+/* Hide parentheses in the "Page Contents" links for all properties. */
+.md-nav--secondary .md-nav__item [href$="name"] {
+  margin-right: 10.9em;
+}
+.md-nav--secondary .md-nav__item [href$="colors"] {
+  margin-right: 9.7em;
+}
+.md-nav--secondary .md-nav__item [href$="strings"] {
+  margin-right: 9.1em;
+}
+
 /* Color the "yes" and "y" prompt text in the `confirm_or_exit()` example. */
-[id*="confirm_or_exit"] + * .colored-output code > :last-child > .go {
+[id$="confirm_or_exit"] + * .colored-output code > :last-child > .go {
   background-image: linear-gradient(
     to right,
     var(--md-code-hl-generic-color) 0%,
@@ -18,7 +34,7 @@
 }
 
 /* Color the two segments of text in the `exit_process()` example. */
-[id*="exit_process"] + * .colored-output code > :last-child > .go {
+[id$="exit_process"] + * .colored-output code > :last-child > .go {
   background-image: linear-gradient(
     to right,
     var(--color-red) 0%,
@@ -29,7 +45,7 @@
 }
 
 /* Color the "yes" and "y" prompt text in the `get_bool_input()` example. */
-[id*="get_bool_input"] + * .colored-output code > :nth-last-child(2) > .go {
+[id$="get_bool_input"] + * .colored-output code > :nth-last-child(2) > .go {
   background-image: linear-gradient(
     to right,
     var(--md-code-hl-generic-color) 0%,
@@ -46,7 +62,7 @@
 }
 
 /* Color the "Enter your password" text in the `get_hidden_input()` example. */
-[id*="get_hidden_input"] + * .colored-output code > :nth-child(2) > .go {
+[id$="get_hidden_input"] + * .colored-output code > :nth-child(2) > .go {
   background-image: linear-gradient(
     to right,
     var(--color-cyan) 0%,

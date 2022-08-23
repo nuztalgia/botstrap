@@ -9,7 +9,7 @@
 
 ??? attention "Attention - This is part of the `internal` package."
 
-    {% include "index.md" start="**Warning:**" end="???" %}
+    {% include "index.md" start="**Note:**" end="???" %}
 
 ::: botstrap.internal.clisession.CliSession
 
