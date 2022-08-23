@@ -209,7 +209,7 @@ class BotstrapFlow(CliSession):
 
             ```console title="Console Session" hl_lines="4"
             $ python bot.py -h
-            usage: bot.py [--help] [-t]
+            usage: bot.py [-t] [--help]
 
               A really cool Discord bot that uses Botstrap!
               Run "python bot.py" with no parameters to start the bot.

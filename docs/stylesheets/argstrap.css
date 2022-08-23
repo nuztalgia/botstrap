@@ -21,7 +21,33 @@ h2[id$="Argstrap"] + .doc-contents > .quote {
 
 /* Restore the rest of the code in the blocks for the non-constructor methods. */
 .doc-heading[id*="assign_arg_abbrs"] + * > .quote code > :nth-child(n + 65),
-.doc-heading[id*="parse_bot_args"] + * > .quote code > :nth-child(n + 26),
+.doc-heading[id*="parse_bot_args"] + * > .quote code > :nth-child(n + 56),
 .doc-heading[id*="manage_tokens"] + * > .quote code > :nth-child(n + 63) {
   display: inline;
+}
+
+/* Fix the inconsistent number coloring in the example for parse_bot_args(). */
+.doc-heading[id*="parse_bot_args"] + * > .example .language-console code .m {
+  color: var(--md-code-fg-color);
+}
+
+/* Add color to text on the last line in the example for parse_bot_args(). */
+.doc-heading[id*="parse_bot_args"] + * > .example #line-1-12 .go {
+  -webkit-background-clip: text;
+  background-clip: text;
+  background-image: linear-gradient(
+    to right,
+    var(--md-code-hl-generic-color) 0%,
+    var(--md-code-hl-generic-color) 49.28%,
+    var(--color-grey) 49.28%,
+    var(--color-grey) 59.42%,
+    var(--md-code-hl-generic-color) 59.42%,
+    var(--md-code-hl-generic-color) 84.06%,
+    var(--color-grey) 84.06%,
+    var(--color-grey) 98.55%,
+    var(--md-code-hl-generic-color) 98.55%,
+    var(--md-code-hl-generic-color) 100%
+  );
+  color: transparent;
+  font-weight: bold;
 }

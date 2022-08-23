@@ -97,19 +97,21 @@ class Argstrap(ArgumentParser):
         usage_components = [prog]  # Will later be joined to form the self.usage field.
         abbreviations = self.assign_arg_abbrs()  # Definitive mapping of keys -> abbrs.
 
-        def add_usage_component(name: str) -> None:
-            """Formats the provided name and appends it to the usage_components list."""
-            if (component := f"[{name}]") in usage_components:
-                raise RuntimeError(f"Duplicate usage component: {component}")
-            usage_components.append(component)
-
-        def add_option(key: str, action: str = "store_true", **kwargs: Any) -> None:
-            """Adds the option (and its abbr) to the parser and to usage_components."""
-            name = f"--{key.replace('_', '-')}"
+        def add_arg(key: str, positional: bool = False, **kwargs: Any) -> None:
+            """Adds the arg (and its abbr) to the arg parser and to usage_components."""
+            name = ("" if positional else "--") + key.replace("_", "-")
             abbr = f"-{abbreviations[key]}" if abbreviations.get(key) else ""
-            # noinspection PyTypeChecker
-            self.add_argument(*[s for s in (abbr, name) if s], action=action, **kwargs)
-            add_usage_component(abbr if (abbr and (key != _HELP_KEY)) else name)
+            metavar = kwargs.get("metavar")
+
+            if key == _HELP_KEY:  # Special case - don't abbreviate "--help".
+                display_name = name
+            elif key == _TOKEN_KEY:  # Special case - show metavar instead of name.
+                display_name = self.cli.colors.lowlight(str(metavar))
+            else:
+                display_name = (abbr or name) + (f" {metavar}" if metavar else "")
+
+            usage_components.append(f"[{display_name}]")
+            self.add_argument(*[s for s in (abbr, name) if s], **kwargs)
 
         # First, add any/all custom-defined (a.k.a. probably the most relevant) options.
         for i, option in enumerate(custom_options.values()):
@@ -122,16 +124,16 @@ class Argstrap(ArgumentParser):
                 option_dict["type"] = (_type := type(option.default))
                 option_dict["choices"] = option.choices or None
                 option_dict["metavar"] = self.cli.colors.lowlight(f"<{_type.__name__}>")
-            add_option(self._custom_keys[i], **option_dict)  # (Use the sanitized key.)
+            add_arg(self._custom_keys[i], **option_dict)  # (Use the sanitized key.)
 
         # Then add the default options, in order of their usefulness when viewing "-h".
-        add_option(_TOKENS_KEY, help=self.cli.strings.h_tokens)
+        add_arg(_TOKENS_KEY, action="store_true", help=self.cli.strings.h_tokens)
 
         if version:
-            h_version = self.cli.strings.h_version
-            add_option(_VERSION_KEY, action="version", version=version, help=h_version)
+            version_help = self.cli.strings.h_version
+            add_arg(_VERSION_KEY, action="version", version=version, help=version_help)
 
-        add_option(_HELP_KEY, action="help", help=self.cli.strings.h_help)
+        add_arg(_HELP_KEY, action="help", help=self.cli.strings.h_help)
 
         # Finally, add the positional "token id" argument iff there's more than 1 token.
         if is_multi_token:
@@ -139,15 +141,15 @@ class Argstrap(ArgumentParser):
                 token_uids := [token.uid for token in self._tokens],
                 conjunction=self.cli.strings.m_conj_and,
             )
-            self.add_argument(  # (Note that this is "add_argument", not "add_option".)
+            add_arg(
                 _TOKEN_KEY,
+                positional=True,
                 nargs="?",
                 choices=token_uids,
                 default=token_uids[0],
                 help=self.cli.strings.h_token_id.substitute(token_ids=joined_uids),
-                metavar=(token_metavar := "<token id>"),
+                metavar="<token id>",
             )
-            add_usage_component(self.cli.colors.lowlight(token_metavar))
 
         # Join all the components together to produce the complete usage string.
         self.usage = " ".join(usage_components)
@@ -261,6 +263,36 @@ class Argstrap(ArgumentParser):
         `#!py tuple`.
 
         [1]: https://docs.python.org/3/library/argparse.html#the-parse-args-method
+
+        ??? example "Example - Parsing argument values"
+            ```py title="example.py"
+            from botstrap import Option
+            from botstrap.internal import Argstrap, CliSession, Token
+
+            token, results = Argstrap(
+                cli=(cli := CliSession(name="argstrap-example")),
+                tokens=[Token(cli, "t_dev"), Token(cli, "t_prod")],
+                a_flag=Option(flag=True),
+                a_float=Option(default=3.14),
+            ).parse_bot_args()
+
+            print(f"Token('{token}'), {results}")
+            ```
+
+            ```console title="Console Session"
+            $ python example.py
+            Token('t_dev'), Results(a_flag=False, a_float=3.14)
+            $ python example.py -a
+            Token('t_dev'), Results(a_flag=True, a_float=3.14)
+            $ python example.py --a-float 0.50
+            Token('t_dev'), Results(a_flag=False, a_float=0.5)
+            $ python example.py t_prod
+            Token('t_prod'), Results(a_flag=False, a_float=3.14)
+            $ python example.py -a t_prod --a-float 12345
+            Token('t_prod'), Results(a_flag=True, a_float=12345.0)
+            $ python example.py -h
+            usage: example.py [-a] [--a-float <float>] [-t] [--help] [<token id>]
+            ```
 
         Returns:
             A tuple containing the active `Token` and the `Results` for custom options.
