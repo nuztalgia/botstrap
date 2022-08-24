@@ -1,11 +1,13 @@
 """This module contains the `Metadata` class, which provides metadata-related utils."""
+from __future__ import annotations
+
 import sys
 from email.errors import MessageError
 from importlib import import_module
 from importlib.metadata import PackageNotFoundError, entry_points, metadata
 from pathlib import Path
 from types import ModuleType
-from typing import Final, Iterator, Optional
+from typing import Final, Iterator
 
 _CURRENT_DIR: Final[Path] = Path(".").resolve()
 _MAIN_MODULE: Final[ModuleType] = sys.modules["__main__"]
@@ -49,7 +51,7 @@ class Metadata:
         return parent_dir / ".botstrap_keys"
 
     @classmethod
-    def get_main_file_path(cls) -> Optional[Path]:
+    def get_main_file_path(cls) -> Path | None:
         """Returns the path of the file containing the main module, if it can be found.
 
         The **main module** (a.k.a. [`"__main__"`][1]) is essentially the top-level
@@ -137,7 +139,7 @@ class Metadata:
             return list(cls._get_top_level_args())
 
     @classmethod
-    def guess_program_name(cls) -> Optional[str]:
+    def guess_program_name(cls) -> str | None:
         """Returns a possible name for the current program/script, if one can be found.
 
         When the name of the current program needs to be displayed but its owner hasn't

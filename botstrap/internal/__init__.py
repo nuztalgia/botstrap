@@ -1,4 +1,5 @@
-"""This package contains modules that aren't exposed by Botstrap's public API."""
+"""This package contains the modules that are *not* exposed by Botstrap's public API."""
+
 from botstrap.internal.argstrap import Argstrap
 from botstrap.internal.clisession import CliSession
 from botstrap.internal.metadata import Metadata

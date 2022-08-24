@@ -11,14 +11,14 @@ from botstrap.strings import CliStrings
 class CliSession:
     """Defines UX state for a program, to ensure a consistent look and feel for its CLI.
 
-    **UX state** consists of a combination of [`CliColors`][botstrap.CliColors] and
-    [`CliStrings`][botstrap.CliStrings]. These are set by the constructor arguments upon
-    creating an instance of this class, and can subsequently be accessed through the
-    instance's read-only properties.
+    **UX state** consists of a combination of [`CliColors`](../../api/cli-colors) and
+    [`CliStrings`](../../api/cli-strings). These are set by the constructor arguments
+    upon creating an instance of this class, and can subsequently be accessed through
+    the instance's read-only properties.
 
-    This class also provides a number of helper functions for CLI input and output. In
-    order to maintain a consistent UX for your program, these functions should be used
-    for all interactions that require anything beyond a simple `#!py print()` statement.
+    This class also provides a number of utility functions for command-line input and
+    output. In order to maintain a consistent UX, these functions should be used for all
+    CLI interactions that require anything beyond a simple `#!py print()` statement.
 
     ??? info "Info - Prerequisite for the examples"
         All of the examples in this class reference a `CliSession` variable named `cli`,
@@ -44,8 +44,8 @@ class CliSession:
 
         Args:
             name:
-                The name of your program. Will be displayed in some CLI messages and may
-                be used to look up package metadata.
+                The name of the program. Will be displayed in some parts of the CLI,
+                and may be used to fetch package [metadata](../metadata).
             colors:
                 The colors to be used by the CLI.
             strings:
@@ -62,12 +62,12 @@ class CliSession:
 
     @property
     def colors(self) -> CliColors:
-        """The [`CliColors`][botstrap.CliColors] used by this instance."""
+        """The [`CliColors`](../../api/cli-colors) used by this instance."""
         return self._colors
 
     @property
     def strings(self) -> CliStrings:
-        """The [`CliStrings`][botstrap.CliStrings] used by this instance."""
+        """The [`CliStrings`](../../api/cli-strings) used by this instance."""
         return self._strings
 
     def confirm_or_exit(self, question: str) -> None:
@@ -176,9 +176,6 @@ class CliSession:
     ) -> str:
         # noinspection PyUnresolvedReferences
         """Returns the user's input without echoing. Prints a safe representation of it.
-
-        In this context, "echoing" is displaying the user's input on the screen as they
-        type. For security reasons, it's undesirable when dealing with sensitive data.
 
         This function tries to provide a user-friendly experience without leaking the
         resulting input. If the descriptions in the "Parameters" section below are

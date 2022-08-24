@@ -17,11 +17,15 @@ _PATTERN: Final[re.Pattern] = re.compile(r"\.".join(r"[\w-]{%i}" % i for i in _L
 class Token(Secret):
     """Represents and handles operations for an individual Discord bot token.
 
+    A **bot token** is essentially the "key" to a bot's Discord account. It's used for
+    authorizing Discord API requests and carries all of the bot's permissions, making
+    it a highly sensitive piece of data. It should *never* be shared with other people
+    or checked into any kind of version control system.
+
     This class effectively combines the functionality provided by
-    [`Secret`][botstrap.internal.secrets.Secret] (its parent class) and a
-    [`CliSession`][botstrap.internal.clisession.CliSession] (passed in upon
-    instantiation) to deliver a secure and user-friendly interface for creating and
-    accessing token files.
+    [`Secret`](../secrets) (its parent class) and a [`CliSession`](../clisession)
+    (passed in upon instantiation) to deliver a secure and user-friendly interface
+    for creating and accessing files containing encrypted bot tokens.
     """
 
     def __init__(
@@ -48,10 +52,10 @@ class Token(Secret):
                 the CLI when referring to this token. If omitted, the `uid` will be
                 displayed instead.
             storage_directory:
-                Where to store the encrypted files containing this token's data. If
-                omitted, the files will be saved in a directory named `.botstrap_keys`,
-                which will be created in the same location as the file containing the
-                `#!py "__main__"` module for the executing script.
+                Where to store the encrypted files containing this token's data.
+                If omitted, the files will be saved in a default
+                [`.botstrap_keys`][botstrap.internal.Metadata.get_default_keys_dir]
+                directory.
         """
         super().__init__(
             uid=uid,
@@ -68,7 +72,7 @@ class Token(Secret):
 
         This token will use the string literal `#!py "default"` for its `uid`,
         and will rely on the default values for all subsequent
-        [`__init__()`][botstrap.internal.tokens.Token.__init__] parameters.
+        [`__init__()`][botstrap.internal.Token.__init__] parameters.
 
         Args:
             cli:
@@ -83,8 +87,8 @@ class Token(Secret):
         """Returns the value of this token, interactively prompting for input if needed.
 
         The main advantage of this method over the superclass methods
-        [`read()`][botstrap.internal.secrets.Secret.read] and
-        [`write()`][botstrap.internal.secrets.Secret.write] is that it can interact with
+        [`read()`][botstrap.internal.Secret.read] and
+        [`write()`][botstrap.internal.Secret.write] is that it can interact with
         the user via the CLI and take different code paths according to their input.
 
         ??? info resolve-info "Info - Tasks performed by this method"
@@ -105,9 +109,9 @@ class Token(Secret):
                   various points throughout this flow
 
             This might sound like a lot, but the implementation is actually quite
-            straightforward and (probably) more concise than this description might lead
-            you to believe. Check out the source code <a href="#line-0-82">below</a>
-            to see for yourself. :eyes:
+            straightforward and (probably) more concise than this description might
+            lead you to believe. Check out the source code [below](./#line-0-86) to
+            see for yourself. :eyes:
 
         Args:
             allow_token_creation:

@@ -1,7 +1,9 @@
 """This module contains the `Argstrap` class, which parses arguments for a bot's CLI."""
+from __future__ import annotations
+
 import re
 from argparse import ArgumentParser, RawTextHelpFormatter
-from typing import Any, Final, Optional
+from typing import Any, Final
 
 from botstrap.internal.clisession import CliSession
 from botstrap.internal.metadata import Metadata
@@ -40,8 +42,8 @@ class Argstrap(ArgumentParser):
         self,
         cli: CliSession,
         tokens: list[Token],
-        description: Optional[str] = None,
-        version: Optional[str] = None,
+        description: str | None = None,
+        version: str | None = None,
         **custom_options: Option,
     ) -> None:
         """Initializes a new `Argstrap` instance.
@@ -154,7 +156,7 @@ class Argstrap(ArgumentParser):
         # Join all the components together to produce the complete usage string.
         self.usage = " ".join(usage_components)
 
-    def assign_arg_abbrs(self) -> dict[str, Optional[str]]:
+    def assign_arg_abbrs(self) -> dict[str, str | None]:
         """Returns a dictionary mapping arg/option keys to their possible abbreviations.
 
         This method is called by [`__init__()`][botstrap.internal.Argstrap.__init__] in
@@ -219,7 +221,7 @@ class Argstrap(ArgumentParser):
             ValueError: If an option key/name is not unique across <u>**all**</u>
                 arguments (custom-defined *and* default).
         """
-        assigned_options: dict[str, Optional[str]] = {}
+        assigned_options: dict[str, str | None] = {}
 
         def add_options(
             *keys: str, allow_existing_keys: bool = False, add_abbrs: bool = False

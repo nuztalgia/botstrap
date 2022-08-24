@@ -1,10 +1,12 @@
 """This module contains the `Secret` class, which encrypts and decrypts data files."""
+from __future__ import annotations
+
 import os
 import re
 from base64 import urlsafe_b64encode
 from functools import partial
 from pathlib import Path
-from typing import Any, Callable, Final, Optional, cast
+from typing import Any, Callable, Final, cast
 
 from cryptography.fernet import Fernet
 from cryptography.hazmat.primitives import hashes
@@ -29,8 +31,7 @@ class Secret:
 
     ??? question "FAQ - How does the encryption work?"
         <div id="key-files"/>
-        This class uses [Fernet](https://cryptography.io/en/latest/fernet/) symmetric
-        encryption from the [`cryptography`](https://pypi.org/project/cryptography/)
+        This class uses [Fernet][1] symmetric encryption from the [`cryptography`][2]
         package to encrypt and decrypt data, optionally with extra protection in the
         form of a password. The encrypted data is guaranteed to be unreadable without
         the **key** that was used to encrypt it. Fernet keys are uniquely generated
@@ -43,6 +44,7 @@ class Secret:
         useless without the other. :closed_lock_with_key:
 
     ??? info "Info - Fernet encryption with passwords"
+        <div id="passwords"/>
         Factoring a password into the encryption of a secret can add an extra layer of
         protection because the password will not be stored anywhere on the file system.
         This means that even if a malicious actor were to gain access to both the
@@ -50,14 +52,17 @@ class Secret:
         to decipher the original data.
 
         If a password is provided when a secret's
-        [`write()`][botstrap.internal.secrets.Secret.write] method is invoked,
-        the specified data will be encrypted using an algorithm based on [this
-        example](https://cryptography.io/en/latest/fernet/#using-passwords-with-fernet)
-        from the Fernet documentation. The password will be run through the
-        [`PBKDF2HMAC`](https://cryptography.io/en/latest/hazmat/primitives/key-derivation-functions/#cryptography.hazmat.primitives.kdf.pbkdf2.PBKDF2HMAC)
-        key derivation function to factor it into the `fernet` key for the secret.
-        It will therefore be required again in order to "complete" the key
-        **every time** the secret is decrypted.
+        [`write()`][botstrap.internal.Secret.write] method is invoked,
+        the specified data will be encrypted using an algorithm based on [this][3]
+        reference from the Fernet documentation. The password will go through the
+        [`PBKDF2HMAC`][4] key derivation function in order to account for it in the
+        `fernet` key of the secret. The result of this procedure is that the password
+        will be required to "complete" the key **every time** the secret is decrypted.
+
+    [1]:https://cryptography.io/en/latest/fernet/
+    [2]:https://pypi.org/project/cryptography/
+    [3]:https://cryptography.io/en/latest/fernet/#using-passwords-with-fernet
+    [4]:https://cryptography.io/en/latest/hazmat/primitives/key-derivation-functions/#pbkdf2
     """
 
     def __init__(
@@ -72,8 +77,8 @@ class Secret:
 
         Args:
             uid:
-                A unique string identifying this secret. Will be used in the names of
-                the files containing this secret's data.
+                A unique string for identifying this secret. Will be used in the names
+                of the files containing this secret's data.
             requires_password:
                 Whether a user-provided password is required in order to read and/or
                 write the data for this secret.
@@ -82,15 +87,17 @@ class Secret:
                 CLI when referring to this secret. If omitted, the `uid` will be
                 displayed instead.
             storage_directory:
-                Where to store the encrypted files holding this secret's data. If
-                omitted, the files will be saved in a folder named `.botstrap_keys`,
-                which will be created in the same location as the file containing the
-                `#!py "__main__"` module for the executing script.
+                Where to store the files containing this secret's data.
+                If omitted, they will be saved in a default
+                [`.botstrap_keys`][botstrap.internal.Metadata.get_default_keys_dir]
+                directory.
             valid_pattern:
-                A string, regex pattern, or function for determining whether a provided
-                input string fits the expected pattern for this secret. Will be used to
-                validate the secret data before it's encrypted and after it's decrypted.
-                If omitted, any string will be considered valid data for this secret.
+                A string, regex [`Pattern`][1], or function for determining whether a
+                given input `#!py str` fits the expected pattern for this secret.
+                Will be used to validate the secret's data before encryption and after
+                decryption. If omitted, **any string** will be considered "valid data".
+
+                [1]:https://docs.python.org/3/library/re.html#regular-expression-objects
         """
         if (not uid) or (not str(uid).isidentifier()):
             raise ValueError("Unique ID (uid) must be a valid non-empty identifier.")
@@ -127,7 +134,7 @@ class Secret:
         """
         return _MINIMUM_PASSWORD_LENGTH if self.requires_password else 0
 
-    def read(self, password: Optional[str] = None) -> Optional[str]:
+    def read(self, password: str | None = None) -> str | None:
         """Returns the decrypted data from this secret's file if it exists and is valid.
 
         The `password` param **must** be provided if this secret was originally
@@ -146,31 +153,30 @@ class Secret:
         data = self._get_fernet(password).decrypt(self.file_path.read_bytes()).decode()
         return data if self.validate(data) else None
 
-    def write(self, data: str, password: Optional[str] = None) -> None:
+    def write(self, data: str, password: str | None = None) -> None:
         """Encrypts and writes the data to a file, optionally protected by a password.
 
         If the `password` param is provided, it must be at least `#!py 8` characters
-        long (see [`min_pw_length`][botstrap.internal.secrets.Secret.min_pw_length])
-        and will have to be provided again whenever
-        [`read()`][botstrap.internal.secrets.Secret.read]
+        long (see [`min_pw_length`][botstrap.internal.Secret.min_pw_length]) and will
+        have to be provided again whenever [`read()`][botstrap.internal.Secret.read]
         is invoked to decrypt this secret.
 
-        Omitting the `password` parameter means that only the secret's two `.key` files
-        will be required in order to decrypt it. This is both more convenient *and* more
-        dangerous, so choose wisely. :genie:
+        Omitting the `password` parameter means that only the secret's two
+        [`.key`](./#key-files) files will be required in order to decrypt it.
+        This is both more convenient *and* more dangerous, so choose wisely. :genie:
 
         Args:
             data:
                 A string containing sensitive information to be encrypted before being
                 stored in a file.
             password:
-                An optional string that can improve the security of this secret. If
-                omitted, a password will not be factored into the encryption algorithm
-                for this secret.
+                An optional string that can improve the [security](./#passwords)
+                of this secret. If omitted, a password will not be factored into
+                the encryption algorithm for this secret.
 
         Raises:
             ValueError: If the `data` is not considered valid according to the
-                [`valid_pattern`][botstrap.internal.secrets.Secret.__init__]
+                [`valid_pattern`][botstrap.internal.Secret.__init__]
                 that was specified when this secret was instantiated.
         """
         if not self.validate(data):
@@ -180,14 +186,13 @@ class Secret:
     def clear(self) -> None:
         """Deletes all files containing data related to this secret, if any exist.
 
-        This method **does not** scan the entire system to
-        locate the files for a secret - it only checks the
-        [`storage_directory`][botstrap.internal.secrets.Secret.__init__]
+        This method **does not** scan the entire system to locate the files for a secret
+        - it only checks the [`storage_directory`][botstrap.internal.Secret.__init__]
         that was specified upon instantiation.
 
         !!! tip "Tip - Don't scramble your secrets!"
-            If a secret's `.key` files are renamed or moved out of their original
-            directory without a corresponding change to the `uid` and/or
+            If a secret's [`.key`](./#key-files) files are renamed or moved out of their
+            original directory without a corresponding change to the `uid` and/or
             `storage_directory` constructor parameters (or vice versa), then the secret
             will behave as if there are no existing files associated with it.
             Fortunately, this can easily be resolved by either moving the files back
@@ -208,7 +213,7 @@ class Secret:
 
         return file
 
-    def _get_fernet(self, password: Optional[str]) -> Fernet:
+    def _get_fernet(self, password: str | None) -> Fernet:
         """Returns a `Fernet` instance for encrypting and decrypting `bytes` data."""
         if self.requires_password:
             if not password:
