@@ -1,11 +1,11 @@
 /* Slightly decrease the vertical padding of cells in the field info table. */
-.cli-colors-fieldinfo .md-typeset__table tr > :is(td, th) {
+details.info .md-typeset__table tr > :is(td, th) {
   padding-top: 0.75em;
   padding-bottom: 0.75em;
 }
 
 /* Add the primary color (cyan) to the first line of console output text. */
-.cli-colors-example .colored-output code > :nth-last-child(2) > .go {
+details.example .colored-output code > :nth-last-child(2) > .go {
   background-image: linear-gradient(
     to right,
     var(--color-cyan) 0%,
@@ -16,7 +16,7 @@
 }
 
 /* Add the highlight color (pink) to the second line of console output text. */
-.cli-colors-example .colored-output code > :last-child > .go {
+details.example .colored-output code > :last-child > .go {
   background-image: linear-gradient(
     to right,
     var(--md-code-hl-generic-color) 0%,
@@ -35,24 +35,24 @@
 }
 
 /* Hide the entire line containing the annotation in the source definitions. */
-.cli-colors-sourcedefs code > :nth-child(2) {
+.sourcedefs code > :nth-child(2) {
   font-size: 0;
   user-select: none;
 }
 
 /* Restore the relevant spans and manually re-insert only the desired spaces. */
-.cli-colors-sourcedefs code > :nth-child(2) span:not(.c1) {
+.sourcedefs code > :nth-child(2) span:not(.c1) {
   font-size: 0.544rem;
 }
-.cli-colors-sourcedefs code > :nth-child(2) :is(.p, .o, .kc)::after {
+.sourcedefs code > :nth-child(2) :is(.p, .o, .kc)::after {
   content: " ";
 }
-.cli-colors-sourcedefs code > :nth-child(2) .o::before {
+.sourcedefs code > :nth-child(2) .o::before {
   content: " ";
 }
 
 /* Adjust width of the annotation tooltip and allow its text to be selected. */
-.cli-colors-sourcedefs code .md-annotation .md-tooltip {
+.sourcedefs code .md-annotation .md-tooltip {
   user-select: text;
   width: 16.67rem;
 }

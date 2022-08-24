@@ -25,4 +25,4 @@
 
 ::: botstrap.CliStrings.compact
 
-<link rel="stylesheet" href="../../stylesheets/nav-code.css" />
+<link rel="stylesheet" href="../../stylesheets/code-navigation.css" />

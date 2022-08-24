@@ -13,5 +13,5 @@
 
 ::: botstrap.internal.clisession.CliSession
 
-<link rel="stylesheet" href="../../stylesheets/clisession.css" />
-<link rel="stylesheet" href="../../stylesheets/nav-code.css" />
+<link rel="stylesheet" href="../stylesheets/clisession.css" />
+<link rel="stylesheet" href="../../stylesheets/code-navigation.css" />

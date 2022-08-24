@@ -27,7 +27,7 @@
       show_root_toc_entry: false
       show_source: true
 
-<link rel="stylesheet" href="../../stylesheets/argstrap.css" />
-<link rel="stylesheet" href="../../stylesheets/dupe-hidden.css" />
+<link rel="stylesheet" href="../stylesheets/argstrap.css" />
+<link rel="stylesheet" href="../../stylesheets/code-navigation.css" />
+<link rel="stylesheet" href="../../stylesheets/hide-dupe-class.css" />
 <link rel="stylesheet" href="../../stylesheets/manage-tokens.css" />
-<link rel="stylesheet" href="../../stylesheets/nav-code.css" />

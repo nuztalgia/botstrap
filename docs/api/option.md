@@ -23,4 +23,4 @@
       heading_level: 3
       members: false
 
-<link rel="stylesheet" href="../../stylesheets/nav-code.css" />
+<link rel="stylesheet" href="../../stylesheets/code-navigation.css" />

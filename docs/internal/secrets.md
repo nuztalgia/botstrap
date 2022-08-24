@@ -25,6 +25,6 @@
       show_root_heading: false
       show_root_toc_entry: false
 
-<link rel="stylesheet" href="../../stylesheets/secrets.css" />
-<link rel="stylesheet" href="../../stylesheets/dupe-hidden.css" />
-<link rel="stylesheet" href="../../stylesheets/nav-code.css" />
+<link rel="stylesheet" href="../stylesheets/secrets.css" />
+<link rel="stylesheet" href="../../stylesheets/code-navigation.css" />
+<link rel="stylesheet" href="../../stylesheets/hide-dupe-class.css" />

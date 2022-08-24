@@ -58,6 +58,6 @@
       show_root_toc_entry: false
       show_signature_annotations: false
 
-<link rel="stylesheet" href="../../stylesheets/botstrap-flow.css" />
-<link rel="stylesheet" href="../../stylesheets/dupe-hidden.css" />
-<link rel="stylesheet" href="../../stylesheets/nav-code.css" />
+<link rel="stylesheet" href="../stylesheets/botstrap-flow.css" />
+<link rel="stylesheet" href="../../stylesheets/code-navigation.css" />
+<link rel="stylesheet" href="../../stylesheets/hide-dupe-class.css" />

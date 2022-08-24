@@ -1,3 +1,8 @@
+---
+hide:
+  - footer
+---
+
 <!-- prettier-ignore -->
 ::: botstrap
     options:
@@ -11,5 +16,3 @@
 - [`Option`](option)
 
 For more details, see the documentation for each class. [Start here.](./botstrap-flow)
-
-<link rel="stylesheet" href="../../stylesheets/nav-hidden.css" />

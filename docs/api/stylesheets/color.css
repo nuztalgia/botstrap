@@ -1,15 +1,15 @@
 /* Fine-tune the alignment of the emoji in the title of the example box. */
-.colors-example .admonition-title > .twemoji[title=":rainbow_flag:"] {
+.admonition.example .admonition-title > .twemoji[title=":rainbow_flag:"] {
   margin: 0.05em calc(var(--emoji-margin) * 1.4) 0;
 }
 
 /* Increase the size of the file name and code text inside the example box. */
-.colors-example .language-pycon :is(.filename, code) {
+.admonition.example .language-pycon :is(.filename, code) {
   font-size: 1em;
 }
 
 /* Color the console output text in the example box with a rainbow gradient. */
-.colors-example .language-pycon.colored-output .go {
+.admonition.example .language-pycon.colored-output .go {
   background-image: linear-gradient(
     to right,
     var(--color-pink) 0%,

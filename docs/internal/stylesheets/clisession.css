@@ -3,7 +3,7 @@
   display: none;
 }
 
-/* Hide parentheses in the "Page Contents" links for all properties. */
+/* Hide parentheses in the "Page Contents" links for properties. */
 .md-nav--secondary .md-nav__item [href$="name"] {
   margin-right: 10.9em;
 }
@@ -12,6 +12,19 @@
 }
 .md-nav--secondary .md-nav__item [href$="strings"] {
   margin-right: 9.1em;
+}
+
+/* Same as above, but for smaller (i.e. mobile) screens. */
+@media screen and (max-width: 44.9375em) {
+  .md-nav--secondary .md-nav__item [href$="name"] {
+    margin-right: 10.2em;
+  }
+  .md-nav--secondary .md-nav__item [href$="colors"] {
+    margin-right: 9em;
+  }
+  .md-nav--secondary .md-nav__item [href$="strings"] {
+    margin-right: 8.4em;
+  }
 }
 
 /* Color the "yes" and "y" prompt text in the `confirm_or_exit()` example. */
@@ -44,6 +57,11 @@
   );
 }
 
+/* Restore the default color to the lines that don't need fancy coloring. */
+[id*="get_"][id$="_input"] + * .colored-output code > :last-child > .go {
+  background-color: var(--md-code-hl-generic-color);
+}
+
 /* Color the "yes" and "y" prompt text in the `get_bool_input()` example. */
 [id$="get_bool_input"] + * .colored-output code > :nth-last-child(2) > .go {
   background-image: linear-gradient(
@@ -70,9 +88,4 @@
     var(--md-code-hl-generic-color) 71.43%,
     var(--md-code-hl-generic-color) 100%
   );
-}
-
-/* Restore color to affected .colored-output lines that don't need a gradient. */
-[id*="get_"][id$="_input"] + * .colored-output code > :last-child > .go {
-  background-color: var(--md-code-hl-generic-color);
 }

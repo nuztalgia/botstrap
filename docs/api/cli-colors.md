@@ -7,7 +7,7 @@
       members:
         - default
 
-??? quote cli-colors-sourcedefs "Definition - All default color values"
+??? quote sourcedefs "Definition - All default color values"
 
     ```{.py title="botstrap/colors.py" .annotate .line-numbers-off}
     {%
@@ -26,5 +26,5 @@
 
 ::: botstrap.CliColors.off
 
-<link rel="stylesheet" href="../../stylesheets/cli-colors.css" />
-<link rel="stylesheet" href="../../stylesheets/nav-code.css" />
+<link rel="stylesheet" href="../stylesheets/cli-colors.css" />
+<link rel="stylesheet" href="../../stylesheets/code-navigation.css" />

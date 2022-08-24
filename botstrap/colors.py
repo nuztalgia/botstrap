@@ -18,7 +18,7 @@ class Color:
     given string. These characters are interpreted by the console as instructions to
     display the enclosed text in a specific color/style.
 
-    !!! example colors-example "Example - Printing rainbow-colored text :rainbow_flag:"
+    !!! example "Example - Printing rainbow-colored text :rainbow_flag:"
         ```{.pycon .colored-output}
         >>> from botstrap import Color
         >>> print(
@@ -83,7 +83,7 @@ class CliColors:
     specify any values you'd like to change. All constructor arguments correspond
     to field names, and all of them are keyword-only except for `primary`.
 
-    ??? info cli-colors-fieldinfo "Info - Field names and descriptions"
+    ??? info "Info - Field names and descriptions"
         The following table lists the names of all the fields in this class,
         demonstrates the colors that they use by default, and describes the types of
         text to which they are applied.
@@ -107,7 +107,7 @@ class CliColors:
         to the [`BotstrapFlow`][botstrap.BotstrapFlow] constructor. See the
         <a href="#cli-colors-example">example</a> below for more details.
 
-    ??? example cli-colors-example "Example - Customizing specific colors"
+    ??? example "Example - Customizing specific colors"
         <div id="cli-colors-example"/>
         Let's say you want to use cyan as your bot's primary color... but cyan is the
         default highlight color, so that might be confusing. Fortunately, it's easy to
