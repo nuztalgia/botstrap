@@ -1,4 +1,4 @@
-"""This module contains a class that defines all the strings used by Botstrap's CLI."""
+"""This module contains the `CliStrings` class, which defines text shown in the CLI."""
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass
@@ -10,16 +10,17 @@ from typing import Any, Callable, Iterable, overload
 class CliStrings:
     """A model for the strings used by the Botstrap-provided CLI.
 
-    The fields of this class are strings,
-    [`Template`](https://docs.python.org/3/library/string.html#template-strings)
-    strings, and tuples of strings. Collectively, they determine the text that is
-    displayed in the console when you run a script that utilizes Botstrap.
+    The fields of this class are strings, [`Template`][1] strings, and tuples of
+    strings. Collectively, they determine the text that is displayed in the console
+    when you run a script that utilizes Botstrap.
 
     Preconfigured strings are provided by the [`default()`][botstrap.CliStrings.default]
     and [`compact()`][botstrap.CliStrings.compact] class methods. If you desire further
     customization, you can create a new instance of this class and specify any values
     you'd like to change. All constructor arguments correspond to field names and are
     keyword-only.
+
+    [1]: https://docs.python.org/3/library/string.html#template-strings
 
     ??? info "Info - Field name prefixes"
         <div id="prefix-info"/>
@@ -39,14 +40,14 @@ class CliStrings:
 
     ??? example "Example - Customizing the Discord login text"
         ```py title="bot.py" hl_lines="5-6"
-        from botstrap import BotstrapFlow, CliStrings
+        from botstrap import Botstrap, CliStrings
         from string import Template
 
         bot_strings = CliStrings(
             m_login=Template("Logging in with '$token' bot token."),
             m_login_success=Template("$bot_id reporting for duty in $token mode!"),
         )
-        BotstrapFlow(strings=bot_strings).run_bot()
+        Botstrap(strings=bot_strings).run_bot()
         ```
 
         ```console title="Console Session"
@@ -57,9 +58,9 @@ class CliStrings:
         ```
 
         **Note:** The strings customized in this example belong to the fields named
-        `m_login` and `m_login_success`.<br>See the info box
-        <a href="#prefix-info">above</a> for an explanation of `m_` and other prefixes
-        used in the naming of this class's fields.
+        `m_login` and `m_login_success`.<br>
+        See the info box [above](./#prefix-info) for an explanation of `m_` and other
+        prefixes used in the naming of this class's fields.
     """
 
     @classmethod
@@ -87,13 +88,13 @@ class CliStrings:
     To keep things organized, they're split up according to the following categories:
 
     1. Basic `#!py str` values (a.k.a. string literals)
-    2. `Template` strings with only a `${token}` placeholder
+    2. `Template` strings with only a `#!py ${token}` placeholder
     3. `Template` strings with assorted placeholders
-    4. `tuple` objects containing any number of strings
+    4. `#!py tuple` objects containing any number of strings
 
     Within each of these sections, fields are sorted alphabetically, with an extra
-    newline separating each prefix group. See the <a href="#prefix-info">info box</a>
-    in the class description for an explanation of field name prefixes.
+    newline separating each prefix group. See the [info box](./#prefix-info) in the
+    class description for an explanation of field name prefixes.
     """
 
     # region FIELDS
@@ -244,12 +245,12 @@ class CliStrings:
                 formatting it.
             conjunction:
                 The string to insert between the last two choices, for lists of length
-                `#!py 2` or more. If omitted, will default to `m_conj_or`, whose default
-                value is `#!py "or"`.
+                `2` or more. If omitted, will default to `m_conj_or`, whose default
+                value is `"or"`.
             separator:
-                The string to insert between each choice, for lists of length `#!py 3`
-                or more. If omitted, will default to `m_list_sep`, whose default value
-                is `#!py ", "`.
+                The string to insert between each choice, for lists of length `3` or
+                more. If omitted, will default to `m_list_sep`, whose default value
+                is `", "`.
 
         Returns:
             A string containing the choices joined together in natural language.
@@ -278,9 +279,8 @@ class CliStrings:
         """Returns a string prompting the user for an affirmative response.
 
         Responses considered "affirmative" are defined by the `m_affirm_responses`
-        field, which is a tuple that consists of the strings "yes" and "y" by default.
-        Under the hood, this method simply calls
-        [`join_choices()`][botstrap.CliStrings.join_choices] with the appropriate
+        field, which is a `tuple` that consists of the strings "yes" and "y" by default.
+        Under the hood, this method simply calls `join_choices()` with the appropriate
         parameters, and then prepends `m_affirm_cue` to create an affirmation prompt.
 
         ??? example "Example - Using a custom response formatter"

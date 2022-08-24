@@ -1,4 +1,4 @@
-"""This module contains a class that acts as a model for custom command-line options."""
+"""This module contains the `Option` class, which is a model for custom CLI options."""
 from __future__ import annotations
 
 import argparse
@@ -99,7 +99,7 @@ class Option:
         This class, like its [parent][1], is essentially just an `#!py object` with a
         readable string representation. The names of its attributes will match the names
         you choose for your `Option` objects when passing them as keyword arguments to
-        [`parse_args()`][botstrap.BotstrapFlow.parse_args].
+        [`parse_args()`][botstrap.Botstrap.parse_args].
 
         If you prefer to work with a `#!py dict` representation of your parsed option
         values, simply pass your instance of this class to the built-in Python function

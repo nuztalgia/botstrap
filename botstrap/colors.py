@@ -1,4 +1,4 @@
-"""This module contains two classes for facilitating colorful command-line output."""
+"""This module contains `Color` & `CliColors`, both of which add color to CLI output."""
 from __future__ import annotations
 
 from dataclasses import KW_ONLY, asdict, dataclass
@@ -13,10 +13,13 @@ init(autoreset=True)
 class Color:
     """A collection of functions that add color to console-printed strings.
 
-    These functions work by adding pre-defined ANSI escape codes from
-    [`colorama`](https://pypi.org/project/colorama/) to the beginning and end of the
-    given string. These characters are interpreted by the console as instructions to
-    display the enclosed text in a specific color/style.
+    These functions work by adding pre-defined [ANSI escape codes][1] from the
+    [`colorama`][2] library to the beginning and end of the given string.
+    The escape code characters are interpreted by the console as instructions
+    to display the enclosed text in a specific color/style.
+
+    [1]: http://en.wikipedia.org/wiki/ANSI_escape_code
+    [2]: https://pypi.org/project/colorama/
 
     !!! example "Example - Printing rainbow-colored text :rainbow_flag:"
         ```{.pycon .colored-output}
@@ -80,8 +83,8 @@ class CliColors:
     class methods.
 
     To personalize these colors, you can create a new instance of this class and
-    specify any values you'd like to change. All constructor arguments correspond
-    to field names, and all of them are keyword-only except for `primary`.
+    specify any values you'd like to change. All constructor arguments correspond to
+    field names, and all of them are keyword-only except for [`primary`](./#primary).
 
     ??? info "Info - Field names and descriptions"
         The following table lists the names of all the fields in this class,
@@ -90,7 +93,7 @@ class CliColors:
 
         | Field            | Description                                               |
         | ---------------- | --------------------------------------------------------- |
-        |`primary`         | Your bot's name. See the tip below for more info.         |
+        |`primary`         | Your bot's name. See the [tip](./#primary) for more info. |
         |`error`{.red}     | Message shown when the script terminates due to an error. |
         |`highlight`{.cyan}| Important text that isn't a success/warning/error message.|
         |`lowlight`{.grey} | Less important text that may safely be de-emphasized.     |
@@ -98,27 +101,28 @@ class CliColors:
         |`warning`{.yellow}| Text shown when something goes wrong, but is recoverable. |
 
     ??? tip "Tip - Set your bot's primary color!"
+        <div id="primary"/>
         The `primary` field is not assigned a color by default. This is deliberate, as
         it will be used to color your bot's name and is essentially a personal brand.
         :rainbow:
 
         To customize this field, simply instantiate this class with your desired color -
         such as `#!py CliColors(Color.blue)` - and pass it in as the `colors` parameter
-        to the [`BotstrapFlow`][botstrap.BotstrapFlow] constructor. See the
-        <a href="#cli-colors-example">example</a> below for more details.
+        to the [`Botstrap`][botstrap.Botstrap] constructor.
+        See the [example](./#custom-colors) below for more details.
 
     ??? example "Example - Customizing specific colors"
-        <div id="cli-colors-example"/>
+        <div id="custom-colors"/>
         Let's say you want to use cyan as your bot's primary color... but cyan is the
         default highlight color, so that might be confusing. Fortunately, it's easy to
         change the highlight color too! This example demonstrates how to change the
         primary color to `cyan`{.cyan} and the highlight color to `pink`{.pink}.
 
         ```py title="bot.py" hl_lines="3"
-        from botstrap import BotstrapFlow, CliColors, Color
+        from botstrap import Botstrap, CliColors, Color
 
         bot_colors = CliColors(Color.cyan, highlight=Color.pink)
-        BotstrapFlow(name="cyan-bot", colors=bot_colors).run_bot()
+        Botstrap(name="cyan-bot", colors=bot_colors).run_bot()
         ```
 
         ```{.console title="Console Session" .colored-output .ends-with-input}
@@ -141,9 +145,9 @@ class CliColors:
     def default(cls) -> CliColors:
         """Returns an instance of this class with default values for all colors.
 
-        Functions from [`Color`][botstrap.Color] are used as the defaults for all fields
-        except for `primary`, which defaults to `#!py str()` and is essentially a no-op
-        unless overridden.
+        Functions from [`Color`][botstrap.Color] are used as the defaults for all
+        fields except for [`primary`](./#primary), which defaults to `#!py str()`
+        and is essentially a no-op unless overridden.
         """
         return cls()
 

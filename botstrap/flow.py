@@ -1,4 +1,4 @@
-"""This is the main Botstrap module, featuring the `BotstrapFlow` class."""
+"""This module features the `Botstrap` class, which is the primary integration point."""
 from __future__ import annotations
 
 from pathlib import Path
@@ -10,7 +10,7 @@ from botstrap.options import Option
 from botstrap.strings import CliStrings
 
 
-class BotstrapFlow(CliSession):
+class Botstrap(CliSession):
     """The primary flow for handling bot token storage, retrieval, and management.
 
     This class contains methods that facilitate the simple and secure handling of
@@ -27,7 +27,7 @@ class BotstrapFlow(CliSession):
         colors: CliColors = CliColors.default(),
         strings: CliStrings = CliStrings.default(),
     ) -> None:
-        """Initializes a new `BotstrapFlow` instance.
+        """Initializes a new `Botstrap` instance.
 
         Args:
             name:
@@ -55,8 +55,8 @@ class BotstrapFlow(CliSession):
         display_name: str | None = None,
         storage_directory: str | Path | None = None,
         allow_overwrites: bool = False,
-    ) -> BotstrapFlow:
-        """Defines a Discord bot token to be managed by this flow.
+    ) -> Botstrap:
+        """Defines a Discord bot token to be managed by this Botstrap integration.
 
         After instantiating this class and before calling any of its other methods, this
         one must be called for **each unique token** that may be used by your bot. For
@@ -103,9 +103,9 @@ class BotstrapFlow(CliSession):
             easily identifiable when they're mentioned in the CLI.
 
             ```py title="bot.py"
-            from botstrap import BotstrapFlow, Color
+            from botstrap import Botstrap, Color
 
-            BotstrapFlow().register_token(
+            Botstrap().register_token(
                 uid="dev",
                 display_name=Color.yellow("development"),
             ).register_token(
@@ -136,7 +136,7 @@ class BotstrapFlow(CliSession):
                 previous token.
 
         Returns:
-            This `BotstrapFlow` instance, for chaining method calls.
+            This `Botstrap` instance, for chaining method calls.
 
         Raises:
             ValueError: If `storage_directory` does not point to a valid directory (i.e.
@@ -159,8 +159,8 @@ class BotstrapFlow(CliSession):
         """Parses any arguments and options passed in via the command line.
 
         This should only be invoked after **all** of your bot's tokens are declared
-        using [`register_token()`][botstrap.BotstrapFlow.register_token], in order to
-        ensure that the [active token][botstrap.BotstrapFlow.retrieve_active_token]
+        using [`register_token()`][botstrap.Botstrap.register_token], in order to
+        ensure that the [active token][botstrap.Botstrap.retrieve_active_token]
         can be correctly determined from any command-line arguments passed to your
         bot's script.
 
@@ -199,9 +199,9 @@ class BotstrapFlow(CliSession):
 
         ??? example "Example - Customizing your bot's description"
             ```py title="bot.py"
-            from botstrap import BotstrapFlow
+            from botstrap import Botstrap
 
-            BotstrapFlow().parse_args(
+            Botstrap().parse_args(
                 description="A really cool Discord bot that uses Botstrap!"
             )
             ```
@@ -270,7 +270,7 @@ class BotstrapFlow(CliSession):
         The **value** of the token is a string containing its decrypted data,
         which can be plugged into your bot's `run()` method to log it into Discord.
         This can (and for security reasons, should) be handled automatically by
-        [`run_bot()`][botstrap.BotstrapFlow.run_bot] - which means that ideally, you
+        [`run_bot()`][botstrap.Botstrap.run_bot] - which means that ideally, you
         won't need to call this method at all.
 
         ??? caution "Caution - Keep your tokens safe!"
@@ -279,16 +279,16 @@ class BotstrapFlow(CliSession):
             any way) the return value of this method! :zipper_mouth:
 
             If your bot is coded such that it can be both instantiated and started by
-            [`run_bot()`][botstrap.BotstrapFlow.run_bot], consider using that method
-            instead for brevity and safety. This method is provided for cases in which
-            that isn't a viable option, but it should be avoided if possible to prevent
+            [`run_bot()`][botstrap.Botstrap.run_bot], consider using that method instead
+            for brevity and safety. This method is provided for cases in which that
+            isn't a viable option, but it should be avoided if possible to prevent
             potential security mishaps.
 
         ??? example "Example - Retrieving a new default token"
             ```py title="bot.py"
-            from botstrap import BotstrapFlow
+            from botstrap import Botstrap
 
-            BotstrapFlow(name="example-bot").retrieve_active_token()
+            Botstrap(name="example-bot").retrieve_active_token()
             ```
 
             ```{.console title="Console Session" .colored-output .ends-with-input}
@@ -305,7 +305,7 @@ class BotstrapFlow(CliSession):
             allow_token_registration:
                 Whether to automatically register a basic `#!py "default"` token
                 if no tokens have been explicitly defined with
-                [`register_token()`][botstrap.BotstrapFlow.register_token].
+                [`register_token()`][botstrap.Botstrap.register_token].
 
         Returns:
             The active token value if it exists and can be decrypted, otherwise `None`.
@@ -362,9 +362,9 @@ class BotstrapFlow(CliSession):
             extremely simple code:
 
             ```py title="bot.py" hl_lines="3"
-            from botstrap import BotstrapFlow
+            from botstrap import Botstrap
 
-            BotstrapFlow().run_bot()
+            Botstrap().run_bot()
             ```
 
             ```{.console title="Console Session" .colored-output}
@@ -391,7 +391,7 @@ class BotstrapFlow(CliSession):
                 possible destinations:
 
                 1. Any args accepted by
-                [`retrieve_active_token()`][botstrap.BotstrapFlow.retrieve_active_token]
+                [`retrieve_active_token()`][botstrap.Botstrap.retrieve_active_token]
                 will be passed to that method when it gets called by this one in order
                 to obtain the token to run your bot.
 

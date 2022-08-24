@@ -1,7 +1,7 @@
-## BotstrapFlow {#}
+## Botstrap {#}
 
 <!-- prettier-ignore -->
-::: botstrap.BotstrapFlow
+::: botstrap.Botstrap
     options:
       heading_level: 1
       members: false
@@ -28,11 +28,11 @@
           H --> K(("Done!"))
           J --> K
 
-          click A "#botstrap.flow.BotstrapFlow.__init__"
-          click C "#botstrap.flow.BotstrapFlow.register_token"
-          click F "#botstrap.flow.BotstrapFlow.parse_args"
-          click H "#botstrap.flow.BotstrapFlow.run_bot"
-          click I "#botstrap.flow.BotstrapFlow.retrieve_active_token"
+          click A "#botstrap.flow.Botstrap.__init__"
+          click C "#botstrap.flow.Botstrap.register_token"
+          click F "#botstrap.flow.Botstrap.parse_args"
+          click H "#botstrap.flow.Botstrap.run_bot"
+          click I "#botstrap.flow.Botstrap.retrieve_active_token"
 
           class A,C,F,H,I method;
           classDef method font-family: Roboto Mono, font-size: 14px, font-weight: bold
@@ -52,12 +52,12 @@
     </figure>
 
 <!-- prettier-ignore -->
-::: botstrap.BotstrapFlow
+::: botstrap.Botstrap
     options:
       show_root_heading: false
       show_root_toc_entry: false
       show_signature_annotations: false
 
-<link rel="stylesheet" href="../stylesheets/botstrap-flow.css" />
+<link rel="stylesheet" href="../stylesheets/botstrap.css" />
 <link rel="stylesheet" href="../../stylesheets/code-navigation.css" />
 <link rel="stylesheet" href="../../stylesheets/hide-dupe-class.css" />

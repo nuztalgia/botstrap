@@ -30,7 +30,7 @@ nav:
   - Home: index.md
   - API Reference:
       - api/index.md
-      - BotstrapFlow: api/botstrap-flow.md
+      - Botstrap: api/botstrap.md
       - CliColors: api/cli-colors.md
       - CliStrings: api/cli-strings.md
       - Color: api/color.md
