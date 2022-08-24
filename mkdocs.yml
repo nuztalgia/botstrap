@@ -39,6 +39,7 @@ nav:
       - internal/index.md
       - argstrap: internal/argstrap.md
       - clisession: internal/clisession.md
+      - metadata: internal/metadata.md
       - secrets: internal/secrets.md
       - tokens: internal/tokens.md
 

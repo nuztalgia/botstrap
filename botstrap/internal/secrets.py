@@ -28,6 +28,7 @@ class Secret:
     it can be accessed again.
 
     ??? question "FAQ - How does the encryption work?"
+        <div id="key-files"/>
         This class uses [Fernet](https://cryptography.io/en/latest/fernet/) symmetric
         encryption from the [`cryptography`](https://pypi.org/project/cryptography/)
         package to encrypt and decrypt data, optionally with extra protection in the
