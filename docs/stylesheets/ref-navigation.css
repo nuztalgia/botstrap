@@ -1,0 +1,19 @@
+/* Hide the secondary nav (i.e. "Page Contents"). */
+@media screen and (min-width: 60em) {
+  .md-sidebar--secondary:not([hidden]) {
+    visibility: hidden;
+  }
+}
+
+/* Hide all of the section anchor links. */
+.md-typeset a.headerlink {
+  display: none;
+}
+
+/* Make each card (as a whole) appear clickable. */
+.card :not(a) {
+  pointer-events: none;
+}
+.card:hover {
+  cursor: pointer;
+}

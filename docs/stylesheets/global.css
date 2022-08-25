@@ -11,6 +11,11 @@
   --task-list-item-margin: 2em;
 }
 
+/* Use bold text for the expandable section headers in the primary nav. */
+.md-nav--primary .md-nav__link--index {
+  font-weight: bold;
+}
+
 /* Prevent user selection of all code block filenames, as well as console and
    pycon code block ".go" (generic output) and ".gp" (generic prompt). */
 .highlight > .filename,

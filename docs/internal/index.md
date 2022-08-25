@@ -3,6 +3,8 @@ hide:
   - footer
 ---
 
+# Internal Reference
+
 <!-- prettier-ignore -->
 ::: botstrap.internal
     options:
@@ -25,3 +27,5 @@ hide:
     <figure markdown>
       ![Botstrap - Simba Meme](https://user-images.githubusercontent.com/95021853/184226591-958ca40d-354e-4bbf-a91a-c19bccb96402.png)
     </figure>
+
+<link rel="stylesheet" href="../../stylesheets/ref-navigation.css" />

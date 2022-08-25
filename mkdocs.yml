@@ -25,6 +25,9 @@ theme:
       toggle:
         icon: material/weather-sunny
         name: Switch to light mode
+  features:
+    - navigation.indexes
+    - navigation.top
 
 nav:
   - Home: index.md
@@ -35,26 +38,27 @@ nav:
       - CliStrings: api/cli-strings.md
       - Color: api/color.md
       - Option: api/option.md
-  - Internal Modules:
+  - Internal Reference:
       - internal/index.md
-      - argstrap: internal/argstrap.md
-      - clisession: internal/clisession.md
-      - metadata: internal/metadata.md
-      - secrets: internal/secrets.md
-      - tokens: internal/tokens.md
+      - Argstrap: internal/argstrap.md
+      - CliSession: internal/cli-session.md
+      - Metadata: internal/metadata.md
+      - Secret: internal/secret.md
+      - Token: internal/token.md
 
 extra_css:
   - stylesheets/global.css
 
+extra_javascript:
+  - javascripts/global.js
+
 plugins:
-  - search
-  - section-index
-  - include-markdown
   - exclude:
       regex:
         - ^(.*/)?README\.md$
         - ^images/robot-happy.*$
         - ^requirements\.(in|txt)$
+  - include-markdown
   - mkdocstrings:
       handlers:
         python:
@@ -70,6 +74,7 @@ plugins:
       watch:
         - botstrap/
         - README.md
+  - search
 
 markdown_extensions:
   - admonition
@@ -78,6 +83,7 @@ markdown_extensions:
   - pymdownx.details
   - pymdownx.emoji:
       emoji_index: !!python/name:materialx.emoji.twemoji
+      emoji_generator: !!python/name:materialx.emoji.to_svg
   - pymdownx.highlight:
       auto_title: true
       line_spans: line
