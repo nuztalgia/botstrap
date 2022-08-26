@@ -1,24 +1,6 @@
-/* Hide the initial "Source Code" block that contains the *entire* class. */
-h2[id$="Argstrap"] + .doc-contents > .quote {
-  display: none;
-}
-
 /* Hide the default "None" values in `__init__()` (because they're distracting). */
 [id$="__init__"] :is(.kc, .n + .o) {
   display: none;
-}
-
-/* Hide the docstrings in the "Source Code" blocks (because they're redundant). */
-[id$="__init__"] + * > .quote code > :not(:nth-child(-n + 9), :nth-child(n + 31)),
-.doc-heading:not([id*="__init__"]) + * > .quote code > :not(:nth-child(-n + 2)) {
-  display: none;
-}
-
-/* Restore the rest of the code in the blocks for the non-constructor methods. */
-.doc-heading[id$="assign_arg_abbrs"] + * > .quote code > :nth-child(n + 65),
-.doc-heading[id$="parse_bot_args"] + * > .quote code > :nth-child(n + 56),
-.doc-heading[id$="manage_tokens"] + * > .quote code > :nth-child(n + 63) {
-  display: inline;
 }
 
 /* Fix the inconsistent number coloring in the example for `parse_bot_args()`. */

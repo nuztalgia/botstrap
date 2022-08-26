@@ -9,11 +9,3 @@
 .md-typeset a.headerlink {
   display: none;
 }
-
-/* Make each card (as a whole) appear clickable. */
-.card :not(a) {
-  pointer-events: none;
-}
-.card:hover {
-  cursor: pointer;
-}

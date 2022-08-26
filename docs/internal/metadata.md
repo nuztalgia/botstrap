@@ -11,6 +11,9 @@
 
     {% include "index.md" start="**Note:**" end="???" %}
 
+<!-- prettier-ignore -->
 ::: botstrap.internal.metadata.Metadata
+    options:
+      show_source: true
 
 <link rel="stylesheet" href="../../stylesheets/code-navigation.css" />

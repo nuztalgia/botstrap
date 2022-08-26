@@ -1,4 +1,0 @@
-/* Hide the contents of the `resolve()` method docstring in the code block. */
-[id$="resolve"] + * > .quote code > :not(:nth-child(-n + 2), :nth-child(n + 40)) {
-  display: none;
-}

@@ -53,6 +53,14 @@
   }
 }
 
+/* Make each clickable grid card actually appear clickable. */
+.clickable.grid :is(.card, li) :not(a) {
+  pointer-events: none;
+}
+.clickable.grid :is(.card, li):hover {
+  cursor: pointer;
+}
+
 /* Add some extra horizontal spacing around emoji so they don't look cramped. */
 .twemoji {
   margin: 0 var(--emoji-margin);
