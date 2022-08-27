@@ -11,6 +11,11 @@ hide:
       members: false
       show_root_full_path: true
 
+The pages in this section contain detailed documentation, examples, and explanations for
+each of the classes that you're likely to encounter and/or use while integrating with
+Botstrap. If you're looking for a deep dive into all of the available options, then
+you're in the right place.
+
 <div class="clickable grid" markdown>
 <div class="card" markdown>
 ### ![](../images/logo-48.png){.twemoji width=24} [`Botstrap`](botstrap)
@@ -42,5 +47,5 @@ A model for a custom option to add to the Botstrap-provided CLI.
 </div>
 </div>
 
-<link rel="stylesheet" href="../../stylesheets/material-grids.css" />
-<link rel="stylesheet" href="../../stylesheets/ref-navigation.css" />
+<link rel="stylesheet" href="../stylesheets/material-grids.css" />
+<link rel="stylesheet" href="../stylesheets/ref-navigation.css" />

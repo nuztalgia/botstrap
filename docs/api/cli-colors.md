@@ -7,7 +7,7 @@
       members:
         - default
 
-??? quote sourcedefs "Definition - All default color values"
+??? note sourcedefs "Note - All default color values"
 
     ```{.py title="botstrap/colors.py" .annotate .line-numbers-off}
     {%

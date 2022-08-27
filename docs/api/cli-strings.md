@@ -7,7 +7,7 @@
       members:
         - default
 
-??? quote "Definition - All default string values"
+??? note "Note - All default string values"
 
     {%
       include "../../botstrap/strings.py"
