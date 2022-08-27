@@ -1,3 +1,8 @@
+/* Hide the redundant file headers in the code blocks in the full example. */
+div#full-example span.filename {
+  display: none;
+}
+
 /* Hide excessive/distracting info in all doc headers except for `__init__()`. */
 .doc-heading:not([id$="__init__"])
   span:not(:first-child, .p, .p + :is(.n, .o), .n:nth-last-child(2)) {

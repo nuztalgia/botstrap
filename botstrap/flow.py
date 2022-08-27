@@ -11,14 +11,13 @@ from botstrap.strings import CliStrings
 
 
 class Botstrap(CliSession):
-    """The primary flow for handling bot token storage, retrieval, and management.
+    """The primary point of integration between a Discord bot and the Botstrap library.
 
-    This class contains methods that facilitate the simple and secure handling of
-    Discord bot tokens. It maintains a token registry to enable programmatic declaration
-    of expected/allowed tokens, and provides a CLI for interactive addition and deletion
-    of encrypted token data. This class also maintains some state corresponding to its
-    constructor arguments, which collectively ensure a consistent look and feel for the
-    aforementioned CLI.
+    This class features a modular, step-by-step flow for securely handling Discord bot
+    tokens and parsing/customizing command-line options. Each method in this class
+    corresponds to a step in the flow, and almost all of them are optional and/or highly
+    customizable in order to adapt to the needs of each individual bot. For a high-level
+    roadmap of their usage, see the [flowchart](./#botstrap-flowchart) below.
     """
 
     def __init__(
@@ -359,9 +358,9 @@ class Botstrap(CliSession):
               token for your bot.
 
             If all of the above statements are true, you can run your bot with this
-            extremely simple code:
+            extremely basic code:
 
-            ```py title="bot.py" hl_lines="3"
+            ```py title="bot.py"
             from botstrap import Botstrap
 
             Botstrap().run_bot()
@@ -374,10 +373,16 @@ class Botstrap(CliSession):
             bot: default: Successfully logged in as "BasicBot#1234".
             ```
 
+            Of course, this simple example probably isn't very helpful unless you're
+            trying to play [golf][5] with your bot start-up code. For a much more
+            complex and interesting example, go [back to the top](./#full-example)
+            of this page.
+
         [1]: https://discord.com/developers/docs/topics/community-resources
         [2]: https://github.com/Rapptz/discord.py
         [3]: https://github.com/Pycord-Development/pycord
         [4]: https://guide.pycord.dev/popular-topics/subclassing-bots/
+        [5]: https://www.geeksforgeeks.org/code-golfing-in-python/
 
         Args:
             bot_class:

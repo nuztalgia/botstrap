@@ -51,6 +51,67 @@
       ```
     </figure>
 
+??? example "Example - Putting it all together"
+
+    <div id="full-example"/>
+    === "\_\_main\_\_.py"
+        ```py
+        from botstrap import Botstrap, CliColors, Color, Option
+        from discord import AllowedMentions
+        from examplebot import extras
+
+        botstrap = (
+            Botstrap(name="example-bot", colors=CliColors(Color.pink))
+            .register_token(
+                uid="dev",
+                display_name=Color.yellow("development"),
+            )
+            .register_token(
+                uid="prod",
+                requires_password=True,
+                display_name=Color.green("production"),
+            )
+        )
+
+        args = botstrap.parse_args(
+            description="A really cool Discord bot that uses Botstrap!",
+            ll=Option(
+                default="i",
+                choices=("d", "debug", "i", "info", "w", "warning", "e", "error"),
+                help="The lowest message level to log.",
+            ),
+            alpha=Option(flag=True, help="Enable features that are currently in alpha."),
+            allow_pings=Option(flag=True, help="Allow the bot to ping people/roles."),
+        )
+
+        extras.initialize_logging(log_level=args.ll)
+
+        bot_class = extras.AlphaBot if args.alpha else "discord.Bot"
+        pings = AllowedMentions.everyone() if args.allow_pings else AllowedMentions.none()
+
+        botstrap.run_bot(bot_class, allowed_mentions=pings)
+        ```
+
+    === "--help"
+        ```console
+        $ python -m examplebot -h
+        usage: examplebot [-l <str>] [-a] [--allow-pings] [-t] [--help] [<token id>]
+
+          A really cool Discord bot that uses Botstrap!
+          Run "python -m examplebot" with no parameters to start the bot in development mode.
+
+        positional arguments:
+          <token id>            The ID of the token to use to run the bot.
+                                Valid options are "dev" and "prod".
+
+        options:
+          -l <str>, --ll <str>  The lowest message level to log.
+          -a, --alpha           Enable features that are currently in alpha.
+          --allow-pings         Allow the bot to ping people/roles.
+          -t, --tokens          View/manage your saved Discord bot tokens.
+          -h, --help            Display this help message.
+        ```
+
 <!-- prettier-ignore -->
 ::: botstrap.Botstrap
     options:
@@ -61,3 +122,4 @@
 <link rel="stylesheet" href="../stylesheets/botstrap.css" />
 <link rel="stylesheet" href="../../stylesheets/code-navigation.css" />
 <link rel="stylesheet" href="../../stylesheets/hide-dupe-class.css" />
+<link rel="stylesheet" href="../../stylesheets/material-tabs.css" />
