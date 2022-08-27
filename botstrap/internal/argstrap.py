@@ -1,9 +1,10 @@
 """This module contains the `Argstrap` class, which parses arguments for a bot's CLI."""
 from __future__ import annotations
 
+import operator
 import re
 from argparse import ArgumentParser, RawTextHelpFormatter
-from typing import Any, Final
+from typing import Any, Final, Iterator
 
 from botstrap.internal.clisession import CliSession
 from botstrap.internal.metadata import Metadata
@@ -103,12 +104,17 @@ class Argstrap(ArgumentParser):
             """Adds the arg (and its abbr) to the arg parser and to usage_components."""
             name = ("" if positional else "--") + key.replace("_", "-")
             abbr = f"-{abbreviations[key]}" if abbreviations.get(key) else ""
-            metavar = kwargs.get("metavar")
+            metavar = (
+                self.cli.colors.lowlight(str(m)) if (m := kwargs.get("metavar")) else ""
+            )
+
+            if len(key) == 1:
+                name = ""  # Single-char keys will only have an abbr, prefixed by "-".
 
             if key == _HELP_KEY:  # Special case - don't abbreviate "--help".
                 display_name = name
             elif key == _TOKEN_KEY:  # Special case - show metavar instead of name.
-                display_name = self.cli.colors.lowlight(str(metavar))
+                display_name = metavar
             else:
                 display_name = (abbr or name) + (f" {metavar}" if metavar else "")
 
@@ -123,9 +129,9 @@ class Argstrap(ArgumentParser):
             }
             if not option.flag:
                 option_dict["default"] = option.default
-                option_dict["type"] = (_type := type(option.default))
+                option_dict["type"] = (option_type := type(option.default))
                 option_dict["choices"] = option.choices or None
-                option_dict["metavar"] = self.cli.colors.lowlight(f"<{_type.__name__}>")
+                option_dict["metavar"] = f"<{option_type.__name__}>"
             add_arg(self._custom_keys[i], **option_dict)  # (Use the sanitized key.)
 
         # Then add the default options, in order of their usefulness when viewing "-h".
@@ -166,7 +172,7 @@ class Argstrap(ArgumentParser):
         (and their abbrs) will have been decided and set using the superclass method
         [`add_argument()`][1].
 
-        ??? info "Info - Contents of the resulting `dict`"
+        ??? info "Info - Contents of the resulting dictionary"
             The dictionary returned by this method represents a mapping of arg/option
             keys (i.e. names) to their abbreviations. It has the following properties:
 
@@ -198,6 +204,9 @@ class Argstrap(ArgumentParser):
                 same [order][3] in which the keyword arguments were originally passed
                 in. For example, with three custom options named `--hoo`, `--bar`, and
                 `--baz`, the only resulting new abbreviation would be `-b` for `--bar`.
+                -   **Special Case:** Any options with single-character names will be
+                    given priority over longer names that would otherwise be able to
+                    use that single character as an abbreviation.
 
             3.  Last, if `-t` and/or `-v` have not been reserved yet, they are assigned
                 to `--tokens` and `--version` respectively. These are default options
@@ -235,12 +244,22 @@ class Argstrap(ArgumentParser):
                 else:
                     assigned_options[key] = None
 
+        def select_custom_keys(single_char: bool) -> Iterator[str]:
+            """Yields valid keys with length == or > 1, depending on the param value."""
+            for key in self._custom_keys:
+                if (not key) or (key == "h") or not isinstance(key, str):
+                    raise ValueError(f"Invalid command-line argument name: '{key}'.")
+                elif (operator.eq if single_char else operator.gt)(len(key), 1):
+                    yield key
+
         # First, assign the keys & abbrs that are strictly reserved by default options.
         add_options(_HELP_KEY, add_abbrs=True)
         add_options(_TOKEN_KEY, _TOKENS_KEY, _VERSION_KEY)
 
-        # Then, try to assign keys and abbreviations for any/all custom-defined options.
-        add_options(*self._custom_keys, add_abbrs=True)
+        # Then, try to assign keys and abbreviations for any/all custom-defined options,
+        # prioritizing those with names consisting of only a single character.
+        add_options(*select_custom_keys(single_char=True), add_abbrs=True)
+        add_options(*select_custom_keys(single_char=False), add_abbrs=True)
 
         # Last, try to add abbrs for the default options that can use them (-t and -v).
         add_options(_TOKENS_KEY, _VERSION_KEY, allow_existing_keys=True, add_abbrs=True)
