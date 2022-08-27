@@ -1,0 +1,69 @@
+# <a href="https://botstrap.rtfd.io"><img src="/docs/images/logo-48.png" width=24></a> Examples
+
+## Example #0
+
+No files needed! Just run the following command in your terminal:
+
+```sh
+python -c "from botstrap import *; Botstrap().run_bot()"
+```
+
+This is the absolute simplest use case. It assumes that the bot:
+
+- Only uses a single bot token, named `default`.
+- Does not need/want to customize its CLI at all.
+- Is of the type `discord.Bot` (i.e. not a
+  [subclass](https://guide.pycord.dev/popular-topics/subclassing-bots/)).
+
+Although this example is unlikely to be applicable in practice, it's a nice minimal
+demonstration of Botstrap's default settings and flow.
+
+## Example #1
+
+This example is significantly more involved, and uses the following two files:
+
+- [`ex1/__main__.py`](ex1/__main__.py) - Contains the entire Botstrap integration and
+  exercises all the recommended methods in the
+  [`Botstrap`](https://botstrap.rtfd.io/en/latest/api/botstrap/#botstrap-flowchart)
+  flow, as well as a few other classes that are also part of the public
+  [API](https://botstrap.rtfd.io/en/latest/api/).
+
+- [`ex1/extras.py`](ex1/extras.py) - Represents a very small subset of the extra pieces
+  that a Discord bot might have. The purpose of this file is simply to provide more
+  context for the example integration, so feel free to skip over it if you don't find it
+  useful.
+
+While the files for this example are contained within their own subdirectory, the
+command to run their code must be executed in **this directory** (i.e. `examples` - not
+`ex1`). After making sure you're in the correct working directory, run the following
+command in your terminal:
+
+```sh
+python -m ex1 -h
+```
+
+<details>
+<summary>If everything was set up correctly, you should see a help menu that looks something like this... <i>(click to expand)</i></summary>
+
+```c
+usage: ex1 [-l <str>] [-a] [--allow-pings] [-t] [--help] [<token id>]
+
+  A really cool Discord bot that uses Botstrap!
+  Run "python -m ex1" with no parameters to start the bot in development mode.
+
+positional arguments:
+  <token id>            The ID of the token to use to run the bot.
+                        Valid options are "dev" and "prod".
+
+options:
+  -l <str>, --ll <str>  The lowest message level to log.
+  -a, --alpha           Enable features that are currently in alpha.
+  --allow-pings         Allow the bot to ping people/roles.
+  -t, --tokens          View/manage your saved Discord bot tokens.
+  -h, --help            Display this help message.
+```
+
+</details>
+
+Once that's working, feel free to play around with the available command-line options
+and observe the resulting behavior! :tada:
