@@ -1,11 +1,6 @@
-/* Define the color to use for tabs. Corresponds to `--md-primary-fg-color--light`. */
-:root {
-  --tab-color: #9574cd;
-}
-
 /* Set the color of the active tab underline. Copied from existing style. */
 .js .md-typeset .tabbed-labels:before {
-  background: var(--tab-color);
+  background: var(--md-typeset-a-color);
 }
 
 /* Set the color of the active tab label text. Copied+shortened from existing style. */
@@ -18,5 +13,5 @@
 .md-typeset .tabbed-set > input:nth-child(7):checked ~ .tabbed-labels > :nth-child(7),
 .md-typeset .tabbed-set > input:nth-child(8):checked ~ .tabbed-labels > :nth-child(8),
 .md-typeset .tabbed-set > input:nth-child(9):checked ~ .tabbed-labels > :nth-child(9) {
-  color: var(--tab-color);
+  color: var(--md-typeset-a-color);
 }

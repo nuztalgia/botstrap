@@ -73,6 +73,7 @@ plugins:
               ignore_init_summary: true
       watch:
         - botstrap/
+        - examples/
         - README.md
   - search
 

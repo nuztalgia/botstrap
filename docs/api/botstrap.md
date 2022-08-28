@@ -54,45 +54,55 @@
 ??? example "Example - Putting it all together"
 
     <div id="full-example"/>
-    === "\_\_main\_\_.py"
-        ```py
-        from botstrap import Botstrap, CliColors, Color, Option
-        from discord import AllowedMentions
-        from examplebot import extras
-
-        botstrap = (
-            Botstrap(name="example-bot", colors=CliColors(Color.pink))
-            .register_token(
-                uid="dev",
-                display_name=Color.yellow("development"),
-            )
-            .register_token(
-                uid="prod",
-                requires_password=True,
-                display_name=Color.green("production"),
-            )
-        )
-
-        args = botstrap.parse_args(
-            description="A really cool Discord bot that uses Botstrap!",
-            ll=Option(
-                default="i",
-                choices=("d", "debug", "i", "info", "w", "warning", "e", "error"),
-                help="The lowest message level to log.",
-            ),
-            alpha=Option(flag=True, help="Enable features that are currently in alpha."),
-            allow_pings=Option(flag=True, help="Allow the bot to ping people/roles."),
-        )
-
-        extras.initialize_logging(log_level=args.ll)
-
-        bot_class = extras.AlphaBot if args.alpha else "discord.Bot"
-        pings = AllowedMentions.everyone() if args.allow_pings else AllowedMentions.none()
-
-        botstrap.run_bot(bot_class, allowed_mentions=pings)
+    === "Intro"
+        ```{.text .line-numbers-off}
+        📁 workspace/
+        └── 📁 examplebot/
+            ├── 📄 __main__.py
+            └── 📄 extras.py
         ```
 
-    === "--help"
+        This is an extensive, multi-part example that utilizes the directory structure
+        outlined above.
+
+        If any of the code or console output in the following tabs is unclear, try using
+        the search bar at the top of the page to look up the key terms and read through
+        the relevant documentation, then come back to this example.
+
+        (And if the docs aren't helpful, please do start a
+        [discussion](https://github.com/nuztalgia/botstrap/discussions)
+        about what could be clarified!)
+
+        ---
+        The next two tabs (after this "Intro" tab) provide the contents of the **Python
+        files** used in this example:
+
+        - `__main__.py` - This file contains the entire Botstrap integration and
+        exercises all of the recommended methods in this class, as well as a few other
+        classes that are also part of Botstrap's [public API](..).
+        - `extras.py` - This file represents a very small subset of the extra pieces
+        that a Discord bot might have. Its purpose is simply to provide more context
+        for the integration, so feel free to skip it if you don't find it useful.
+
+        ---
+        The subsequent tabs demonstrate the **CLI output** for various program flows
+        and/or command-line arguments:
+
+        1. `python -m examplebot -h` - The help menu for the example bot.
+        2. `python -m examplebot` - Running the bot in its default (`dev`) mode for the
+           first time; going through the flow for adding a token **without** a password.
+
+    === "\_\_main\_\_.py"
+        ```py
+        {% include "../../examples/ex1/__main__.py" %}
+        ```
+
+    === "extras.py"
+        ```py
+        {% include "../../examples/ex1/extras.py" %}
+        ```
+
+    === "CLI #1"
         ```console
         $ python -m examplebot -h
         usage: examplebot [-l <str>] [-a] [--allow-pings] [-t] [--help] [<token id>]
@@ -101,15 +111,25 @@
           Run "python -m examplebot" with no parameters to start the bot in development mode.
 
         positional arguments:
-          <token id>            The ID of the token to use to run the bot.
-                                Valid options are "dev" and "prod".
+        {% include "../../examples/README.md" start="positional arguments:\n" end="```" %}
+        ```
 
-        options:
-          -l <str>, --ll <str>  The lowest message level to log.
-          -a, --alpha           Enable features that are currently in alpha.
-          --allow-pings         Allow the bot to ping people/roles.
-          -t, --tokens          View/manage your saved Discord bot tokens.
-          -h, --help            Display this help message.
+    === "CLI #2"
+        ```console
+        $ python -m examplebot
+
+        example-bot: You currently don't have a saved development bot token.
+        Would you like to add one now? If so, type "yes" or "y": y
+
+        Please enter your bot token now. It'll be invisible for security reasons.
+        BOT TOKEN: ************************.******.***************************
+
+        Your token has been successfully encrypted and saved.
+
+        Do you want to use this token to run your bot now? If so, type "yes" or "y": y
+
+        example-bot: development: Attempting to log in to Discord...
+        example-bot: development: Successfully logged in as "BasicBot#1234".
         ```
 
 <!-- prettier-ignore -->
