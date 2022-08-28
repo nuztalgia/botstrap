@@ -141,5 +141,3 @@
 
 <link rel="stylesheet" href="../stylesheets/botstrap.css" />
 <link rel="stylesheet" href="../../stylesheets/code-navigation.css" />
-<link rel="stylesheet" href="../../stylesheets/hide-dupe-class.css" />
-<link rel="stylesheet" href="../../stylesheets/material-tabs.css" />

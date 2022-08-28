@@ -1,0 +1,117 @@
+/**
+ *  This file is adapted from existing code in the "Material for MkDocs" project
+ *  (https://github.com/squidfunk/mkdocs-material), which uses the MIT license.
+ *  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *
+ *  Copyright (c) 2016-2022 Martin Donath <martin.donath@squidfunk.com>
+ *
+ *  Permission is hereby granted, free of charge, to any person obtaining a copy
+ *  of this software and associated documentation files (the "Software"), to
+ *  deal in the Software without restriction, including without limitation the
+ *  rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+ *  sell copies of the Software, and to permit persons to whom the Software is
+ *  furnished to do so, subject to the following conditions:
+ *
+ *  The above copyright notice and this permission notice shall be included in
+ *  all copies or substantial portions of the Software.
+ *
+ *  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ *  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ *  FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. IN NO EVENT SHALL THE
+ *  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ *  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+ *  IN THE SOFTWARE.
+ */
+
+.js .md-typeset .tabbed-labels:before {
+  background: var(--md-typeset-a-color);
+}
+
+.md-typeset .tabbed-set > input:first-child:checked ~ .tabbed-labels > :first-child,
+.md-typeset .tabbed-set > input:nth-child(10):checked ~ .tabbed-labels > :nth-child(10),
+.md-typeset .tabbed-set > input:nth-child(11):checked ~ .tabbed-labels > :nth-child(11),
+.md-typeset .tabbed-set > input:nth-child(12):checked ~ .tabbed-labels > :nth-child(12),
+.md-typeset .tabbed-set > input:nth-child(13):checked ~ .tabbed-labels > :nth-child(13),
+.md-typeset .tabbed-set > input:nth-child(14):checked ~ .tabbed-labels > :nth-child(14),
+.md-typeset .tabbed-set > input:nth-child(15):checked ~ .tabbed-labels > :nth-child(15),
+.md-typeset .tabbed-set > input:nth-child(16):checked ~ .tabbed-labels > :nth-child(16),
+.md-typeset .tabbed-set > input:nth-child(17):checked ~ .tabbed-labels > :nth-child(17),
+.md-typeset .tabbed-set > input:nth-child(18):checked ~ .tabbed-labels > :nth-child(18),
+.md-typeset .tabbed-set > input:nth-child(19):checked ~ .tabbed-labels > :nth-child(19),
+.md-typeset .tabbed-set > input:nth-child(2):checked ~ .tabbed-labels > :nth-child(2),
+.md-typeset .tabbed-set > input:nth-child(20):checked ~ .tabbed-labels > :nth-child(20),
+.md-typeset .tabbed-set > input:nth-child(3):checked ~ .tabbed-labels > :nth-child(3),
+.md-typeset .tabbed-set > input:nth-child(4):checked ~ .tabbed-labels > :nth-child(4),
+.md-typeset .tabbed-set > input:nth-child(5):checked ~ .tabbed-labels > :nth-child(5),
+.md-typeset .tabbed-set > input:nth-child(6):checked ~ .tabbed-labels > :nth-child(6),
+.md-typeset .tabbed-set > input:nth-child(7):checked ~ .tabbed-labels > :nth-child(7),
+.md-typeset .tabbed-set > input:nth-child(8):checked ~ .tabbed-labels > :nth-child(8),
+.md-typeset .tabbed-set > input:nth-child(9):checked ~ .tabbed-labels > :nth-child(9) {
+  color: var(--md-typeset-a-color);
+}
+
+.md-typeset .grid {
+  grid-gap: 0.4rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  margin: 1em 0;
+}
+
+.md-typeset .grid.cards > :is(ul, ol) {
+  display: contents;
+}
+
+.md-typeset .grid.cards > :is(ul, ol) > li,
+.md-typeset .grid > .card {
+  border: 0.05rem solid var(--md-default-fg-color--lightest);
+  border-radius: 0.1rem;
+  display: block;
+  margin: 0;
+  padding: 0.8rem;
+  transition: border 0.25s, box-shadow 0.25s;
+}
+
+.md-typeset .grid.cards > :is(ul, ol) > li:is(:focus-within, :hover),
+.md-typeset .grid > .card:is(:focus-within, :hover) {
+  border-color: transparent;
+  box-shadow: var(--md-shadow-z2);
+}
+
+.md-typeset .grid.cards > :is(ul, ol) > li > hr,
+.md-typeset .grid > .card > hr {
+  margin-bottom: 1em;
+  margin-top: 1em;
+}
+
+.md-typeset .grid.cards > :is(ul, ol) > li > :first-child,
+.md-typeset .grid > .card > :first-child {
+  margin-top: 0;
+}
+
+.md-typeset .grid.cards > :is(ul, ol) > li > :last-child,
+.md-typeset .grid > .card > :last-child {
+  margin-bottom: 0;
+}
+
+.md-typeset .grid > *,
+.md-typeset .grid > :is(.admonition, details),
+.md-typeset .grid > .highlight > *,
+.md-typeset .grid > .highlighttable,
+.md-typeset .grid > .tabbed-set,
+.md-typeset .grid > pre {
+  margin-bottom: 0;
+  margin-top: 0;
+}
+
+.md-typeset .grid > .highlight > pre:only-child,
+.md-typeset .grid > .highlight > pre > code,
+.md-typeset .grid > .highlighttable,
+.md-typeset .grid > .highlighttable > tbody,
+.md-typeset .grid > .highlighttable > tbody > tr,
+.md-typeset .grid > .highlighttable > tbody > tr > .code,
+.md-typeset .grid > .highlighttable > tbody > tr > .code > .highlight,
+.md-typeset .grid > .highlighttable > tbody > tr > .code > .highlight > pre,
+.md-typeset .grid > .highlighttable > tbody > tr > .code > .highlight > pre > code {
+  height: 100%;
+}

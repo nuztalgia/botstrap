@@ -36,4 +36,3 @@ Colors the text `yellow`{.yellow}.
 
 <link rel="stylesheet" href="../stylesheets/color.css" />
 <link rel="stylesheet" href="../../stylesheets/code-navigation.css" />
-<script src="../../javascripts/color.js"></script>

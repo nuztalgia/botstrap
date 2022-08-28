@@ -44,5 +44,4 @@ hide:
 
 </div>
 
-<link rel="stylesheet" href="../stylesheets/material-grids.css" />
 <link rel="stylesheet" href="../stylesheets/ref-navigation.css" />

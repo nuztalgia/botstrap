@@ -48,8 +48,10 @@ nav:
 
 extra_css:
   - stylesheets/global.css
+  - stylesheets/material.css
 
 extra_javascript:
+  - javascripts/colors.js
   - javascripts/global.js
 
 plugins:

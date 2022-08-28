@@ -11,9 +11,21 @@
   --task-list-item-margin: 2em;
 }
 
-/* Use bold text for the expandable section headers in the primary nav. */
-.md-nav--primary .md-nav__link--index {
-  font-weight: bold;
+/* Define the "blinking caret" animation. */
+@keyframes blink {
+  from,
+  to {
+    color: transparent;
+  }
+  50% {
+    color: var(--md-code-hl-generic-color);
+  }
+}
+
+/* Append pseudo-element mimicking a blinking caret to opted-in code blocks. */
+.ends-with-input code > :last-child > .go::after {
+  content: " █";
+  animation: 1.5s blink 0s step-end infinite;
 }
 
 /* Prevent user selection of all code block filenames, as well as console and
@@ -28,29 +40,22 @@
   display: none;
 }
 
-/* Append pseudo-element mimicking a blinking caret to marked ".go" elements. */
-.ends-with-input code > :last-child > .go::after {
-  content: " █";
-  animation: 1.5s blink 0s step-end infinite;
-}
-
-/* Define the "blinking caret" animation. */
-@keyframes blink {
-  from,
-  to {
-    color: transparent;
-  }
-  50% {
-    color: var(--md-code-hl-generic-color);
-  }
-}
-
 /* Make each clickable grid card actually appear clickable. */
 .clickable.grid :is(.card, li) :not(a) {
   pointer-events: none;
 }
 .clickable.grid :is(.card, li):hover {
   cursor: pointer;
+}
+
+/* Hide duplicate class descriptions if a class is included multiple times. */
+.doc-class ~ .doc-class > .doc-contents > :not(.doc-children) {
+  display: none;
+}
+
+/* Use bold text for the expandable section headers in the primary nav. */
+.md-nav--primary .md-nav__link--index {
+  font-weight: bold;
 }
 
 /* Add some extra horizontal spacing around emoji so they don't look cramped. */
