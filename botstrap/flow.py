@@ -290,7 +290,7 @@ class Botstrap(CliSession):
             Botstrap(name="example-bot").retrieve_active_token()
             ```
 
-            ```{.console title="Console Session" .colored-output .ends-with-input}
+            ```{.console title="Console Session" .ends-with-input}
             $ python bot.py
 
             example-bot: You currently don't have a saved default bot token.
@@ -366,7 +366,7 @@ class Botstrap(CliSession):
             Botstrap().run_bot()
             ```
 
-            ```{.console title="Console Session" .colored-output}
+            ```console title="Console Session"
             $ python bot.py
 
             bot: default: Attempting to log in to Discord...

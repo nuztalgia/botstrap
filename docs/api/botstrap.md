@@ -79,7 +79,7 @@
 
         - `__main__.py` - This file contains the entire Botstrap integration and
         exercises all of the recommended methods in this class, as well as a few other
-        classes that are also part of Botstrap's [public API](..).
+        classes that are also part of Botstrap's [public API](../../api).
         - `extras.py` - This file represents a very small subset of the extra pieces
         that a Discord bot might have. Its purpose is simply to provide more context
         for the integration, so feel free to skip it if you don't find it useful.

@@ -4,36 +4,6 @@ details.info .md-typeset__table tr > :is(td, th) {
   padding-bottom: 0.75em;
 }
 
-/* Add the primary color (cyan) to the first line of console output text. */
-details.example .colored-output code > :nth-last-child(2) > .go {
-  background-image: linear-gradient(
-    to right,
-    var(--color-cyan) 0%,
-    var(--color-cyan) 13.12%,
-    var(--md-code-hl-generic-color) 13.12%,
-    var(--md-code-hl-generic-color) 100%
-  );
-}
-
-/* Add the highlight color (pink) to the second line of console output text. */
-details.example .colored-output code > :last-child > .go {
-  background-image: linear-gradient(
-    to right,
-    var(--md-code-hl-generic-color) 0%,
-    var(--md-code-hl-generic-color) 75.86%,
-    var(--color-pink) 75.86%,
-    var(--color-pink) 81.03%,
-    var(--md-code-hl-generic-color) 81.03%,
-    var(--md-code-hl-generic-color) 91.38%,
-    var(--color-pink) 91.38%,
-    var(--color-pink) 93.28%,
-    var(--md-code-hl-generic-color) 93.28%,
-    var(--md-code-hl-generic-color) 96.55%,
-    transparent 96.55%,
-    transparent 100%
-  );
-}
-
 /* Hide the entire line containing the annotation in the source definitions. */
 .sourcedefs code > :nth-child(2) {
   font-size: 0;

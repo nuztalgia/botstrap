@@ -1,3 +1,8 @@
+/*  Make all console output in the code blocks in the full example selectable. */
+div#full-example .language-console code .go {
+  user-select: text;
+}
+
 /* Hide the redundant file headers in the code blocks in the full example. */
 div#full-example span.filename {
   display: none;
@@ -22,41 +27,4 @@ div#full-example span.filename {
 /* Make opening paren unselectable (because closing paren isn't selectable). */
 [id$="__init__"] .fm + .p {
   user-select: none;
-}
-
-/* Restore the default color to the lines that don't need fancy coloring. */
-:is([id$="_token"], [id$="_bot"]) + * .colored-output code > :nth-last-child(2) > .go {
-  background-color: var(--md-code-hl-generic-color);
-}
-
-/* Color the "yes" and "y" prompt text in the `retrieve_active_token()` example. */
-[id$="retrieve_active_token"] + * .colored-output code > :last-child > .go {
-  background-image: linear-gradient(
-    to right,
-    var(--md-code-hl-generic-color) 0%,
-    var(--md-code-hl-generic-color) 75.86%,
-    var(--color-cyan) 75.86%,
-    var(--color-cyan) 81.03%,
-    var(--md-code-hl-generic-color) 81.03%,
-    var(--md-code-hl-generic-color) 91.38%,
-    var(--color-cyan) 91.38%,
-    var(--color-cyan) 93.28%,
-    var(--md-code-hl-generic-color) 93.28%,
-    var(--md-code-hl-generic-color) 96.55%,
-    transparent 96.55%,
-    transparent 100%
-  );
-}
-
-/* Color the bot's Discord handle text in the `run_bot()` example. */
-[id$="run_bot"] + * .colored-output code > :last-child > .go {
-  background-image: linear-gradient(
-    to right,
-    var(--md-code-hl-generic-color) 0%,
-    var(--md-code-hl-generic-color) 73.21%,
-    var(--color-cyan) 73.21%,
-    var(--color-cyan) 96.43%,
-    var(--md-code-hl-generic-color) 96.43%,
-    var(--md-code-hl-generic-color) 100%
-  );
 }

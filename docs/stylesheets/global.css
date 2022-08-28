@@ -3,7 +3,7 @@
   --color-blue: #55f;
   --color-cyan: #5ff;
   --color-green: #5f5;
-  --color-grey: #555;
+  --color-grey: #616263;
   --color-pink: #f5f;
   --color-red: #f55;
   --color-yellow: #ff5;
@@ -66,26 +66,26 @@
   margin: 0 var(--emoji-margin);
 }
 
-/* Color all the code blocks that are tagged with a color class. */
-code.blue {
+/* Color all the code/span elements that are tagged with a color class. */
+:is(code, span).blue {
   color: var(--color-blue);
 }
-code.cyan {
+:is(code, span).cyan {
   color: var(--color-cyan);
 }
-code.green {
+:is(code, span).green {
   color: var(--color-green);
 }
-code.grey {
+:is(code, span).grey {
   color: var(--color-grey);
 }
-code.pink {
+:is(code, span).pink {
   color: var(--color-pink);
 }
-code.red {
+:is(code, span).red {
   color: var(--color-red);
 }
-code.yellow {
+:is(code, span).yellow {
   color: var(--color-yellow);
 }
 

@@ -22,13 +22,12 @@ class Color:
     [2]: https://pypi.org/project/colorama/
 
     !!! example "Example - Printing rainbow-colored text :rainbow_flag:"
-        ```{.pycon .colored-output}
+        ```pycon
         >>> from botstrap import Color
         >>> print(
         ...     f"{Color.pink('P')}{Color.red('R')}{Color.yellow('I')}"
         ...     f"{Color.green('D')}{Color.cyan('E')}{Color.blue('!')}"
         ... )
-        PRIDE!
         ```
     """
 
@@ -125,7 +124,7 @@ class CliColors:
         Botstrap(name="cyan-bot", colors=bot_colors).run_bot()
         ```
 
-        ```{.console title="Console Session" .colored-output .ends-with-input}
+        ```{.console title="Console Session" .custom-colors .ends-with-input}
         $ python bot.py
 
         cyan-bot: You currently don't have a saved default bot token.

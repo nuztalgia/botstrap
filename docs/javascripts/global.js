@@ -62,3 +62,53 @@ for (var i = 0; i < quoteBlocks.length; i++) {
     }
   }
 }
+
+// Adds color to text matched by the regex pattern in the given element.
+function colorText(element, color, pattern) {
+  var matches = element.innerHTML.match(pattern);
+  if (matches && matches.length == 1) {
+    element.innerHTML = element.innerHTML.replace(
+      matches[0],
+      `<span class="${color}">${matches[0]}</span>`,
+    );
+  } else if (matches && matches.length == 2) {
+    element.innerHTML = element.innerHTML.replace(
+      matches[0],
+      matches[0].replace(matches[1], `<span class="${color}">${matches[1]}</span>`),
+    );
+  }
+}
+
+// Add color to strings that commonly appear in console output.
+var outputSpans = document.querySelectorAll(
+  ":is(.language-console, .language-pycon):not(.custom-colors) span.go",
+);
+for (var i = 0; i < outputSpans.length; i++) {
+  if (!window.location.href.match(/\/api\/botstrap\/$/)) {
+    break; // Only enabled on the `Botstrap` class page for now.
+  }
+  var span = outputSpans[i];
+  if (span.innerHTML.includes('If so, type "yes" or "y":')) {
+    colorText(span, "cyan", /"(yes)"/);
+    colorText(span, "cyan", /"(y)"/);
+  }
+  colorText(span, "cyan", /BasicBot#1234/);
+  colorText(span, "cyan", /BOT TOKEN:/);
+  colorText(span, "green", /Your token has been .* saved\./);
+  colorText(span, "grey", /(&lt;str&gt;)]/);
+  colorText(span, "grey", /(&lt;token id&gt;)]/);
+  colorText(span, "pink", /example-bot/);
+  colorText(span, "pink", /usage: (\S*) /);
+  colorText(span, "yellow", /development/);
+}
+
+// Same as above, but only for output blocks with the "custom-colors" class.
+var customColorSpans = document.querySelectorAll(".custom-colors span.go");
+for (var i = 0; i < customColorSpans.length; i++) {
+  var span = customColorSpans[i];
+  if (span.innerHTML.includes('If so, type "yes" or "y":')) {
+    colorText(span, "pink", /"(yes)"/);
+    colorText(span, "pink", /"(y)"/);
+  }
+  colorText(span, "cyan", /cyan-bot/);
+}

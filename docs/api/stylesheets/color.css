@@ -3,30 +3,6 @@
   margin: 0.05em calc(var(--emoji-margin) * 1.4) 0;
 }
 
-/* Increase the size of the file name and code text inside the example box. */
-.admonition.example .language-pycon :is(.filename, code) {
-  font-size: 1em;
-}
-
-/* Color the console output text in the example box with a rainbow gradient. */
-.admonition.example .language-pycon.colored-output .go {
-  background-image: linear-gradient(
-    to right,
-    var(--color-pink) 0%,
-    var(--color-pink) 16.667%,
-    var(--color-red) 16.667%,
-    var(--color-red) 33.333%,
-    var(--color-yellow) 33.333%,
-    var(--color-yellow) 50%,
-    var(--color-green) 50%,
-    var(--color-green) 66.667%,
-    var(--color-cyan) 66.667%,
-    var(--color-cyan) 83.333%,
-    var(--color-blue) 83.333%,
-    var(--color-blue) 100%
-  );
-}
-
 /* Hide the function docstrings - the page manually adds color preview text. */
 .doc-function > [id^="botstrap.colors.Color."] + .doc-contents {
   display: none;
