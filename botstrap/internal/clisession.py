@@ -78,7 +78,7 @@ class CliSession:
         any errors, allowing program execution to continue normally.
 
         ??? example "Example - Deciding whether to continue or exit"
-            ```{.pycon .colored-output .ends-with-input}
+            ```{.pycon .ends-with-input}
             >>> cli.confirm_or_exit("Would you like to continue?")
             Would you like to continue? If so, type "yes" or "y":
             ```
@@ -104,7 +104,7 @@ class CliSession:
         in the console.
 
         ??? example "Example - Exiting with an error message"
-            ```{.pycon .colored-output}
+            ```pycon
             >>> cli.exit_process("Just testing the 'exit_process()' function!")
             Just testing the 'exit_process()' function! Exiting process.
             ```
@@ -143,7 +143,7 @@ class CliSession:
         """Returns a boolean value corresponding to the user's response to a prompt.
 
         ??? example "Example - Printing output based on user input"
-            ```{.pycon .colored-output}
+            ```pycon
             >>> if cli.get_bool_input("Do you believe in life after love?"):
             ...     print("I can feel something inside me say...")
             ... else:
@@ -184,7 +184,7 @@ class CliSession:
         (with the keyword argument `#!py echo_input=False`) instead of this function.
 
         ??? example "Example - Obtaining input that should be hidden"
-            ```{.pycon .colored-output}
+            ```pycon
             >>> very_secure_password = cli.get_hidden_input("Enter your password")
             Enter your password: *******
             >>> print(very_secure_password)  # NEVER do this with a real password!

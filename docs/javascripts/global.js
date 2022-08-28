@@ -84,21 +84,30 @@ var outputSpans = document.querySelectorAll(
   ":is(.language-console, .language-pycon):not(.custom-colors) span.go",
 );
 for (var i = 0; i < outputSpans.length; i++) {
-  if (!window.location.href.match(/\/api\/botstrap\/$/)) {
-    break; // Only enabled on the `Botstrap` class page for now.
-  }
   var span = outputSpans[i];
   if (span.innerHTML.includes('If so, type "yes" or "y":')) {
     colorText(span, "cyan", /"(yes)"/);
     colorText(span, "cyan", /"(y)"/);
   }
+  colorText(span, "cyan", /^  (\d)\. .*-&gt;  .*\.\*$/);
+  colorText(span, "cyan", /^BOT TOKEN:/);
+  colorText(span, "cyan", /^Enter your password:/);
   colorText(span, "cyan", /BasicBot#1234/);
-  colorText(span, "cyan", /BOT TOKEN:/);
-  colorText(span, "green", /Your token has been .* saved\./);
+  colorText(span, "cyan", /Expected "(1)" or "2"\.\)$/);
+  colorText(span, "cyan", /Expected ".*" or "(2)"\.\)$/);
+  colorText(span, "green", /^Token successfully deleted\.$/);
+  colorText(span, "green", /^Your token has been .* saved\.$/);
+  colorText(span, "grey", /^  .*\. .*-&gt;  (.*\.\*)$/);
+  colorText(span, "grey", /^Received a [^\.]*\./);
+  colorText(span, "grey", / Exiting process\.$/);
+  colorText(span, "grey", /(&lt;float&gt;)]/);
+  colorText(span, "grey", /(&lt;int&gt;)]/);
   colorText(span, "grey", /(&lt;str&gt;)]/);
   colorText(span, "grey", /(&lt;token id&gt;)]/);
-  colorText(span, "pink", /example-bot/);
-  colorText(span, "pink", /usage: (\S*) /);
+  colorText(span, "pink", /^example-bot/);
+  colorText(span, "pink", /^usage: (\S*) /);
+  colorText(span, "red", /^.* 'exit_process\(\)' function!/);
+  colorText(span, "yellow", /^That number doesn't match .* tokens\./);
   colorText(span, "yellow", /development/);
 }
 

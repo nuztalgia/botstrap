@@ -4,27 +4,24 @@
 }
 
 /* Fix the inconsistent number coloring in the example for `parse_bot_args()`. */
-.doc-heading[id$="parse_bot_args"] + * > .example .language-console code .m {
+[id$="parse_bot_args"] + * > .example .language-console code .m {
   color: var(--md-code-fg-color);
 }
 
-/* Add color to text on the last line in the example for `parse_bot_args()`. */
-.doc-heading[id$="parse_bot_args"] + * > .example #line-1-12 .go {
-  -webkit-background-clip: text;
-  background-clip: text;
-  background-image: linear-gradient(
-    to right,
-    var(--md-code-hl-generic-color) 0%,
-    var(--md-code-hl-generic-color) 49.28%,
-    var(--color-grey) 49.28%,
-    var(--color-grey) 59.42%,
-    var(--md-code-hl-generic-color) 59.42%,
-    var(--md-code-hl-generic-color) 84.06%,
-    var(--color-grey) 84.06%,
-    var(--color-grey) 98.55%,
-    var(--md-code-hl-generic-color) 98.55%,
-    var(--md-code-hl-generic-color) 100%
-  );
-  color: transparent;
-  font-weight: bold;
+/*  Make all console output in the `manage_tokens()` example selectable. */
+[id*="manage_tokens"] + * > .example .language-console code .go {
+  user-select: text;
+}
+
+/*  Hide the "#" before the annotation in the `manage_tokens()` example. */
+[id*="manage_tokens"] + * > .example .annotate code > :first-child .c1 {
+  font-size: 0;
+}
+[id*="manage_tokens"] + * > .example .annotate code > :first-child .md-annotation {
+  font-size: 0.544rem;
+}
+
+/* Adjust width of the annotation tooltip in the `manage_tokens()` example. */
+[id*="manage_tokens"] + * > .example .annotate code .md-annotation .md-tooltip {
+  width: 16.5rem;
 }

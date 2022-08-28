@@ -25,5 +25,4 @@
       heading_level: 3
       show_source: true
 
-<link rel="stylesheet" href="../stylesheets/token.css" />
 <link rel="stylesheet" href="../../stylesheets/code-navigation.css" />

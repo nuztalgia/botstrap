@@ -374,7 +374,7 @@ class Argstrap(ArgumentParser):
             non-`#!py 0` exit code.
 
         ??? example "Example - Deleting a saved token"
-            ```{.console title="Console Session" .annotate .colored-output}
+            ```{.console title="Console Session" .annotate}
             $ python bot.py -t # (1)
 
             example-bot: You currently have the following bot tokens saved:

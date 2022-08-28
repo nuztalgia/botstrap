@@ -28,14 +28,6 @@
   display: none;
 }
 
-/* Allow marked ".go" (generic output) to be colored by its background-image. */
-.colored-output .go {
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  font-weight: bold;
-}
-
 /* Append pseudo-element mimicking a blinking caret to marked ".go" elements. */
 .ends-with-input code > :last-child > .go::after {
   content: " █";
@@ -69,6 +61,7 @@
 /* Color all the code/span elements that are tagged with a color class. */
 :is(code, span).blue {
   color: var(--color-blue);
+  font-weight: bold;
 }
 :is(code, span).cyan {
   color: var(--color-cyan);
@@ -78,12 +71,15 @@
 }
 :is(code, span).grey {
   color: var(--color-grey);
+  font-weight: bold;
 }
 :is(code, span).pink {
   color: var(--color-pink);
+  font-weight: bold;
 }
 :is(code, span).red {
   color: var(--color-red);
+  font-weight: bold;
 }
 :is(code, span).yellow {
   color: var(--color-yellow);
