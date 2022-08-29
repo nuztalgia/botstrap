@@ -1,13 +1,8 @@
-/** Returns `true` if the given element is a source code block. */
-function isSourceCodeBlock(element) {
-  const pattern = /^Source code in <code>botstrap.*\.py<\/code>$/;
-  return element.querySelector("summary").innerHTML.match(pattern);
-}
-
 // Remove redundant docstrings and irrelevant comments in source code blocks.
 let quoteBlocks = document.querySelectorAll("details.quote");
 for (let i = 0; i < quoteBlocks.length; i++) {
-  if (isSourceCodeBlock(quoteBlocks[i])) {
+  const sourcePattern = /^Source code in <code>botstrap.*\.py<\/code>$/;
+  if (quoteBlocks[i].querySelector("summary").innerHTML.match(sourcePattern)) {
     const lineSpans = quoteBlocks[i].querySelectorAll("pre code > *");
     let inDocString = false;
     for (let j = 0; j < lineSpans.length; j++) {
@@ -21,6 +16,14 @@ for (let i = 0; i < quoteBlocks.length; i++) {
   }
 }
 
+// Remove the "#" comment characters preceding annotations in code blocks.
+let annotations = document.querySelectorAll(".annotate code span.c1");
+for (let i = 0; i < annotations.length; i++) {
+  if (annotations[i].innerHTML.match(/# .*?\(\d\)$/)) {
+    annotations[i].innerHTML = annotations[i].innerHTML.replace(/# .*?\(/, "(");
+  }
+}
+
 // Remove parentheses for properties in page navigation links and headings.
 let docFunctions = document.querySelectorAll(".doc-function");
 for (let i = 0; i < docFunctions.length; i++) {
@@ -31,6 +34,20 @@ for (let i = 0; i < docFunctions.length; i++) {
     pageNavLink.innerHTML = pageNavLink.innerHTML.replace(/\(\)/, "");
     const docHeading = docFunctions[i].querySelector(".doc-heading");
     docHeading.querySelector("code > .p").remove();
+  }
+}
+
+// Remove default arguments in function signature headings.
+for (let i = 0; i < docFunctions.length; i++) {
+  const funcHeading = docFunctions[i].querySelector(".doc-heading code");
+  const defaultArgMatches = funcHeading.innerHTML.matchAll(
+    / ?<span class="o">=<\/span>.*?<span class="p">(\(\))?(,|\))<\/span>/g,
+  );
+  for (const match of defaultArgMatches) {
+    funcHeading.innerHTML = funcHeading.innerHTML.replace(
+      match[0],
+      `<span class="p">${match[2]}</span>`,
+    );
   }
 }
 

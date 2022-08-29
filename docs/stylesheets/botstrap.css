@@ -7,24 +7,3 @@ div#full-example .language-console code .go {
 div#full-example span.filename {
   display: none;
 }
-
-/* Hide excessive/distracting info in all doc headers except for `__init__()`. */
-.doc-heading:not([id$="__init__"])
-  span:not(:first-child, .p, .p + :is(.n, .o), .n:nth-last-child(2)) {
-  display: none;
-}
-
-/* Hide everything except the name and opening paren in the `__init__()` header. */
-[id$="__init__"] .fm + .p ~ * {
-  display: none;
-}
-
-/* Add a closing paren after the opening paren in the `__init__()` header. */
-[id$="__init__"] .fm + .p::after {
-  content: ")";
-}
-
-/* Make opening paren unselectable (because closing paren isn't selectable). */
-[id$="__init__"] .fm + .p {
-  user-select: none;
-}

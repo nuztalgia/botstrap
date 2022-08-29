@@ -4,7 +4,7 @@ from discord import AllowedMentions
 
 
 botstrap = (
-    Botstrap(name="example-bot", colors=CliColors(Color.pink))
+    Botstrap(name="examplebot", colors=CliColors(Color.pink))
     .register_token(
         uid="dev",
         display_name=Color.yellow("development"),

@@ -4,25 +4,7 @@ details.info .md-typeset__table tr > :is(td, th) {
   padding-bottom: 0.75em;
 }
 
-/* Hide the entire line containing the annotation in the source definitions. */
-.sourcedefs code > :nth-child(2) {
-  font-size: 0;
-  user-select: none;
-}
-
-/* Restore the relevant spans and manually re-insert only the desired spaces. */
-.sourcedefs code > :nth-child(2) span:not(.c1) {
-  font-size: 0.544rem;
-}
-.sourcedefs code > :nth-child(2) :is(.p, .o, .kc)::after {
-  content: " ";
-}
-.sourcedefs code > :nth-child(2) .o::before {
-  content: " ";
-}
-
-/* Adjust width of the annotation tooltip and allow its text to be selected. */
+/* Adjust width of the annotation tooltip in the source definitions block. */
 .sourcedefs code .md-annotation .md-tooltip {
-  user-select: text;
   width: 16.67rem;
 }

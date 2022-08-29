@@ -10,14 +10,13 @@ hide:
 ::: botstrap
     options:
       members: false
-      show_root_full_path: true
 
 The pages in this section contain detailed documentation, examples, and explanations for
 each of the classes that you're likely to encounter and/or use while integrating with
 Botstrap. If you're looking for a deep dive into all of the available options, then
 you're in the right place.
 
-<div class="clickable grid" markdown>
+<div class="clickable grid" style="margin-bottom: 0.4rem" markdown>
 <div class="card" markdown>
 ### ![](../images/logo-48.png){.twemoji width=24} [`Botstrap`](botstrap)
 ---
@@ -25,7 +24,7 @@ The primary point of integration between Botstrap and your Discord bot.
 </div>
 </div>
 
-<div class="clickable grid" markdown>
+<div class="clickable grid" style="margin-top: 0.4rem" markdown>
 <div class="card" markdown>
 ### :art: [`CliColors`](cli-colors)
 ---

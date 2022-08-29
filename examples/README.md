@@ -22,34 +22,34 @@ demonstration of Botstrap's default settings and flow.
 
 This example is significantly more involved, and uses the following two files:
 
-- [`ex1/__main__.py`](ex1/__main__.py) - Contains the entire Botstrap integration and
-  exercises all the recommended methods in the
+- [`examplebot/__main__.py`](examplebot/__main__.py) - Contains the entire Botstrap
+  integration and exercises all the recommended methods in the
   [`Botstrap`](https://botstrap.rtfd.io/en/latest/api/botstrap/#botstrap-flowchart)
   flow, as well as a few other classes that are also part of the public
   [API](https://botstrap.rtfd.io/en/latest/api/).
 
-- [`ex1/extras.py`](ex1/extras.py) - Represents a very small subset of the extra pieces
-  that a Discord bot might have. The purpose of this file is simply to provide more
-  context for the example integration, so feel free to skip over it if you don't find it
-  useful.
+- [`examplebot/extras.py`](examplebot/extras.py) - Represents a very small subset of the
+  extra pieces that a Discord bot might have. The purpose of this file is simply to
+  provide more context for the example integration, so feel free to skip over it if you
+  don't find it useful.
 
 While the files for this example are contained within their own subdirectory, the
 command to run their code must be executed in **this directory** (i.e. `examples` - not
-`ex1`). After making sure you're in the correct working directory, run the following
-command in your terminal:
+`examplebot`). After making sure you're in the correct working directory, run the
+following command in your terminal:
 
 ```sh
-python -m ex1 -h
+python -m examplebot -h
 ```
 
 <details>
 <summary>If everything was set up correctly, you should see a help menu that looks something like this... <i>(click to expand)</i></summary>
 
 ```c
-usage: ex1 [-l <str>] [-a] [--allow-pings] [-t] [--help] [<token id>]
+usage: examplebot [-l <str>] [-a] [--allow-pings] [-t] [--help] [<token id>]
 
   A really cool Discord bot that uses Botstrap!
-  Run "python -m ex1" with no parameters to start the bot in development mode.
+  Run "python -m examplebot" with no parameters to start the bot in development mode.
 
 positional arguments:
   <token id>            The ID of the token to use to run the bot.
@@ -65,5 +65,5 @@ options:
 
 </details>
 
-Once that's working, feel free to play around with the available command-line options
+Once that's working, go ahead and play around with the available command-line options,
 and observe the resulting behavior! :tada:

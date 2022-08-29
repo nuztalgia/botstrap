@@ -287,13 +287,13 @@ class Botstrap(CliSession):
             ```py title="bot.py"
             from botstrap import Botstrap
 
-            Botstrap(name="example-bot").retrieve_active_token()
+            Botstrap().retrieve_active_token()
             ```
 
             ```{.console title="Console Session" .ends-with-input}
             $ python bot.py
 
-            example-bot: You currently don't have a saved default bot token.
+            bot.py: You currently don't have a saved default bot token.
             Would you like to add one now? If so, type "yes" or "y":
             ```
 
@@ -369,8 +369,8 @@ class Botstrap(CliSession):
             ```console title="Console Session"
             $ python bot.py
 
-            bot: default: Attempting to log in to Discord...
-            bot: default: Successfully logged in as "BasicBot#1234".
+            bot.py: default: Attempting to log in to Discord...
+            bot.py: default: Successfully logged in as "BasicBot#1234".
             ```
 
             Of course, this simple example probably isn't very helpful unless you're

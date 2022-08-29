@@ -87,36 +87,35 @@
         and/or command-line arguments:
 
         1. `python -m examplebot -h` - The help menu for the example bot.
-        2. `python -m examplebot` - Running the bot in its default (`dev`) mode for the
-           first time; going through the flow for adding a token **without** a password.
+        2. `python -m examplebot` - Running in `dev` mode for the first time and adding
+           a token **without** a password.
+        3. `python -m examplebot -t` - Exploring the CLI flow for managing tokens, and
+           deleting a saved token.
+
+        **Note:** All of these commands are run from the outermost (`workspace`)
+        directory.
 
     === "\_\_main\_\_.py"
         ```py
-        {% include "../../examples/ex1/__main__.py" %}
+        {% include "../../examples/examplebot/__main__.py" %}
         ```
 
     === "extras.py"
         ```py
-        {% include "../../examples/ex1/extras.py" %}
+        {% include "../../examples/examplebot/extras.py" %}
         ```
 
     === "CLI #1"
         ```console
         $ python -m examplebot -h
-        usage: examplebot [-l <str>] [-a] [--allow-pings] [-t] [--help] [<token id>]
-
-          A really cool Discord bot that uses Botstrap!
-          Run "python -m examplebot" with no parameters to start the bot in development mode.
-
-        positional arguments:
-        {% include "../../examples/README.md" start="positional arguments:\n" end="```" %}
+        {% include "../../examples/README.md" start="```c\n" end="```" %}
         ```
 
     === "CLI #2"
         ```console
         $ python -m examplebot
 
-        example-bot: You currently don't have a saved development bot token.
+        examplebot: You currently don't have a saved development bot token.
         Would you like to add one now? If so, type "yes" or "y": y
 
         Please enter your bot token now. It'll be invisible for security reasons.
@@ -126,8 +125,14 @@
 
         Do you want to use this token to run your bot now? If so, type "yes" or "y": y
 
-        example-bot: development: Attempting to log in to Discord...
-        example-bot: development: Successfully logged in as "BasicBot#1234".
+        examplebot: development: Attempting to log in to Discord...
+        examplebot: development: Successfully logged in as "BasicBot#1234".
+        ```
+
+    === "CLI #3"
+        ```console
+        $ python -m examplebot -t
+        {% include "../../botstrap/internal/argstrap.py" start="# (1)\n" end="```" %}
         ```
 
 <!-- prettier-ignore -->

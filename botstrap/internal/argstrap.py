@@ -375,11 +375,11 @@ class Argstrap(ArgumentParser):
 
         ??? example "Example - Deleting a saved token"
             ```{.console title="Console Session" .annotate}
-            $ python bot.py -t # (1)
+            $ python examplebot.py -t # (1)
 
-            example-bot: You currently have the following bot tokens saved:
-              1. default   ->  path/to/your/bot_directory/.botstrap_keys/.default.*
-              2. protected ->  path/to/your/bot_directory/.botstrap_keys/.protected.*
+            examplebot: You currently have the following bot tokens saved:
+              1. development ->  ~/botstrap/examples/examplebot/.botstrap_keys/.dev.*
+              2. production  ->  ~/botstrap/examples/examplebot/.botstrap_keys/.prod.*
 
             Would you like to delete any of these tokens? If so, type "yes" or "y": y
             Please enter the number next to the token you want to delete: 0
@@ -391,8 +391,8 @@ class Argstrap(ArgumentParser):
 
             Token successfully deleted.
 
-            example-bot: You currently have the following bot tokens saved:
-              1. protected ->  path/to/your/bot_directory/.botstrap_keys/.protected.*
+            examplebot: You currently have the following bot tokens saved:
+              1. production  ->  ~/botstrap/examples/examplebot/.botstrap_keys/.prod.*
 
             Would you like to delete any of these tokens? If so, type "yes" or "y": n
 

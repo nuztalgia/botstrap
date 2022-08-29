@@ -53,8 +53,8 @@ class CliStrings:
         ```console title="Console Session"
         $ python bot.py
 
-        bot: Logging in with 'default' bot token.
-        bot: BasicBot#1234 reporting for duty in default mode!
+        bot.py: Logging in with 'default' bot token.
+        bot.py: BasicBot#1234 reporting for duty in default mode!
         ```
 
         **Note:** The strings customized in this example belong to the fields named

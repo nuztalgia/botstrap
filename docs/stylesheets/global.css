@@ -23,6 +23,14 @@
   }
 }
 
+/* Adjust some features of the layout on smaller (i.e. mobile) screens. */
+@media screen and (max-width: 76.25em) {
+  /* Hide the "Back to top" button that normally appears when scrolling up. */
+  .md-top.md-icon {
+    display: none;
+  }
+}
+
 /* Define the "blinking caret" animation. */
 @keyframes blink {
   from,
