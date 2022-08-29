@@ -1,51 +1,58 @@
 /** Returns `true` if the given element is a source code block. */
 function isSourceCodeBlock(element) {
-  let pattern = /^Source code in <code>botstrap.*\.py<\/code>$/;
+  const pattern = /^Source code in <code>botstrap.*\.py<\/code>$/;
   return element.querySelector("summary").innerHTML.match(pattern);
 }
 
-// Hide redundant docstrings and "noinspection" comments in source code blocks.
-var quoteBlocks = document.querySelectorAll("details.quote");
+// Remove redundant docstrings and irrelevant comments in source code blocks.
+let quoteBlocks = document.querySelectorAll("details.quote");
 for (let i = 0; i < quoteBlocks.length; i++) {
   if (isSourceCodeBlock(quoteBlocks[i])) {
-    let lineSpans = quoteBlocks[i].querySelectorAll("pre code > *");
+    const lineSpans = quoteBlocks[i].querySelectorAll("pre code > *");
     let inDocString = false;
     for (let j = 0; j < lineSpans.length; j++) {
-      let lineText = lineSpans[j].textContent;
+      const lineText = lineSpans[j].textContent;
       if (lineText.match(/ {4}"{3}(.*\.)?\n/)) {
         inDocString = !inDocString;
       } else if (inDocString || lineText.match(/ *# noinspection /)) {
-        lineSpans[j].style.display = "none";
+        lineSpans[j].remove();
       }
     }
   }
 }
 
-// Hide source code blocks that contain *entire* classes.
-var docClasses = document.querySelectorAll(".doc-class");
-for (let i = 0; i < docClasses.length; i++) {
-  let quoteBlocks = docClasses[i].querySelectorAll(".doc-contents.first > .quote");
-  for (let j = 0; j < quoteBlocks.length; j++) {
-    if (isSourceCodeBlock(quoteBlocks[j])) {
-      quoteBlocks[j].style.display = "none";
-    }
-  }
-}
-
-// Hide parentheses in "function" headings for properties.
-var docFunctions = document.querySelectorAll(".doc-function");
+// Remove parentheses for properties in page navigation links and headings.
+let docFunctions = document.querySelectorAll(".doc-function");
 for (let i = 0; i < docFunctions.length; i++) {
   if (docFunctions[i].querySelector(".doc-label-property")) {
-    let docHeading = docFunctions[i].querySelector(".doc-heading");
-    docHeading.querySelector("code > .p").style.display = "none";
+    const pageNavLink = document.querySelector(
+      `.md-nav__link[href="#${docFunctions[i].querySelector("h2").id}"]`,
+    );
+    pageNavLink.innerHTML = pageNavLink.innerHTML.replace(/\(\)/, "");
+    const docHeading = docFunctions[i].querySelector(".doc-heading");
+    docHeading.querySelector("code > .p").remove();
   }
 }
 
-// Make clickable grid cards actually work.
-var cardElements = document.querySelectorAll(".clickable.grid :is(.card, li)");
+// Remove the title header anchor link on every page.
+let titleHeaderLink = document.querySelector("h1 a.headerlink");
+if (titleHeaderLink) {
+  titleHeaderLink.remove();
+}
+
+// Remove all header anchor links on reference index pages.
+if (window.location.href.match(/\/(api|internal)\/$/)) {
+  const headerLinks = document.querySelectorAll(".md-typeset a.headerlink");
+  for (let i = 0; i < headerLinks.length; i++) {
+    headerLinks[i].remove();
+  }
+}
+
+// Follow the first detected link when a card in a clickable grid is clicked.
+let cardElements = document.querySelectorAll(".clickable.grid :is(.card, li)");
 for (let i = 0; i < cardElements.length; i++) {
   cardElements[i].addEventListener("click", function (event) {
-    let cardTargetLink = event.target.querySelector("h3 > img + a");
+    const cardTargetLink = event.target.querySelector("a");
     if (cardTargetLink) {
       window.location.href = cardTargetLink.getAttribute("href");
     }

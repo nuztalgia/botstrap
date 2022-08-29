@@ -1,27 +1,22 @@
-/* Hide the default "None" values in `__init__()` (because they're distracting). */
-[id$="__init__"] :is(.kc, .n + .o) {
-  display: none;
-}
-
 /* Fix the inconsistent number coloring in the example for `parse_bot_args()`. */
 [id$="parse_bot_args"] + * > .example .language-console code .m {
   color: var(--md-code-fg-color);
 }
 
 /*  Make all console output in the `manage_tokens()` example selectable. */
-[id*="manage_tokens"] + * > .example .language-console code .go {
+[id$="manage_tokens"] + * > .example .language-console code .go {
   user-select: text;
 }
 
 /*  Hide the "#" before the annotation in the `manage_tokens()` example. */
-[id*="manage_tokens"] + * > .example .annotate code > :first-child .c1 {
+[id$="manage_tokens"] + * > .example .annotate code > :first-child .c1 {
   font-size: 0;
 }
-[id*="manage_tokens"] + * > .example .annotate code > :first-child .md-annotation {
+[id$="manage_tokens"] + * > .example .annotate code > :first-child .md-annotation {
   font-size: 0.544rem;
 }
 
 /* Adjust width of the annotation tooltip in the `manage_tokens()` example. */
-[id*="manage_tokens"] + * > .example .annotate code .md-annotation .md-tooltip {
+[id$="manage_tokens"] + * > .example .annotate code .md-annotation .md-tooltip {
   width: 16.5rem;
 }

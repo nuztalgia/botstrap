@@ -1,6 +1,7 @@
 ---
 hide:
   - footer
+  - toc
 ---
 
 # Internal Reference
@@ -43,5 +44,3 @@ hide:
 </div>
 
 </div>
-
-<link rel="stylesheet" href="../stylesheets/ref-navigation.css" />

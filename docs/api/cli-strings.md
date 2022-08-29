@@ -1,5 +1,3 @@
-## CliStrings {#}
-
 <!-- prettier-ignore -->
 ::: botstrap.CliStrings
     options:
@@ -24,5 +22,3 @@
     ```
 
 ::: botstrap.CliStrings.compact
-
-<link rel="stylesheet" href="../../stylesheets/code-navigation.css" />

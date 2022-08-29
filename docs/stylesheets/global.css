@@ -11,6 +11,18 @@
   --task-list-item-margin: 2em;
 }
 
+/* Adjust some features of the layout on bigger (i.e. non-mobile) screens. */
+@media screen and (min-width: 76.25em) {
+  /* Constrain the width of the content area to keep it easy-to-read. */
+  .md-content {
+    max-width: 800px;
+  }
+  /* Use bold text for the expandable section headers in the primary nav. */
+  .md-nav--primary .md-nav__link--index {
+    font-weight: bold;
+  }
+}
+
 /* Define the "blinking caret" animation. */
 @keyframes blink {
   from,
@@ -40,6 +52,12 @@
   display: none;
 }
 
+/* Hide footer links pointing outside of the current directory. */
+a[href="../"].md-footer__link--prev,
+a[href^="../../"].md-footer__link {
+  display: none;
+}
+
 /* Make each clickable grid card actually appear clickable. */
 .clickable.grid :is(.card, li) :not(a) {
   pointer-events: none;
@@ -51,11 +69,6 @@
 /* Hide duplicate class descriptions if a class is included multiple times. */
 .doc-class ~ .doc-class > .doc-contents > :not(.doc-children) {
   display: none;
-}
-
-/* Use bold text for the expandable section headers in the primary nav. */
-.md-nav--primary .md-nav__link--index {
-  font-weight: bold;
 }
 
 /* Add some extra horizontal spacing around emoji so they don't look cramped. */

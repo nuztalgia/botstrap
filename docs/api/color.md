@@ -1,5 +1,3 @@
-## Color {#}
-
 <!-- prettier-ignore -->
 ::: botstrap.Color
     options:
@@ -34,5 +32,4 @@ Colors the text `red`{.red}.
 
 Colors the text `yellow`{.yellow}.
 
-<link rel="stylesheet" href="../stylesheets/color.css" />
-<link rel="stylesheet" href="../../stylesheets/code-navigation.css" />
+<link rel="stylesheet" href="../../stylesheets/color.css" />

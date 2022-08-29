@@ -1,6 +1,7 @@
 ---
 hide:
   - footer
+  - toc
 ---
 
 # API Reference
@@ -46,5 +47,3 @@ A collection of functions that add color to console-printed strings.
 A model for a custom option to add to the Botstrap-provided CLI.
 </div>
 </div>
-
-<link rel="stylesheet" href="../stylesheets/ref-navigation.css" />

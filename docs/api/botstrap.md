@@ -1,5 +1,3 @@
-## Botstrap {#}
-
 <!-- prettier-ignore -->
 ::: botstrap.Botstrap
     options:
@@ -139,5 +137,4 @@
       show_root_toc_entry: false
       show_signature_annotations: false
 
-<link rel="stylesheet" href="../stylesheets/botstrap.css" />
-<link rel="stylesheet" href="../../stylesheets/code-navigation.css" />
+<link rel="stylesheet" href="../../stylesheets/botstrap.css" />

@@ -1,17 +1,13 @@
-## clisession {#}
-
-<!-- prettier-ignore -->
-::: botstrap.internal.clisession
+::: botstrap.internal.CliSession
     options:
       heading_level: 1
-      members: false
-      show_root_full_path: true
+      members:
+        - __init__
+      show_signature_annotations: false
 
-??? attention "Attention - This is part of the `internal` package."
-
-    {% include "index.md" start="**Note:**" end="???" %}
-
-::: botstrap.internal.clisession.CliSession
-
-<link rel="stylesheet" href="../stylesheets/cli-session.css" />
-<link rel="stylesheet" href="../../stylesheets/code-navigation.css" />
+::: botstrap.internal.CliSession
+    options:
+      filters:
+        - "!^_"
+      show_root_heading: false
+      show_root_toc_entry: false

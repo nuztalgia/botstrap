@@ -1,21 +1,21 @@
 /** Adds color to text matched by the regex pattern in the given element. */
 function colorText(element, color, pattern) {
-  let matches = element.innerHTML.match(pattern);
-  if (matches) {
-    let replacement =
-      matches.length === 1
-        ? `<span class="${color}">${matches[0]}</span>`
-        : matches[0].replace(matches[1], `<span class="${color}">${matches[1]}</span>`);
-    element.innerHTML = element.innerHTML.replace(matches[0], replacement);
+  const match = element.innerHTML.match(pattern);
+  if (match) {
+    const replacement =
+      match.length === 1
+        ? `<span class="${color}">${match[0]}</span>`
+        : match[0].replace(match[1], `<span class="${color}">${match[1]}</span>`);
+    element.innerHTML = element.innerHTML.replace(match[0], replacement);
   }
 }
 
 // Add color to strings that commonly appear in console output.
-var outputSpans = document.querySelectorAll(
+let outputSpans = document.querySelectorAll(
   ":is(.language-console, .language-pycon):not(.custom-colors) span.go",
 );
 for (let i = 0; i < outputSpans.length; i++) {
-  let span = outputSpans[i];
+  const span = outputSpans[i];
   if (span.innerHTML.includes('If so, type "yes" or "y":')) {
     colorText(span, "cyan", /"(yes)"/);
     colorText(span, "cyan", /"(y)"/);
@@ -43,9 +43,9 @@ for (let i = 0; i < outputSpans.length; i++) {
 }
 
 // Same as above, but only for output blocks with the "custom-colors" class.
-var customColorSpans = document.querySelectorAll(".custom-colors span.go");
+let customColorSpans = document.querySelectorAll(".custom-colors span.go");
 for (let i = 0; i < customColorSpans.length; i++) {
-  let span = customColorSpans[i];
+  const span = customColorSpans[i];
   if (span.innerHTML.includes('If so, type "yes" or "y":')) {
     colorText(span, "pink", /"(yes)"/);
     colorText(span, "pink", /"(y)"/);
@@ -53,11 +53,11 @@ for (let i = 0; i < customColorSpans.length; i++) {
   colorText(span, "cyan", /^cyan-bot/);
 }
 
-// Add the colorful "PRIDE!" console output to the example on the Color page.
+// Add the colorful "PRIDE!" console output to the example on the `Color` page.
 if (window.location.href.match(/\/api\/color\/$/)) {
-  let colorExample = document.querySelector(".admonition.example code");
+  const colorExample = document.querySelector(".admonition.example code");
   colorExample.innerHTML += "<span class='go'>PRIDE!</span>";
-  let span = colorExample.querySelector(".go:last-child");
+  const span = colorExample.querySelector(".go:last-child");
   colorText(span, "pink", /P/);
   colorText(span, "red", /R/);
   colorText(span, "yellow", /I/);

@@ -28,6 +28,7 @@ theme:
   features:
     - navigation.indexes
     - navigation.top
+    - toc.integrate
 
 nav:
   - Home: index.md
