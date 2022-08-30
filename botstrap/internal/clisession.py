@@ -86,7 +86,7 @@ class CliSession:
         Args:
             question:
                 The first part of the prompt. Should be phrased as a question that can
-                be meaningfully answered by a "yes" or "no" response.
+                be meaningfully answered by a "yes" / "no" response.
 
         Raises:
             SystemExit: If the user responds non-affirmatively. Will be raised with
@@ -160,7 +160,7 @@ class CliSession:
         Args:
             question:
                 The first part of the prompt. Should be phrased as a question that can
-                be meaningfully answered by a "yes" or "no" response.
+                be meaningfully answered by a "yes" / "no" response.
 
         Returns:
             `True` if the user responds affirmatively, otherwise `False`.
@@ -231,10 +231,11 @@ class CliSession:
 
         Args:
             prompt:
-                A short human-readable prompt for the user. Will be followed by a space.
+                A short human-readable prompt for the user.
+                Will be followed by a single space.
             echo_input:
-                Whether the user's input should be displayed on the screen. Set this to
-                `False` for sensitive input.
+                Whether the user's input should be displayed on the screen.
+                Set this to `False` for sensitive input.
 
         Returns:
             The user's response as a string, stripped of leading & trailing whitespace.

@@ -1,9 +1,9 @@
 """This module contains the `Argstrap` class, which parses arguments for a bot's CLI."""
 from __future__ import annotations
 
+import argparse
 import operator
 import re
-from argparse import ArgumentParser, RawTextHelpFormatter
 from typing import Any, Final, Iterator
 
 from botstrap.internal.clisession import CliSession
@@ -21,7 +21,7 @@ _HELP_PATTERN: Final[re.Pattern] = re.compile(r"(^|[^%])(%)([^%(]|$)")
 _HELP_REPLACEMENT: Final[str] = r"\1\2\2\3"  # Escape the "%" by including it twice.
 
 
-class Argstrap(ArgumentParser):
+class Argstrap(argparse.ArgumentParser):
     """Parses command-line args and provides a CLI framework for bots that use Botstrap.
 
     This class extends [`ArgumentParser`][1] and can operate similarly, but its primary
@@ -55,7 +55,7 @@ class Argstrap(ArgumentParser):
             tokens:
                 The tokens that are defined for the bot. Will be used to determine its
                 available command-line arguments (e.g. if multiple tokens are supported,
-                a "token id" argument may be specified to select which one to use).
+                a "token id" argument may be specified to select the one to use).
             description:
                 A short human-readable description of the bot. Will be displayed when
                 the `--help` option is passed to the CLI. If omitted, Botstrap will try
@@ -93,7 +93,7 @@ class Argstrap(ArgumentParser):
         super().__init__(
             prog=(prog := self.cli.colors.primary(program_command[-1])),
             description=description,
-            formatter_class=RawTextHelpFormatter,
+            formatter_class=argparse.RawTextHelpFormatter,
             add_help=False,
         )
 
@@ -104,6 +104,12 @@ class Argstrap(ArgumentParser):
             """Adds the arg (and its abbr) to the arg parser and to usage_components."""
             name = ("" if positional else "--") + key.replace("_", "-")
             abbr = f"-{abbreviations[key]}" if abbreviations.get(key) else ""
+
+            self.add_argument(*[s for s in (abbr, name) if s], **kwargs)
+
+            if kwargs.get("help") == argparse.SUPPRESS:
+                return  # This arg should be invisible - don't add it to usage string.
+
             metavar = (
                 self.cli.colors.lowlight(str(m)) if (m := kwargs.get("metavar")) else ""
             )
@@ -119,7 +125,6 @@ class Argstrap(ArgumentParser):
                 display_name = (abbr or name) + (f" {metavar}" if metavar else "")
 
             usage_components.append(f"[{display_name}]")
-            self.add_argument(*[s for s in (abbr, name) if s], **kwargs)
 
         # First, add any/all custom-defined (a.k.a. probably the most relevant) options.
         for i, option in enumerate(custom_options.values()):
@@ -128,11 +133,14 @@ class Argstrap(ArgumentParser):
                 "help": _HELP_PATTERN.sub(_HELP_REPLACEMENT, option.help or ""),
             }
             if not option.flag:
-                option_dict["default"] = option.default
-                option_dict["type"] = (option_type := type(option.default))
-                option_dict["choices"] = option.choices or None
+                option_dict["default"] = (default := option.default)
+                option_dict["type"] = (option_type := type(default))
                 option_dict["metavar"] = f"<{option_type.__name__}>"
-            add_arg(self._custom_keys[i], **option_dict)  # (Use the sanitized key.)
+                if choices := option.choices:
+                    option_dict["choices"] = (  # Make sure default value is included.
+                        choices if (default in choices) else [default, *choices]
+                    )
+            add_arg(self._custom_keys[i], **option_dict)  # Use the sanitized key.
 
         # Then add the default options, in order of their usefulness when viewing "-h".
         add_arg(_TOKENS_KEY, action="store_true", help=self.cli.strings.h_tokens)

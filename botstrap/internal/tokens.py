@@ -48,8 +48,8 @@ class Token(Secret):
                 Whether a user-provided password is required to store and subsequently
                 retrieve this token's value.
             display_name:
-                A human-readable string describing this token. Will be displayed in
-                the CLI when referring to this token. If omitted, the `uid` will be
+                A human-readable string describing this token. Will be shown in the
+                CLI when referring to this token. If omitted, the `uid` will be
                 displayed instead.
             storage_directory:
                 Where to store the encrypted files containing this token's data.
@@ -107,11 +107,6 @@ class Token(Secret):
                   missing files, etc.)
             - [x] Let the user choose whether to continue or exit the process at
                   various points throughout this flow
-
-            This might sound like a lot, but the implementation is actually quite
-            straightforward and (probably) more concise than this description might
-            lead you to believe. Check out the source code [below](./#line-0-86) to
-            see for yourself. :eyes:
 
         ??? example "Example - Creating a password-protected token"
             ```console title="Console Session"

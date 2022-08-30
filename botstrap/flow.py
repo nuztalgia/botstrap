@@ -110,13 +110,23 @@ class Botstrap(CliSession):
                 uid="prod",
                 requires_password=True,
                 display_name=Color.green("production"),
-            )
+            ).run_bot()
+            ```
+
+            ```{.console title="Console Session" .ends-with-input}
+            $ python bot.py --tokens
+
+            bot.py: You currently have the following bot tokens saved:
+              1. development ->  ~/path/to/your/bot/.botstrap_keys/.dev.*
+              2. production  ->  ~/path/to/your/bot/.botstrap_keys/.prod.*
+
+            Would you like to delete any of these tokens? If so, type "yes" or "y":
             ```
 
         Args:
             uid:
                 A unique string identifying this token. Will be used in the names of
-                the files containing this token's data.
+                the files holding this token's data.
             requires_password:
                 Whether a password is required in order to create and subsequently
                 retrieve this token.

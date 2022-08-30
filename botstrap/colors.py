@@ -107,7 +107,7 @@ class CliColors:
 
         To customize this field, simply instantiate this class with your desired color -
         such as `#!py CliColors(Color.blue)` - and pass it in as the `colors` parameter
-        to the [`Botstrap`][botstrap.Botstrap] constructor.
+        to the [`Botstrap`](../botstrap) constructor.
         See the [example](./#custom-colors) below for more details.
 
     ??? example "Example - Customizing specific colors"
@@ -144,9 +144,9 @@ class CliColors:
     def default(cls) -> CliColors:
         """Returns an instance of this class with default values for all colors.
 
-        Functions from [`Color`][botstrap.Color] are used as the defaults for all
-        fields except for [`primary`](./#primary), which defaults to `#!py str()`
-        and is essentially a no-op unless overridden.
+        Functions from [`Color`](../color) are used as the defaults for all fields
+        except for [`primary`](./#primary), which defaults to `#!py str()` and is
+        essentially a no-op unless overridden.
         """
         return cls()
 

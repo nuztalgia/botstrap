@@ -51,7 +51,7 @@ class Option:
           unless you intend to use their default values.
 
         - This field has no effect on [`help`][botstrap.Option.help], which should
-          **always** be provided for a user-friendly experience! :sparkles:
+          always be provided for a user-friendly experience! :sparkles:
     """
 
     default: str | int | float = ""
@@ -67,7 +67,7 @@ class Option:
     [`flag`][botstrap.Option.flag] field instead.
 
     ??? example "Example - Creating options of different types"
-        ```py title="bot.py"
+        ```py title="example.py"
         from botstrap import Botstrap, Option
 
         Botstrap().parse_args(
@@ -79,10 +79,10 @@ class Option:
         ```
 
         ```console title="Console Session"
-        $ python bot.py -h
-        usage: bot.py [-a <str>] [-b <int>] [-c <float>] [-d] [-t] [--help]
+        $ python example.py -h
+        usage: example.py [-a <str>] [-b <int>] [-c <float>] [-d] [-t] [--help]
 
-          Run "python bot.py" with no parameters to start the bot.
+          Run "python example.py" with no parameters to start the bot.
 
         options:
           -a <str>      An option with type 'str'.
@@ -104,6 +104,28 @@ class Option:
     If this field is omitted or otherwise empty, the given value for this option will
     not be checked. This means that **any** value with the same `#!py type` as the
     [`default`][botstrap.Option.default] value will be considered "acceptable".
+
+    ??? example "Example - Defining valid values for an option"
+        ```{.py title="example.py" .annotate}
+        from botstrap import Botstrap, Option
+
+        Botstrap().parse_args(
+            pizza_topping=Option(
+                default="cheese", # (1)
+                choices=("mushrooms", "olives", "pepperoni", "sausage"),
+            ),
+        )
+        ```
+
+        1.  If the specified `default` argument is not included in `choices`, Botstrap
+            will automatically prepend it to ensure consistent and predictable behavior.
+
+        ```console title="Console Session"
+        $ python example.py -p pineapple
+        usage: example.py [-p <str>] [-t] [--help]
+        example.py: error: argument -p/--pizza-topping: invalid choice: 'pineapple'
+        (choose from 'cheese', 'mushrooms', 'olives', 'pepperoni', 'sausage')
+        ```
     """
 
     help: str | None = None
@@ -114,34 +136,37 @@ class Option:
     appear without any help text. To prevent this option from being listed in the help
     menu, set this field to [`Option.HIDE_HELP`][botstrap.Option.HIDE_HELP].
 
-    ??? example "Example - Configuring option text in the help menu"
-        ```py title="bot.py"
+    ??? example "Example - Configuring visibility in the help menu"
+        ```py title="example.py"
         from botstrap import Botstrap, Option
 
-        Botstrap().parse_args(
+        args = Botstrap().parse_args(
             a=Option(help="A user-friendly option with help text!"),
             b=Option(),
             c=Option(help=Option.HIDE_HELP),
         )
+        print(args)
         ```
 
         ```console title="Console Session"
-        $ python bot.py -h
-        usage: bot.py [-a <str>] [-b <str>] [-c <str>] [-t] [--help]
+        $ python example.py -h
+        usage: example.py [-a <str>] [-b <str>] [-t] [--help]
 
-          Run "python bot.py" with no parameters to start the bot.
+          Run "python example.py" with no parameters to start the bot.
 
         options:
           -a <str>      A user-friendly option with help text!
           -b <str>
           -t, --tokens  View/manage your saved Discord bot tokens.
           -h, --help    Display this help message.
+
+        $ python example.py -b "a mysterious option" -c "a super secret option"
+        Results(a='', b='a mysterious option', c='a super secret option')
         ```
 
-        Observe that option `b` is listed without a description because it didn't
-        specify a value for its `help` field, while option `c` is not listed at all
-        (although it still appears in the `usage` info at the top) because it specified
-        `Option.HIDE_HELP`.
+        Notice that `-b` appears without a description because it didn't specify a value
+        for its `help` field, while `-c` does not appear in the help menu at all because
+        it specified `Option.HIDE_HELP`. However, both options are equally usable.
     """
 
     # endregion FIELDS

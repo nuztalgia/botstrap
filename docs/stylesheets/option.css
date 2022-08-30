@@ -12,3 +12,8 @@ h3 > .doc-labels > .doc-label-class-attribute {
 .doc-class > [id$="Option.Results"] + .doc-contents > :not(.doc-children) {
   display: revert;
 }
+
+/* Adjust width of the annotation tooltip in the `choices` example. */
+[id$="choices"] + * > .example .annotate code .md-annotation .md-tooltip {
+  width: 15.8rem;
+}
