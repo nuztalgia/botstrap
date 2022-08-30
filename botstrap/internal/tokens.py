@@ -91,7 +91,7 @@ class Token(Secret):
         [`write()`][botstrap.internal.Secret.write] is that it can interact with
         the user via the CLI and take different code paths according to their input.
 
-        ??? info resolve-info "Info - Tasks performed by this method"
+        ??? info "Info - Tasks performed by this method"
             Based on a combination of this token's state and the input provided by the
             user, this method can:
 
@@ -112,6 +112,37 @@ class Token(Secret):
             straightforward and (probably) more concise than this description might
             lead you to believe. Check out the source code [below](./#line-0-86) to
             see for yourself. :eyes:
+
+        ??? example "Example - Creating a password-protected token"
+            ```console title="Console Session"
+            $ python examplebot.py prod
+
+            examplebot: You currently don't have a saved production bot token.
+            Would you like to add one now? If so, type "yes" or "y": y
+
+            Please enter your bot token now. It'll be hidden for security reasons.
+            BOT TOKEN: ************************.******.***************************
+
+            To keep your bot token extra safe, it must be encrypted with a password.
+            This password won't be stored anywhere. It will only be used as a key to
+            decrypt your token every time you run your bot in production mode.
+
+            Please enter a password for your production bot token.
+            PASSWORD: ****
+
+            Your password must be at least 8 characters long.
+            Would you like to try a different one? If so, type "yes" or "y": y
+            PASSWORD: ********
+
+            Please re-enter the same password again to confirm.
+            PASSWORD: ********
+
+            Your token has been successfully encrypted and saved.
+
+            Do you want to run your bot with this token now? If so, type "yes" or "y": n
+
+            Received a non-affirmative response. Exiting process.
+            ```
 
         Args:
             allow_token_creation:

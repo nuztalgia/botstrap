@@ -1,9 +1,9 @@
-/*  Make all console output in the code blocks in the full example selectable. */
-div#full-example .language-console code .go {
+/*  Make all console output selectable in the code blocks in the main example. */
+div#botstrap-example .language-console code .go {
   user-select: text;
 }
 
-/* Hide the redundant file headers in the code blocks in the full example. */
-div#full-example span.filename {
+/* Hide the redundant filename headers in the code blocks in the main example. */
+div#botstrap-example span.filename {
   display: none;
 }

@@ -22,6 +22,7 @@ for (let i = 0; i < outputSpans.length; i++) {
   colorText(span, "cyan", /^  (\d)\. .*-&gt;  .*\.\*$/);
   colorText(span, "cyan", /^BOT TOKEN:/);
   colorText(span, "cyan", /^Enter your password:/);
+  colorText(span, "cyan", /^PASSWORD:/);
   colorText(span, "cyan", /"(yes)"/);
   colorText(span, "cyan", /"(y)"/);
   colorText(span, "cyan", /BasicBot#1234/);
@@ -32,6 +33,7 @@ for (let i = 0; i < outputSpans.length; i++) {
   colorText(span, "green", /production/);
   colorText(span, "grey", /^  .*\. .*-&gt;  (.*\.\*)$/);
   colorText(span, "grey", /^Received a [^\.]*\./);
+  colorText(span, "grey", / [\*\.]*$/);
   colorText(span, "grey", / Exiting process\.$/);
   colorText(span, "grey", /(&lt;float&gt;)]/);
   colorText(span, "grey", /(&lt;int&gt;)]/);
@@ -40,6 +42,7 @@ for (let i = 0; i < outputSpans.length; i++) {
   colorText(span, "pink", /^(usage: )?(examplebot)/, 2);
   colorText(span, "red", /^.* 'exit_process\(\)' function!/);
   colorText(span, "yellow", /^That number doesn't match .* tokens\./);
+  colorText(span, "yellow", /^Your password must be .* characters long\./);
   colorText(span, "yellow", /development/);
 }
 

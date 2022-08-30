@@ -15,9 +15,8 @@ class Botstrap(CliSession):
 
     This class features a modular, step-by-step flow for securely handling Discord bot
     tokens and parsing/customizing command-line options. Each method in this class
-    corresponds to a step in the flow, and almost all of them are optional and/or highly
-    customizable in order to adapt to the needs of each individual bot. For a high-level
-    roadmap of their usage, see the [flowchart](./#botstrap-flowchart) below.
+    corresponds to a step in the flow, and all of them are highly customizable in order
+    to adapt to the needs of individual bots.
     """
 
     def __init__(
@@ -374,9 +373,9 @@ class Botstrap(CliSession):
             ```
 
             Of course, this simple example probably isn't very helpful unless you're
-            trying to play [golf][5] with your bot start-up code. For a much more
-            complex and interesting example, go [back to the top](./#full-example)
-            of this page.
+            trying to play [golf][5] with your bot start-up code.
+            For a much more complex and interesting example, check out the one
+            [at the top](./#botstrap-example) of this page.
 
         [1]: https://discord.com/developers/docs/topics/community-resources
         [2]: https://github.com/Rapptz/discord.py

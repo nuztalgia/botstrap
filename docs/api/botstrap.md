@@ -4,6 +4,11 @@
       heading_level: 1
       members: false
 
+For an overview of this class's usage, see the [flowchart](./#botstrap-flowchart) below.
+It establishes a foundation for the subsequent [example](./#botstrap-example), which
+includes code snippets and demonstrates the **CLI** (command-line interface) created by
+a lightly-customized Botstrap integration.
+
 ??? abstract "Diagram - The Botstrap Flowchart"
 
     <div id="botstrap-flowchart"/>
@@ -49,10 +54,10 @@
       ```
     </figure>
 
-??? example "Example - Putting it all together"
+??? example "Example - The Botstrap Interface"
 
-    <div id="full-example"/>
-    === "Intro"
+    <div id="botstrap-example"/>
+    === "Info"
         ```{.text .line-numbers-off}
         📁 workspace/
         └── 📁 examplebot/
@@ -72,7 +77,7 @@
         about what could be clarified!)
 
         ---
-        The next two tabs (after this "Intro" tab) provide the contents of the **Python
+        The next two tabs (after this "Info" tab) provide the contents of the **Python
         files** used in this example:
 
         - `__main__.py` - This file contains the entire Botstrap integration and
@@ -89,7 +94,9 @@
         1. `python -m examplebot -h` - The help menu for the example bot.
         2. `python -m examplebot` - Running in `dev` mode for the first time and adding
            a token **without** a password.
-        3. `python -m examplebot -t` - Exploring the CLI flow for managing tokens, and
+        3. `python -m examplebot prod` - Running in `prod` mode for the first time and
+           adding a token **with** a password.
+        4. `python -m examplebot -t` - Exploring the CLI flow for managing tokens, and
            deleting a saved token.
 
         **Note:** All of these commands are run from the outermost (`workspace`)
@@ -118,7 +125,7 @@
         examplebot: You currently don't have a saved development bot token.
         Would you like to add one now? If so, type "yes" or "y": y
 
-        Please enter your bot token now. It'll be invisible for security reasons.
+        Please enter your bot token now. It'll be hidden for security reasons.
         BOT TOKEN: ************************.******.***************************
 
         Your token has been successfully encrypted and saved.
@@ -130,6 +137,12 @@
         ```
 
     === "CLI #3"
+        ```console
+        $ python -m examplebot prod
+        {% include "../../botstrap/internal/tokens.py" start=".py prod\n" end="```" %}
+        ```
+
+    === "CLI #4"
         ```console
         $ python -m examplebot -t
         {% include "../../botstrap/internal/argstrap.py" start="# (1)\n" end="```" %}
