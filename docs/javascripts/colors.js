@@ -1,69 +1,56 @@
-/** Adds color to text matched by the regex pattern in the given element. */
-function colorText(element, color, pattern, index = 1) {
-  const match = element.innerHTML.match(pattern);
-  if (match) {
+/** Adds color to all text matched by the regex pattern in the bound element. */
+function colorElementText(colorName, regexPattern, replacementIndex = 1) {
+  for (const match of this.innerHTML.matchAll(new RegExp(regexPattern, "g"))) {
     const replacement =
       match.length === 1
-        ? `<span class="${color}">${match[0]}</span>`
+        ? `<span class="${colorName}">${match[0]}</span>`
         : match[0].replace(
-            match[index],
-            `<span class="${color}">${match[index]}</span>`,
+            match[replacementIndex],
+            `<span class="${colorName}">${match[replacementIndex]}</span>`,
           );
-    element.innerHTML = element.innerHTML.replace(match[0], replacement);
+    this.innerHTML = this.innerHTML.replace(match[0], replacement);
   }
 }
 
 // Add color to strings that commonly appear in console output.
-let outputSpans = document.querySelectorAll(
-  ":is(.language-console, .language-pycon):not(.custom-colors) span.go",
-);
-for (let i = 0; i < outputSpans.length; i++) {
-  const span = outputSpans[i];
-  colorText(span, "cyan", /^  (\d)\. .*-&gt;  .*\.\*$/);
-  colorText(span, "cyan", /^BOT TOKEN:/);
-  colorText(span, "cyan", /^Enter your password:/);
-  colorText(span, "cyan", /^PASSWORD:/);
-  colorText(span, "cyan", /"(yes)"/);
-  colorText(span, "cyan", /"(y)"/);
-  colorText(span, "cyan", /BasicBot#1234/);
-  colorText(span, "cyan", /Expected "(1)" or "2"\.\)$/);
-  colorText(span, "cyan", /Expected ".*" or "(2)"\.\)$/);
-  colorText(span, "green", /^Token successfully deleted\.$/);
-  colorText(span, "green", /^Your token has been .* saved\.$/);
-  colorText(span, "green", /production/);
-  colorText(span, "grey", /^  .*\. .*-&gt;  (.*\.\*)$/);
-  colorText(span, "grey", /^Received a [^\.]*\./);
-  colorText(span, "grey", / [\*\.]*$/);
-  colorText(span, "grey", / Exiting process\.$/);
-  colorText(span, "grey", /(&lt;float&gt;)]/);
-  colorText(span, "grey", /(&lt;int&gt;)]/);
-  colorText(span, "grey", /(&lt;str&gt;)]/);
-  colorText(span, "grey", /(&lt;token id&gt;)]/);
-  colorText(span, "pink", /^(usage: )?(examplebot)/, 2);
-  colorText(span, "red", /^.* 'exit_process\(\)' function!/);
-  colorText(span, "yellow", /^That number doesn't match .* tokens\./);
-  colorText(span, "yellow", /^Your password must be .* characters long\./);
-  colorText(span, "yellow", /development/);
+const selector = ":is(.language-console, .language-pycon):not(.custom-colors)";
+for (const element of document.querySelectorAll(selector + " span.go")) {
+  const colorText = colorElementText.bind(element);
+  colorText("cyan", /^  (\d)\. .*-&gt;  .*\.\*$/);
+  colorText("cyan", /^(BOT TOKEN|PASSWORD|Enter your password):/, 0);
+  colorText("cyan", /"(y(es)?|\d)"/);
+  colorText("cyan", /BasicBot#1234/);
+  colorText("green", /^Token successfully deleted\.$/);
+  colorText("green", /^Your token has been .* saved\.$/);
+  colorText("green", /production/);
+  colorText("grey", /^  .*\. .*-&gt;  (.*\.\*)$/);
+  colorText("grey", /^Received a [^\.]*\./);
+  colorText("grey", / [\*\.]*$/);
+  colorText("grey", / Exiting process\.$/);
+  colorText("grey", /(&lt;(float|int|str|token id)&gt;)]/);
+  colorText("pink", /^(usage: )?(examplebot)/, 2);
+  colorText("red", /^.* 'exit_process\(\)' function!/);
+  colorText("yellow", /^That number doesn't match .* tokens\./);
+  colorText("yellow", /^Your password must be .* characters long\./);
+  colorText("yellow", /development/);
 }
 
 // Same as above, but only for output blocks with the "custom-colors" class.
-let customColorSpans = document.querySelectorAll(".custom-colors span.go");
-for (let i = 0; i < customColorSpans.length; i++) {
-  const span = customColorSpans[i];
-  colorText(span, "cyan", /^cyan-bot/);
-  colorText(span, "pink", /"(yes)"/);
-  colorText(span, "pink", /"(y)"/);
+for (const element of document.querySelectorAll(".custom-colors span.go")) {
+  const colorText = colorElementText.bind(element);
+  colorText("cyan", /^cyan-bot/);
+  colorText("pink", /"(y(es)?)"/);
 }
 
 // Add the colorful "PRIDE!" console output to the example on the `Color` page.
-if (window.location.href.match(/\/api\/color\/$/)) {
-  const colorExample = document.querySelector(".admonition.example code");
-  colorExample.innerHTML += "<span class='go'>PRIDE!</span>";
-  const span = colorExample.querySelector(".go:last-child");
-  colorText(span, "pink", /P/);
-  colorText(span, "red", /R/);
-  colorText(span, "yellow", /I/);
-  colorText(span, "green", /D/);
-  colorText(span, "cyan", /E/);
-  colorText(span, "blue", /!/);
+if (window.location.href.match(/\/api\/color\//)) {
+  const prideExample = document.querySelector(".admonition.example code");
+  prideExample.innerHTML += "<span class='go'>PRIDE!</span>";
+  const colorText = colorElementText.bind(prideExample.querySelector(".go"));
+  colorText("pink", /P/);
+  colorText("red", /R/);
+  colorText("yellow", /I/);
+  colorText("green", /D/);
+  colorText("cyan", /E/);
+  colorText("blue", /!/);
 }

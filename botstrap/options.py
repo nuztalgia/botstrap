@@ -65,6 +65,33 @@ class Option:
     Note that the value of this field **must** be a `#!py str`, an `#!py int`,
     or a `#!py float`. To create an option with a `#!py bool` value type, use the
     [`flag`][botstrap.Option.flag] field instead.
+
+    ??? example "Example - Creating options of different types"
+        ```py title="bot.py"
+        from botstrap import Botstrap, Option
+
+        Botstrap().parse_args(
+            a=Option(help="An option with type 'str'."),
+            b=Option(default=0, help="An option with type 'int'."),
+            c=Option(default=0.0, help="An option with type 'float'."),
+            d=Option(flag=True, help="A boolean flag."),
+        )
+        ```
+
+        ```console title="Console Session"
+        $ python bot.py -h
+        usage: bot.py [-a <str>] [-b <int>] [-c <float>] [-d] [-t] [--help]
+
+          Run "python bot.py" with no parameters to start the bot.
+
+        options:
+          -a <str>      An option with type 'str'.
+          -b <int>      An option with type 'int'.
+          -c <float>    An option with type 'float'.
+          -d            A boolean flag.
+          -t, --tokens  View/manage your saved Discord bot tokens.
+          -h, --help    Display this help message.
+        ```
     """
 
     choices: Iterable[str | int | float] = ()
@@ -86,6 +113,35 @@ class Option:
     `-h`) is specified on the command line. If omitted, the entry for this option will
     appear without any help text. To prevent this option from being listed in the help
     menu, set this field to [`Option.HIDE_HELP`][botstrap.Option.HIDE_HELP].
+
+    ??? example "Example - Configuring option text in the help menu"
+        ```py title="bot.py"
+        from botstrap import Botstrap, Option
+
+        Botstrap().parse_args(
+            a=Option(help="A user-friendly option with help text!"),
+            b=Option(),
+            c=Option(help=Option.HIDE_HELP),
+        )
+        ```
+
+        ```console title="Console Session"
+        $ python bot.py -h
+        usage: bot.py [-a <str>] [-b <str>] [-c <str>] [-t] [--help]
+
+          Run "python bot.py" with no parameters to start the bot.
+
+        options:
+          -a <str>      A user-friendly option with help text!
+          -b <str>
+          -t, --tokens  View/manage your saved Discord bot tokens.
+          -h, --help    Display this help message.
+        ```
+
+        Observe that option `b` is listed without a description because it didn't
+        specify a value for its `help` field, while option `c` is not listed at all
+        (although it still appears in the `usage` info at the top) because it specified
+        `Option.HIDE_HELP`.
     """
 
     # endregion FIELDS

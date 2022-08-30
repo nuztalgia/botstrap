@@ -20,3 +20,6 @@
     options:
       heading_level: 3
       members: false
+
+<link rel="stylesheet" href="../../stylesheets/option.css" />
+<script src="../../javascripts/option.js"></script>

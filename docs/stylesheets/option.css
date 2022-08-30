@@ -1,0 +1,14 @@
+/* Hide the "class attribute" labels next to fields/constants (misleading). */
+h3 > .doc-labels > .doc-label-class-attribute {
+  display: none;
+}
+
+/* Hide the links for constants in the page nav (relatively unimportant). */
+.md-nav--secondary > ul.md-nav__list > li.md-nav__item:nth-child(2) {
+  display: none;
+}
+
+/* Revert the global rule to hide dupe class descriptions (false positive). */
+.doc-class > [id$="Option.Results"] + .doc-contents > :not(.doc-children) {
+  display: revert;
+}
