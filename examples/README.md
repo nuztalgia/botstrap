@@ -45,8 +45,8 @@ python -m examplebot -h
 <details>
 <summary>If everything was set up correctly, you should see a help menu that looks something like this... <i>(click to expand)</i></summary>
 
-```c
-usage: examplebot [-l <str>] [-a] [--allow-pings] [-t] [--help] [<token id>]
+```text
+usage: examplebot [-l <int>] [-s <str>] [-a <str>] [-m] [-t] [--help] [<token id>]
 
   A really cool Discord bot that uses Botstrap!
   Run "python -m examplebot" with no parameters to start the bot in development mode.
@@ -56,9 +56,10 @@ positional arguments:
                         Valid options are "dev" and "prod".
 
 options:
-  -l <str>, --ll <str>  The lowest message level to log.
-  -a, --alpha           Enable features that are currently in alpha.
-  --allow-pings         Allow the bot to ping people/roles.
+  -l <>, --log-thld <>  A value from 1-4 specifying the minimum log threshold.
+  -s <>, --status <>    Text to show in the bot's Discord profile status.
+  -a <>, --activity <>  The text preceding '--status'. Defaults to 'playing'.
+  -m, --mentions        Allow the bot to @mention members and/or roles.
   -t, --tokens          View/manage your saved Discord bot tokens.
   -h, --help            Display this help message.
 ```

@@ -85,9 +85,9 @@ class Option:
           Run "python example.py" with no parameters to start the bot.
 
         options:
-          -a <str>      An option with type 'str'.
-          -b <int>      An option with type 'int'.
-          -c <float>    An option with type 'float'.
+          -a <>         An option with type 'str'.
+          -b <>         An option with type 'int'.
+          -c <>         An option with type 'float'.
           -d            A boolean flag.
           -t, --tokens  View/manage your saved Discord bot tokens.
           -h, --help    Display this help message.
@@ -155,8 +155,8 @@ class Option:
           Run "python example.py" with no parameters to start the bot.
 
         options:
-          -a <str>      A user-friendly option with help text!
-          -b <str>
+          -a <>         A user-friendly option with help text!
+          -b <>
           -t, --tokens  View/manage your saved Discord bot tokens.
           -h, --help    Display this help message.
 

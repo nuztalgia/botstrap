@@ -1,6 +1,6 @@
 from . import extras
 from botstrap import Botstrap, CliColors, Color, Option
-from discord import AllowedMentions
+from discord import Activity, ActivityType, AllowedMentions
 
 
 botstrap = (
@@ -18,18 +18,29 @@ botstrap = (
 
 args = botstrap.parse_args(
     description="A really cool Discord bot that uses Botstrap!",
-    ll=Option(
-        default="i",
-        choices=("d", "debug", "i", "info", "w", "warning", "e", "error"),
-        help="The lowest message level to log.",
+    log_thld=Option(
+        default=2,
+        choices=range(1, 5),
+        help="A value from 1-4 specifying the minimum log threshold.",
     ),
-    alpha=Option(flag=True, help="Enable features that are currently in alpha."),
-    allow_pings=Option(flag=True, help="Allow the bot to ping people/roles."),
+    status=Option(default="", help="Text to show in the bot's Discord profile status."),
+    activity=Option(
+        default="playing",
+        choices=("streaming", "listening", "watching"),
+        help="The text preceding '--status'. Defaults to '%(default)s'.",
+    ),
+    mentions=Option(flag=True, help="Allow the bot to @mention members and/or roles."),
+    alpha=Option(flag=True, help=Option.HIDE_HELP),
 )
 
-extras.initialize_logging(log_level=args.ll)
+extras.initialize_system_logging(log_level=args.log_thld)
+
+activity = (
+    Activity(type=getattr(ActivityType, args.activity.lower()), name=args.status)
+    if args.status
+    else None
+)
+allowed_mentions = AllowedMentions.all() if args.mentions else AllowedMentions.none()
 
 bot_class = extras.AlphaBot if args.alpha else "discord.Bot"
-pings = AllowedMentions.everyone() if args.allow_pings else AllowedMentions.none()
-
-botstrap.run_bot(bot_class, allowed_mentions=pings)
+botstrap.run_bot(bot_class, activity=activity, allowed_mentions=allowed_mentions)

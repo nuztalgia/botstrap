@@ -104,18 +104,20 @@ class Argstrap(argparse.ArgumentParser):
             """Adds the arg (and its abbr) to the arg parser and to usage_components."""
             name = ("" if positional else "--") + key.replace("_", "-")
             abbr = f"-{abbreviations[key]}" if abbreviations.get(key) else ""
-
-            self.add_argument(*[s for s in (abbr, name) if s], **kwargs)
-
-            if kwargs.get("help") == argparse.SUPPRESS:
-                return  # This arg should be invisible - don't add it to usage string.
-
             metavar = (
                 self.cli.colors.lowlight(str(m)) if (m := kwargs.get("metavar")) else ""
             )
 
             if len(key) == 1:
                 name = ""  # Single-char keys will only have an abbr, prefixed by "-".
+
+            if metavar and (not positional):
+                kwargs["metavar"] = "<>"  # Short metavar in "options" section of "-h".
+
+            self.add_argument(*[s for s in (abbr, name) if s], **kwargs)
+
+            if kwargs.get("help") == argparse.SUPPRESS:
+                return  # This arg should be invisible - don't add it to usage string.
 
             if key == _HELP_KEY:  # Special case - don't abbreviate "--help".
                 display_name = name
@@ -414,7 +416,7 @@ class Argstrap(argparse.ArgumentParser):
             SystemExit: When the user cannot (or does not want to) delete any more
                 token files.
         """
-        ansi_pattern = re.compile(r"(\x9B|\x1B\[)[0-?]*[ -/]*[@-~]")
+        ansi_pattern = re.compile(r"\x1b\[[0-9]+m")
         default_token = Token.get_default(self.cli)
 
         if not any(t for t in self._tokens if t.uid == default_token.uid):

@@ -112,10 +112,21 @@ a lightly-customized Botstrap integration.
         {% include "../../examples/examplebot/extras.py" %}
         ```
 
+        **Note:** For more information about the contents of this file, check out these
+        helpful guides about [setting up logging][1], [subclassing bots][2], and the
+        [tasks extension][3]. (Those links point to the [Pycord][4] website, but the
+        concepts they explain are useful regardless of which Discord API wrapper you're
+        using.)
+
+        [1]: https://docs.pycord.dev/en/master/logging.html
+        [2]: https://guide.pycord.dev/popular-topics/subclassing-bots/
+        [3]: https://guide.pycord.dev/extensions/tasks/
+        [4]: https://docs.pycord.dev/
+
     === "CLI #1"
         ```console
         $ python -m examplebot -h
-        {% include "../../examples/README.md" start="```c\n" end="```" %}
+        {% include "../../examples/README.md" start="```text\n" end="```" %}
         ```
 
     === "CLI #2"
@@ -133,7 +144,7 @@ a lightly-customized Botstrap integration.
         Do you want to use this token to run your bot now? If so, type "yes" or "y": y
 
         examplebot: development: Attempting to log in to Discord...
-        examplebot: development: Successfully logged in as "BasicBot#1234".
+        examplebot: development: Successfully logged in as "BotstrapBot#1234".
         ```
 
     === "CLI #3"

@@ -19,7 +19,7 @@ for (const element of document.querySelectorAll(selector + " span.go")) {
   colorText("cyan", /^  (\d)\. .*-&gt;  .*\.\*$/);
   colorText("cyan", /^(BOT TOKEN|PASSWORD|Enter your password):/, 0);
   colorText("cyan", /"(y(es)?|\d)"/);
-  colorText("cyan", /BasicBot#1234/);
+  colorText("cyan", /BotstrapBot#1234/);
   colorText("green", /^Token successfully deleted\.$/);
   colorText("green", /^Your token has been .* saved\.$/);
   colorText("green", /production/);

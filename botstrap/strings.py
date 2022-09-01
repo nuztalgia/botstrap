@@ -54,7 +54,7 @@ class CliStrings:
         $ python bot.py
 
         bot.py: Logging in with 'default' bot token.
-        bot.py: BasicBot#1234 reporting for duty in default mode!
+        bot.py: BotstrapBot#1234 reporting for duty in default mode!
         ```
 
         **Note:** The strings customized in this example belong to the fields named

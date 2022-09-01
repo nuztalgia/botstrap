@@ -379,7 +379,7 @@ class Botstrap(CliSession):
             $ python bot.py
 
             bot.py: default: Attempting to log in to Discord...
-            bot.py: default: Successfully logged in as "BasicBot#1234".
+            bot.py: default: Successfully logged in as "BotstrapBot#1234".
             ```
 
             Of course, this simple example probably isn't very helpful unless you're
