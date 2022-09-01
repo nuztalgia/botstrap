@@ -35,20 +35,21 @@ class Option:
     """Whether this option represents a boolean flag (i.e. an on/off switch).
 
     A **flag** is the most basic type of option. It doesn't require another command-line
-    argument to tell it what its final "return value" should be - it'll simply be `True`
-    if the option name was specified on the command line, or `False` if it wasn't.
+    argument to tell it what its parsed value should be - it'll simply be `True` if its
+    name (or abbreviation) was specified on the command line, or `False` if not.
 
     ??? question "FAQ - How does this field affect the others?"
         - If this field is set to `True`, you should **ignore** the
           [`default`][botstrap.Option.default] and [`choices`][botstrap.Option.choices]
-          fields when instantiating this class. Effectively, `default` will behave as
-          if it were set to `False`, and `choices` will be unused because this option
+          fields when instantiating this class. Effectively,
+          [`default`][botstrap.Option.default] will behave as if it were set to `False`,
+          and [`choices`][botstrap.Option.choices] will be unused because this option
           does not parse a *separate* command-line argument to determine its value.
 
         - If this field is set to `False` (or omitted, because that's the default
-          setting), you **must set** the [`default`][botstrap.Option.default] and
+          setting), you should **set** the [`default`][botstrap.Option.default] and
           [`choices`][botstrap.Option.choices] fields when instantiating this class -
-          unless you intend to use their default values.
+          unless you intend to use their default values, of course.
 
         - This field has no effect on [`help`][botstrap.Option.help], which should
           always be provided for a user-friendly experience! :sparkles:
@@ -57,10 +58,9 @@ class Option:
     default: str | int | float = ""
     """The value that should be used if this option is not specified.
 
-    This field also determines the `#!py type` of the final "return value" of this
-    option after command-line args have been parsed. If this field is omitted, this
-    option's type will be `#!py str` and its default value will be the empty string
-    (`#!py ""`).
+    In addition to providing a standard value, this field determines the `#!py type` of
+    the parsed value for this option. If omitted, this option's type will be `#!py str`
+    and its default value will be the empty string.
 
     Note that the value of this field **must** be a `#!py str`, an `#!py int`,
     or a `#!py float`. To create an option with a `#!py bool` value type, use the
@@ -117,8 +117,8 @@ class Option:
         )
         ```
 
-        1.  If the specified `default` argument is not included in `choices`, Botstrap
-            will automatically prepend it to ensure consistent and predictable behavior.
+        1.  If the specified `default` value is not included in `choices`, Botstrap will
+            automatically prepend it to ensure consistent and predictable behavior.
 
         ```console title="Console Session"
         $ python example.py -p pineapple
@@ -177,14 +177,14 @@ class Option:
     class Results(argparse.Namespace):
         """A simple class to hold the final parsed values for command-line options.
 
-        This class, like its [parent][1], is essentially just an `#!py object` with a
-        readable string representation. The names of its attributes will match the names
-        you choose for your `Option` objects when passing them as keyword arguments to
-        [`parse_args()`][botstrap.Botstrap.parse_args].
+        This class (like its superclass, [`Namespace`][1]) is essentially just an
+        `#!py object` with a readable string representation. The names of its attributes
+        will match the names you specify for your [`Option`](./#) objects when passing
+        them as keyword arguments to [`parse_args()`][botstrap.Botstrap.parse_args].
 
         If you prefer to work with a `#!py dict` representation of your parsed option
-        values, simply pass your instance of this class to the built-in Python function
-        [`vars()`][2].
+        values, simply pass your [`Option.Results`][botstrap.Option.Results] instance
+        to the built-in Python function [`vars()`][2].
 
         [1]: https://docs.python.org/3/library/argparse.html#the-namespace-object
         [2]: https://docs.python.org/3/library/functions.html#vars
