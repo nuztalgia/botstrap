@@ -75,11 +75,10 @@ class Color:
 class CliColors:
     """A model for the colors used by the Botstrap-provided CLI.
 
-    The fields of this class are `#!py Callable[[str], str]` functions that can add
-    color to specific types of messages displayed in the console, such as success and
-    error text. Simple color presets are provided by the
-    [`default()`][botstrap.CliColors.default] and [`off()`][botstrap.CliColors.off]
-    class methods.
+    The fields of this class are `Callable[[str], str]` functions that can add color to
+    specific types of messages displayed in the console, such as success and error text.
+    Simple color presets are provided by the [`default()`][botstrap.CliColors.default]
+    and [`off()`][botstrap.CliColors.off] class methods.
 
     To personalize these colors, you can create a new instance of this class and
     specify any values you'd like to change. All constructor arguments correspond to
@@ -107,8 +106,8 @@ class CliColors:
 
         To customize this field, simply instantiate this class with your desired color -
         such as `#!py CliColors(Color.blue)` - and pass it in as the `colors` parameter
-        to the [`Botstrap`](../botstrap) constructor.
-        See the [example](./#custom-colors) below for more details.
+        to the `Botstrap` constructor. See the [example](./#custom-colors) below for
+        more details.
 
     ??? example "Example - Customizing specific colors"
         <div id="custom-colors"/>
@@ -144,9 +143,9 @@ class CliColors:
     def default(cls) -> CliColors:
         """Returns an instance of this class with default values for all colors.
 
-        Functions from [`Color`](../color) are used as the defaults for all fields
-        except for [`primary`](./#primary), which defaults to `#!py str()` and is
-        essentially a no-op unless overridden.
+        Functions from `Color` are used as the defaults for all fields except for
+        [`primary`](./#primary), which defaults to `str()` and is essentially a no-op
+        unless overridden.
         """
         return cls()
 
@@ -154,9 +153,9 @@ class CliColors:
     def off(cls) -> CliColors:
         """Returns an instance of this class with all colors disabled.
 
-        In other words, the values of all fields will effectively be no-ops - functions
-        that simply call `#!py str()` on their inputs without adding any formatting
-        characters. This means that any text printed to the console will be displayed
-        in its original (un-styled) color.
+        In other words, the values of all fields will effectively be no-ops -
+        functions that simply call `str()` on their inputs without adding any
+        formatting characters. This means that any text printed to the console
+        will be displayed in its original (un-styled) color.
         """
         return cls(**{key: str for key in asdict(cls.default())})

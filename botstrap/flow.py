@@ -57,9 +57,9 @@ class Botstrap(CliSession):
         """Defines a Discord bot token to be managed by this Botstrap integration.
 
         After instantiating this class and before calling any of its other methods, this
-        one must be called for **each unique token** that may be used by your bot. For
-        instance, to define a `#!py "development"` token as well as a password-protected
-        `#!py "production"` token, you would call this method twice.
+        one must be called for **each unique token** that may be used by your bot.
+        For instance, to define a `"development"` token as well as a password-protected
+        `"production"` token, you would call this method twice.
 
         This is what lets Botstrap know how to display the token's name, whether to ask
         for a password when it's accessed, and where to find (or create) its files. In
@@ -75,7 +75,7 @@ class Botstrap(CliSession):
 
             For more technical details about how the token values are encrypted and
             decrypted, feel free to check out the documentation for the internal
-            [`Secret`](../../internal/secret) class.
+            `Secret` class.
 
         ??? note "Note - Automatically registering a default token"
             If <u>**all**</u> of the following statements are true, you can skip this
@@ -91,14 +91,14 @@ class Botstrap(CliSession):
               method calls** - it's enabled by default, so unless you explicitly set
               it to `False`, you'll be fine.
 
-            If you decide to skip this method, a simple token named `#!py "default"`
-            will be created when you first run your bot. It will be saved in a directory
-            named `.botstrap_keys`, which will be created in the same location as the
-            file containing the `#!py "__main__"` module of your bot's script.
+            If you decide to skip this method, a simple token named `"default"` will
+            be created when you first run your bot. It will be saved in a directory
+            named `.botstrap_keys`, which will be created in the same location as
+            the file containing the `"__main__"` module of your bot's script.
 
         ??? example "Example - Registering multiple tokens"
-            This example uses [`Color`](../color) functions to make the tokens more
-            easily identifiable when they're mentioned in the CLI.
+            This example uses `Color` functions to make the tokens more easily
+            identifiable when they're mentioned in the CLI.
 
             ```py title="bot.py"
             from botstrap import Botstrap, Color
@@ -182,24 +182,24 @@ class Botstrap(CliSession):
             <div id="custom-options"/>
             By default, your bot's CLI will include options for `--tokens` and `--help`
             (and `--version`, if you specify a version). However, you aren't limited to
-            those three - this method can accept as many `#!py **options` as you want
-            to define! :tada:
+            those three - this method can accept as many `**options` as you want to
+            define! :tada:
 
-            To add custom command-line options, simply create [`Option`](../option)
-            objects and pass them in as keyword arguments when you call this method. The
-            **names** you choose for your keyword arguments will determine the names of
-            the options. For example, an argument named `my_custom_flag` will create the
-            command-line option `--my-custom-flag`.
+            To add custom command-line options, simply create `Option` objects and pass
+            them in as keyword arguments when you call this method. The **names** you
+            choose for your keyword arguments will determine the names of the options.
+            For example, an argument named `my_custom_flag` will create the command-line
+            option `--my-custom-flag`.
 
             ---
             For more information, check out:
 
-            - The **API reference** for [`Option`](../option). It includes examples and
-              goes into detail about the fields you need to specify when defining your
-              own custom options.
-            - The documentation for this method's **return type**,
-              [`Option.Results`][botstrap.Option.Results]. (It only occupies a short
-              section at the very bottom, so it might be easy to miss.)
+            - The **API reference** for `Option`. It includes examples and goes into
+              detail about the fields you need to specify when defining your own custom
+              options.
+            - The documentation for this method's **return type**, `Option.Results`.
+              (It only occupies a short section at the very bottom, so it might be
+              easy to miss.)
             - ... and if you're curious about how **option abbreviations** (such as `-h`
               and `-v`) are allotted, you can venture into the internal documentation to
               read [this note](../../internal/argstrap#abbr-priority), which explains
@@ -273,7 +273,7 @@ class Botstrap(CliSession):
         The **active token** is the one that should be used to run your bot, taking
         into account all tokens that have been registered and any arguments that were
         passed in from the command line. If no custom tokens have been defined, this
-        will be the basic `#!py "default"` token.
+        will be the basic `"default"` token.
 
         The **value** of the token is a string containing its decrypted data,
         which can be plugged into your bot's `run()` method to log it into Discord.
@@ -283,7 +283,7 @@ class Botstrap(CliSession):
 
         ??? caution "Caution - Keep your tokens safe!"
             Token values should always be kept secret and can be very damaging if
-            leaked... so **make sure** you don't `#!py print()` (or log, or output in
+            leaked... so **make sure** you don't `print()` (or log, or output in
             any way) the return value of this method! :zipper_mouth:
 
             If your bot is coded such that it can be both instantiated and started by
@@ -348,8 +348,8 @@ class Botstrap(CliSession):
 
         In the simplest use case, this method will work out-of-the-box with no
         customization required. But in practice, you will likely have to specify
-        information such as the fully-qualified name of your `bot_class`, and/or any
-        `#!py **options` expected by its constructor.
+        information such as the fully-qualified name of your `bot_class`, and/or
+        any `**options` expected by its constructor.
 
         These two parameters provide a straightforward solution for complex use cases
         while preserving most, if not all, of the flexibility afforded by your chosen
@@ -363,8 +363,8 @@ class Botstrap(CliSession):
               either [discord.py][2] or [Pycord][3].
             - Your bot does not subclass `discord.Bot`.
               (**Note:** Subclassing is often useful. [This guide][4] explains why.)
-            - You've already completed the CLI flow to set up the `#!py "default"`
-              token for your bot.
+            - You've already completed the CLI flow to set up the `"default"` token
+              for your bot.
 
             If all of the above statements are true, you can run your bot with this
             extremely basic code:

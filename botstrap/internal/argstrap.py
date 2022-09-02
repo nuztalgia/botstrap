@@ -28,7 +28,7 @@ class Argstrap(argparse.ArgumentParser):
     purpose is to automatically handle the command-line arguments expected by Botstrap.
     These may be the default options provided out-of-the-box (such as `--help` and
     `--tokens`), or custom ones defined for individual bots with the help of the
-    [`Option`](../../api/option) class.
+    `Option` class.
 
     The portion of the program flow handled by this class is fairly self-contained -
     its only method that gets called externally, aside from its (quite intricate)
@@ -187,17 +187,17 @@ class Argstrap(argparse.ArgumentParser):
             keys (i.e. names) to their abbreviations. It has the following properties:
 
             - Each **key** is the "full name" of a command-line argument or option that
-              may later be parsed by this `Argstrap` instance. As is the norm for
-              `#!py dict` objects, all keys are unique. The [order][2] in which
-              they are specified (all default args/options first, then all custom
-              options) is not relevant to the user.
+              may later be parsed by this `Argstrap` instance. As is the norm for `dict`
+              objects, all keys are unique. The [order][2] in which they are specified
+              (all default args/options first, then all custom options) is not relevant
+              to the user.
 
-            - The **value** for each key will either be a single-character `#!py str`
+            - The **value** for each key will either be a single-character `str`
               containing the first letter of the argument name, or `None` if a
-              higher-[priority](./#abbr-priority) argument starting with the same letter
-              was previously added to the `#!py dict`.
+              higher-[priority](./#abbr-priority) argument starting with the
+              same letter was previously added to the `dict`.
 
-            - Values that represent abbreviations (i.e. all of the `#!py str` values)
+            - Values that represent abbreviations (i.e. all of the `str` values)
               are guaranteed to be **unique**.
 
         ??? note "Note - Determining abbreviation priority"
@@ -288,10 +288,9 @@ class Argstrap(argparse.ArgumentParser):
         If no default options are provided to trigger an alternate program flow,
         this method will select the [active][botstrap.Botstrap.retrieve_active_token]
         token, either based on the "token id" argument (if it was specified) or a
-        reasonable default. It will package the [`Token`](../token) along with an
-        [`Option.Results`][botstrap.Option.Results] containing the parsed values for
-        any custom options that were defined, and return both objects together in a
-        `#!py tuple`.
+        reasonable default. It will package the `Token` along with an `Option.Results`
+        containing the parsed values for any custom options that were defined, and
+        return both objects together in a `tuple`.
 
         [1]: https://docs.python.org/3/library/argparse.html#the-parse-args-method
 
@@ -362,17 +361,17 @@ class Argstrap(argparse.ArgumentParser):
         program flow, it takes precedence over any custom options (if applicable)
         but yields to both `--help` and `--version`.
 
-        Once this method is called, there's no `#!py return`ing to the original program
+        Once this method is called, there's no `return`ing to the original program
         flow - the process is guaranteed to exit when this method finishes. For more
         details, expand the boxes below.
 
         ??? note "Note - Exiting from this method"
-            The process will end with exit code `#!py 0` (to indicate success) when one
+            The process will end with exit code `0` (to indicate success) when one
             of the following things happens:
 
             - The user has **no existing files** for any of the
               [`tokens`][botstrap.internal.Argstrap.__init__] in the list that was
-              provided when this class was instantiated. If the `#!py "default"` token
+              provided when this class was instantiated. If the `"default"` token
               wasn't included in that original list, it will be appended for the
               purposes of this method, just in case the user has existing files
               associated with it.
@@ -380,8 +379,8 @@ class Argstrap(argparse.ArgumentParser):
             - The user still has existing token files, but **chooses not to delete**
               any (more) of them.
 
-            There are currently no cases in which this process ends with a
-            non-`#!py 0` exit code.
+            There are currently no cases in which this process ends with a non-`0`
+            exit code.
 
         ??? example "Example - Deleting a saved token"
             ```{.console title="Console Session" .annotate}

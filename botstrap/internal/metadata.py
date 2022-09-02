@@ -55,7 +55,7 @@ class Metadata:
 
         The **main module** (a.k.a. [`"__main__"`][1]) is essentially the top-level
         environment of the currently executing script. In most applications, it can be
-        accessed through `#!py sys.modules["__main__"]`, and therefore this function is
+        accessed through `sys.modules["__main__"]`, and therefore this function is
         able to return a valid path most of the time.
 
         However, in niche cases (such as when a "script" is run using Python's [`-c`][2]
@@ -78,14 +78,14 @@ class Metadata:
     def get_package_info(cls, package_name: str = "") -> dict[str, str | list[str]]:
         """Returns a dictionary containing any available metadata about the package.
 
-        This function uses the `#!py metadata()` function from [`importlib.metadata`][1]
+        This function uses the `metadata()` function from [`importlib.metadata`][1]
         to retrieve information about the specified package. If successful, it will
         return a dictionary in which the keys are strings corresponding to the fields
         defined by Python's [core metadata][2]. As detailed in that specification, each
-        value (if present) will either be a `#!py str` or a `#!py list[str]`.
+        value (if present) will either be a `str` or a `list[str]`.
 
         If `package_name` belongs to a package that cannot be found or whose metadata
-        is otherwise unavailable, this function will simply return an empty `#!py dict`.
+        is otherwise unavailable, this function will simply return an empty `dict`.
 
         [1]: https://docs.python.org/3/library/importlib.metadata.html
         [2]: https://packaging.python.org/en/latest/specifications/core-metadata/
@@ -110,11 +110,11 @@ class Metadata:
 
         If the given program name matches the name of a console script returned
         by [`entry_points()`][1], this function will simply return a single-item
-        `#!py list` consisting of the `program_name` string.
+        `list` consisting of the `program_name` string.
 
         Otherwise, this function will iterate through [`sys.orig_argv`][2] in order
         to approximate a "minimum viable command" for running the current script.
-        The resulting `#!py list` will include everything from the name of the
+        The resulting `list` will include everything from the name of the
         [`sys.executable`][3] up to (and including) the first string that is either
         **a)** the name of an existing file, or **b)** a non-optional argument.
 
@@ -177,9 +177,9 @@ class Metadata:
 
         This function uses [`import_module()`][1] to dynamically import the specified
         class. Note that the class name **must be fully-qualified** (i.e. include its
-        module name, *à la* `#!py module_name.ClassName`) in order for the import to be
+        module name, *à la* `module_name.ClassName`) in order for the import to be
         successful. If for any reason the import is unsuccessful, this function will
-        raise an `#!py ImportError` or a subclass thereof.
+        raise an `ImportError` or a subclass thereof.
 
         [1]: https://docs.python.org/3/library/importlib.html#importlib.import_module
 

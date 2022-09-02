@@ -93,7 +93,7 @@ class Secret:
                 directory.
             valid_pattern:
                 A string, regex `Pattern`, or function for determining whether a
-                given input `#!py str` fits the expected pattern for this secret.
+                given input `str` fits the expected pattern for this secret.
                 Will be used to validate the secret's data before encryption and after
                 decryption. If omitted, **any string** will be considered "valid data".
         """
@@ -112,14 +112,12 @@ class Secret:
 
     @property
     def file_path(self) -> Path:
-        """The `Path` of the file that may contain this secret's encrypted data.
+        """The path of the file that may contain this secret's encrypted data.
 
         This property will only return the `content` file path, as the `fernet` file is
         irrelevant outside of this class. The return value will be an instance of
-        [`pathlib.Path`][1], but it is **not** guaranteed to point to an existing file
+        `pathlib.Path`, but it is **not** guaranteed to point to an existing file
         (e.g. if this secret's data hasn't been created/saved yet, or has been deleted).
-
-        [1]: https://docs.python.org/3/library/pathlib.html#concrete-paths
         """
         return self._get_key_file(_CONTENT_FILE)
 
@@ -127,9 +125,9 @@ class Secret:
     def min_pw_length(self) -> int:
         """The minimum length for this secret's password, if one is required.
 
-        For secrets that require a password, this property will return `#!py 8` (chosen
-        arbitrarily to try and balance security vs. convenience). For secrets that don't
-        require a password, this will return `#!py 0`.
+        For secrets that require a password, this property will return `8`
+        (chosen arbitrarily to try and balance security vs. convenience).
+        For secrets that don't require a password, this will return `0`.
         """
         return _MINIMUM_PASSWORD_LENGTH if self.requires_password else 0
 
@@ -155,10 +153,10 @@ class Secret:
     def write(self, data: str, password: str | None = None) -> None:
         """Encrypts and writes the data to a file, optionally protected by a password.
 
-        If the `password` param is provided, it must be at least `#!py 8` characters
-        long (see [`min_pw_length`][botstrap.internal.Secret.min_pw_length]) and will
-        have to be provided again whenever [`read()`][botstrap.internal.Secret.read]
-        is invoked to decrypt this secret.
+        If the `password` param is provided, it must be at least `8` characters long
+        (see [`min_pw_length`][botstrap.internal.Secret.min_pw_length]) and will have to
+        be provided again whenever [`read()`][botstrap.internal.Secret.read] is invoked
+        to decrypt this secret.
 
         Omitting the `password` parameter means that only the secret's two
         [`.key`](./#key-files) files will be required in order to decrypt it.

@@ -58,13 +58,13 @@ class Option:
     default: str | int | float = ""
     """The value that should be used if this option is not specified.
 
-    In addition to providing a standard value, this field determines the `#!py type` of
-    the parsed value for this option. If omitted, this option's type will be `#!py str`
-    and its default value will be the empty string.
+    In addition to providing a standard value, this field determines the `type` of the
+    parsed value for this option. If omitted, this option's type will be `str` and its
+    default value will be the empty string.
 
-    Note that the value of this field **must** be a `#!py str`, an `#!py int`,
-    or a `#!py float`. To create an option with a `#!py bool` value type, use the
-    [`flag`][botstrap.Option.flag] field instead.
+    Note that the value of this field **must** be a `str`, an `int`, or a `float`.
+    To create an option with a `bool` value type, use the [`flag`][botstrap.Option.flag]
+    field instead.
 
     ??? example "Example - Creating options of different types"
         ```py title="example.py"
@@ -97,12 +97,12 @@ class Option:
     choices: Iterable[str | int | float] = ()
     """A group of values representing the acceptable choices for this option.
 
-    When command-line arguments are parsed and this option is specified, the given value
-    will be checked against the values in this field. If the given value is not one of
-    these "acceptable" values, an error message will be displayed.
+    When command-line arguments are parsed and this option is specified, the given
+    value will be checked against the values in this field. If the given value is
+    not one of these "acceptable" values, an error message will be displayed.
 
-    If this field is omitted or otherwise empty, the given value for this option will
-    not be checked. This means that **any** value with the same `#!py type` as the
+    If this field is omitted or otherwise empty, the given value for this option
+    will not be checked. This means that **any** value with the same `type` as the
     [`default`][botstrap.Option.default] value will be considered "acceptable".
 
     ??? example "Example - Defining valid values for an option"
@@ -178,13 +178,13 @@ class Option:
         """A simple class to hold the final parsed values for command-line options.
 
         This class (like its superclass, [`Namespace`][1]) is essentially just an
-        `#!py object` with a readable string representation. The names of its attributes
-        will match the names you specify for your [`Option`](./#) objects when passing
-        them as keyword arguments to [`parse_args()`][botstrap.Botstrap.parse_args].
+        `object` with a readable string representation. The names of its attributes
+        will match the names you specify for your `Option` objects when passing them
+        as keyword arguments to [`parse_args()`][botstrap.Botstrap.parse_args].
 
-        If you prefer to work with a `#!py dict` representation of your parsed option
-        values, simply pass your [`Option.Results`][botstrap.Option.Results] instance
-        to the built-in Python function [`vars()`][2].
+        If you prefer to work with a `dict` representation of your parsed option values,
+        simply pass your `Option.Results` instance to the built-in Python function
+        [`vars()`][2].
 
         [1]: https://docs.python.org/3/library/argparse.html#the-namespace-object
         [2]: https://docs.python.org/3/library/functions.html#vars

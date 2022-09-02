@@ -22,10 +22,10 @@ class Token(Secret):
     it a highly sensitive piece of data. It should *never* be shared with other people
     or checked into any kind of version control system.
 
-    This class effectively combines the functionality provided by
-    [`Secret`](../secret) (its parent class) and a [`CliSession`](../cli-session)
-    (passed in upon instantiation) to deliver a secure and user-friendly interface
-    for creating and accessing files containing encrypted bot tokens.
+    This class effectively combines the functionality provided by `Secret` (its parent
+    class) and a `CliSession` (passed in upon instantiation) to deliver a secure and
+    user-friendly interface for creating and accessing files containing encrypted
+    Discord bot tokens.
     """
 
     def __init__(
@@ -70,7 +70,7 @@ class Token(Secret):
     def get_default(cls, cli: CliSession) -> Token:
         """Creates and returns a default token for the provided `CliSession`.
 
-        This token will use the string literal `#!py "default"` for its `uid`,
+        This token will use the string literal `"default"` for its `uid`,
         and will rely on the default values for all subsequent
         [`__init__()`][botstrap.internal.Token.__init__] parameters.
 

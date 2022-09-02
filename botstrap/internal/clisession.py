@@ -11,14 +11,13 @@ from botstrap.strings import CliStrings
 class CliSession:
     """Defines UX state for a program, to ensure a consistent look and feel for its CLI.
 
-    **UX state** consists of a combination of [`CliColors`](../../api/cli-colors) and
-    [`CliStrings`](../../api/cli-strings). These are set by the constructor arguments
-    upon creating an instance of this class, and can subsequently be accessed through
-    the instance's read-only properties.
+    **UX state** consists of a combination of `CliColors` and `CliStrings`. These are
+    set by the constructor arguments upon creating an instance of this class, and can
+    subsequently be accessed through the instance's read-only properties.
 
     This class also provides a number of utility functions for command-line input and
-    output. In order to maintain a consistent UX, these functions should be used for all
-    CLI interactions that require anything beyond a simple `#!py print()` statement.
+    output. In order to maintain a consistent UX, these functions should be used for
+    all CLI interactions that require anything beyond a simple `print()` statement.
 
     ??? info "Info - Prerequisite for the examples"
         All of the examples in this class reference a `CliSession` variable named `cli`,
@@ -31,7 +30,7 @@ class CliSession:
 
         To keep the examples focused and brief, the above definition is only explicitly
         written out once in this section. However, <u>**all**</u> of the examples will
-        fail with a `#!py NameError` if the `cli` variable is not defined.
+        fail with a `NameError` if the `cli` variable is not defined.
     """
 
     def __init__(
@@ -62,12 +61,12 @@ class CliSession:
 
     @property
     def colors(self) -> CliColors:
-        """The [`CliColors`](../../api/cli-colors) used by this instance."""
+        """The `CliColors` used by this instance."""
         return self._colors
 
     @property
     def strings(self) -> CliStrings:
-        """The [`CliStrings`](../../api/cli-strings) used by this instance."""
+        """The `CliStrings` used by this instance."""
         return self._strings
 
     def confirm_or_exit(self, question: str) -> None:
@@ -155,7 +154,7 @@ class CliSession:
 
             **Note:** You might have to hit the "Enter" or "Return" key an additional
             time after pasting this example into the console, to force the interpreter
-            to recognize the end of the `#!py if` statement.
+            to recognize the end of the `if` statement.
 
         Args:
             question:
@@ -181,7 +180,7 @@ class CliSession:
         resulting input. If the descriptions in the "Parameters" section below are
         undesirable for your use case, consider using
         [`get_input()`][botstrap.internal.CliSession.get_input]
-        (with the keyword argument `#!py echo_input=False`) instead of this function.
+        (with the keyword argument `echo_input=False`) instead of this function.
 
         ??? example "Example - Obtaining input that should be hidden"
             ```pycon
