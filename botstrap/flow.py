@@ -31,7 +31,7 @@ class Botstrap(CliSession):
             name:
                 The name of your bot. If omitted, Botstrap will try to determine an
                 appropriate name from package and/or file metadata. If unsuccessful, it
-                will use the default name: `#!py "bot"`.
+                will use the default name: `"bot"`.
             colors:
                 The colors to be used by the CLI. Defaults to commonly-used colors (e.g.
                 green for success, red for error). Set this to `CliColors.off()` to
@@ -75,7 +75,7 @@ class Botstrap(CliSession):
 
             For more technical details about how the token values are encrypted and
             decrypted, feel free to check out the documentation for the internal
-            [`secrets`](../../internal/secrets) module.
+            [`Secret`](../../internal/secret) class.
 
         ??? note "Note - Automatically registering a default token"
             If <u>**all**</u> of the following statements are true, you can skip this
@@ -311,7 +311,7 @@ class Botstrap(CliSession):
                 Whether to interactively prompt to create (i.e. add and encrypt)
                 a new token if the active token has not already been created.
             allow_token_registration:
-                Whether to automatically register a basic `#!py "default"` token
+                Whether to automatically register a basic `"default"` token
                 if no tokens have been explicitly defined with
                 [`register_token()`][botstrap.Botstrap.register_token].
 
@@ -395,8 +395,8 @@ class Botstrap(CliSession):
 
         Args:
             bot_class:
-                The fully-qualified class name or the `#!py type` of your bot.
-                Will be instantiated with the `#!py **options` keyword args.
+                The fully-qualified class name or the `type` of your bot.
+                Will be instantiated with the `**options` keyword args.
                 The default value of this argument is compatible with the
                 [`discord.py`](https://pypi.org/project/discord.py/) and
                 [`py-cord`](https://pypi.org/project/py-cord/) packages.
@@ -419,9 +419,9 @@ class Botstrap(CliSession):
                 [1]: https://discord.com/developers/docs/topics/gateway#gateway-intents
 
         Raises:
-            ImportError: If `bot_class` is a `#!py str` that refers to a type that
+            ImportError: If `bot_class` is a `str` that refers to a type that
                 cannot be imported in the current environment.
-            TypeError: If `bot_class` (after it's converted to a `#!py type`, if it
+            TypeError: If `bot_class` (after it's converted to a `type`, if it
                 wasn't one already) is not an instantiable type.
             SystemExit: If Discord login fails, which means the bot can't run. This
                 may be caused by an invalid bot token.

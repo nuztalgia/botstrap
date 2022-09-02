@@ -23,7 +23,7 @@ class Token(Secret):
     or checked into any kind of version control system.
 
     This class effectively combines the functionality provided by
-    [`Secret`](../secrets) (its parent class) and a [`CliSession`](../clisession)
+    [`Secret`](../secret) (its parent class) and a [`CliSession`](../cli-session)
     (passed in upon instantiation) to deliver a secure and user-friendly interface
     for creating and accessing files containing encrypted bot tokens.
     """
@@ -79,7 +79,7 @@ class Token(Secret):
                 A `CliSession` providing the UX used by the CLI.
 
         Returns:
-            A token named `#!py "default"`, created with the default constructor params.
+            A token named `"default"`, created using the default constructor parameters.
         """
         return cls(cli, uid="default")
 

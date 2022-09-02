@@ -92,12 +92,10 @@ class Secret:
                 [`.botstrap_keys`][botstrap.internal.Metadata.get_default_keys_dir]
                 directory.
             valid_pattern:
-                A string, regex [`Pattern`][1], or function for determining whether a
+                A string, regex `Pattern`, or function for determining whether a
                 given input `#!py str` fits the expected pattern for this secret.
                 Will be used to validate the secret's data before encryption and after
                 decryption. If omitted, **any string** will be considered "valid data".
-
-                [1]:https://docs.python.org/3/library/re.html#regular-expression-objects
         """
         if (not uid) or (not str(uid).isidentifier()):
             raise ValueError("Unique ID (uid) must be a valid non-empty identifier.")
@@ -118,9 +116,10 @@ class Secret:
 
         This property will only return the `content` file path, as the `fernet` file is
         irrelevant outside of this class. The return value will be an instance of
-        [`pathlib.Path`](https://docs.python.org/3/library/pathlib.html#concrete-paths),
-        but it is **not** guaranteed to point to an existing file (e.g. if this secret's
-        data hasn't been created/saved yet, or has been deleted).
+        [`pathlib.Path`][1], but it is **not** guaranteed to point to an existing file
+        (e.g. if this secret's data hasn't been created/saved yet, or has been deleted).
+
+        [1]: https://docs.python.org/3/library/pathlib.html#concrete-paths
         """
         return self._get_key_file(_CONTENT_FILE)
 

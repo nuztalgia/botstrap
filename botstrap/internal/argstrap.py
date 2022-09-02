@@ -288,7 +288,7 @@ class Argstrap(argparse.ArgumentParser):
         If no default options are provided to trigger an alternate program flow,
         this method will select the [active][botstrap.Botstrap.retrieve_active_token]
         token, either based on the "token id" argument (if it was specified) or a
-        reasonable default. It will package the [`Token`](../tokens) along with an
+        reasonable default. It will package the [`Token`](../token) along with an
         [`Option.Results`][botstrap.Option.Results] containing the parsed values for
         any custom options that were defined, and return both objects together in a
         `#!py tuple`.

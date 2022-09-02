@@ -31,16 +31,15 @@ class Metadata:
     def get_default_keys_dir(cls) -> Path:
         """Returns the path of the default key storage directory for the current script.
 
-        By default, Botstrap [`.key`](../secrets#key-files) files are stored in a
+        By default, Botstrap [`.key`](../secret#key-files) files are stored in a
         directory named `.botstrap_keys`. This directory is usually placed in the
         same location as the file containing the
         [`"__main__"`][botstrap.internal.Metadata.get_main_file_path] module for the
         executing script. If the main module cannot be found, `.botstrap_keys` will
         be located in the current working directory.
 
-        The return value of this function will be an instance of [`pathlib.Path`][1],
-        but this path is **not** guaranteed to point to an existing directory (i.e. it
-        might not have been created yet).
+        The path returned by this function is **not** guaranteed to point to an
+        already-existing directory.
 
         [1]: https://docs.python.org/3/library/pathlib.html#concrete-paths
 
@@ -57,15 +56,14 @@ class Metadata:
         The **main module** (a.k.a. [`"__main__"`][1]) is essentially the top-level
         environment of the currently executing script. In most applications, it can be
         accessed through `#!py sys.modules["__main__"]`, and therefore this function is
-        able to return a valid [`pathlib.Path`][2] most of the time.
+        able to return a valid path most of the time.
 
-        However, in niche cases (such as when a "script" is run using Python's [`-c`][3]
+        However, in niche cases (such as when a "script" is run using Python's [`-c`][2]
         command-line option), this function will be unable to find the main module and
         will therefore return `None`.
 
         [1]: https://docs.python.org/3/library/__main__.html#module-__main__
-        [2]: https://docs.python.org/3/library/pathlib.html#concrete-paths
-        [3]: https://docs.python.org/3/using/cmdline.html#cmdoption-c
+        [2]: https://docs.python.org/3/using/cmdline.html#cmdoption-c
 
         Returns:
             The `Path` of the `"__main__"` module if it can be found, otherwise `None`.
@@ -97,7 +95,7 @@ class Metadata:
                 The name of the package to fetch metadata for.
 
         Returns:
-            A `#!py dict` containing any available metadata about the specified package.
+            A dictionary containing the available metadata for the specified package.
         """
         if (not package_name) and not (package_name := _MAIN_MODULE.__package__ or ""):
             package_name = vars(_MAIN_MODULE).get("__requires__", "")
@@ -190,7 +188,7 @@ class Metadata:
                 The fully-qualified name of the class to import.
 
         Returns:
-            The `#!py type` of the specified class, if it was imported successfully.
+            The `type` of the specified class, if it was imported successfully.
 
         Raises:
             ImportError: If the class cannot be imported successfully in the current

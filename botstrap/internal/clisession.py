@@ -90,7 +90,7 @@ class CliSession:
 
         Raises:
             SystemExit: If the user responds non-affirmatively. Will be raised with
-                exit code `#!py 0`.
+                exit code `0`.
         """
         if not self.get_bool_input(question):
             self.exit_process(self.strings.m_exit_by_choice, is_error=False)
@@ -128,8 +128,8 @@ class CliSession:
 
         Raises:
             SystemExit: If `is_error` is `True`, this will be raised with exit code
-                `#!py 1` to indicate an "abnormal" exit. Otherwise, it will be raised
-                with exit code `#!py 0` to indicate a "successful" exit.
+                `1` to indicate an "abnormal" exit. Otherwise, it will be raised with
+                exit code `0` to indicate a "successful" exit.
         """
         if text := reason:
             print(
