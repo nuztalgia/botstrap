@@ -1,3 +1,23 @@
+window.addEventListener("DOMContentLoaded", (event) => {
+  // Add reference links and syntax highlighting to inline code elements.
+  for (const codeElement of document.querySelectorAll(
+    ".doc-contents :not(.doc-heading, .doc-label, a, pre, summary) > code",
+  )) {
+    if (codeElement.innerText) {
+      codeElement.innerHTML = codeElement.innerText; // Clear existing markup.
+    }
+    codeElement.classList.add("highlight");
+    addReferenceLinks(codeElement);
+    highlightCodeInline(codeElement);
+  }
+  // Improve syntax highlighting in Python examples and source code blocks.
+  for (const codeElement of document.querySelectorAll(
+    ":is(.language-py, .language-pycon, .quote) code",
+  )) {
+    highlightCodeBlock(codeElement);
+  }
+});
+
 /** Adds links to specific references (defined at the bottom of this file). */
 function addReferenceLinks(element) {
   for (const [regex, rawUrl] of Object.entries(referenceMap)) {
@@ -27,10 +47,10 @@ function addSyntaxHighlighting(spanClass, regexPattern) {
   }
 }
 
-/** Adds syntax highlighting (based on crude regexes) to the given element. */
-function highlightCodeElement(element) {
+/** Adds syntax highlighting (based on crude regexes) to the given element.
+ *  These regexes are written/edited on an as-needed basis & may be fragile. */
+function highlightCodeInline(element) {
   const highlight = addSyntaxHighlighting.bind(element);
-  // These regexes are written/edited on an as-needed basis and may be fragile.
   highlight("k", /\b(if|return)\b/);
   highlight("kc", /\b(None|True|False)\b/);
   highlight("mi", /^\d+$/);
@@ -44,22 +64,60 @@ function highlightCodeElement(element) {
   highlight("s2", /('.*'|^".*"$|[^=]("[^<>]*")[^>])/);
 }
 
-// Wait until the page is ready, then go through and process all relevant code.
-window.addEventListener("DOMContentLoaded", (event) => {
-  for (const codeElement of document.querySelectorAll(
-    ".doc-contents :not(.doc-heading, .doc-label, a, pre, summary) > code",
+/** Improve existing syntax highlighting & color usage in the given element. */
+function highlightCodeBlock(element) {
+  for (const match of element.innerHTML.matchAll(
+    /="(n|fm)"(>[a-z_][a-zA-Z_]*<\/span><span class="p">\()/g,
   )) {
-    if (codeElement.innerText) {
-      codeElement.innerHTML = codeElement.innerText; // Clear existing markup.
-    }
-    addReferenceLinks(codeElement);
-    codeElement.classList.add("highlight");
-    highlightCodeElement(codeElement);
+    // Change text to "function" color (pink) if it looks like a function name.
+    element.innerHTML = element.innerHTML.replace(match[0], `="nf"${match[2]}`);
   }
-});
+  for (const stringElement of element.querySelectorAll(":is(.sa, .se)")) {
+    // Recolor existing string affixes (.sa) and string escapes (.se).
+    stringElement.className = "s1"; // Change to "string" color (green).
+  }
+  for (const nameElement of element.querySelectorAll(":is(.nc, .ne)")) {
+    // Recolor existing class names (.nc) and exception names (.ne).
+    nameElement.className = "se"; // Change to "special" color (red).
+  }
+  for (const nameElement of element.querySelectorAll(".n")) {
+    // Recolor class names (explicitly listed below) outside of imports.
+    const importNames = nameElement.parentElement.querySelectorAll(".kn");
+    if (importNames.length != 2 && classNames.has(nameElement.innerHTML)) {
+      nameElement.className = "se"; // Change to "special" color (red).
+    }
+  }
+  for (const keywordConstant of element.querySelectorAll(".kc")) {
+    keywordConstant.className = "mi"; // Change to "number" color (orange).
+  }
+  for (const operatorWord of element.querySelectorAll(".ow")) {
+    operatorWord.className = "k"; // Change to "keyword" color (blue).
+  }
+  for (const stringInterpol of element.querySelectorAll(".si")) {
+    stringInterpol.className = "p"; // Change to "punctuation" color (grey).
+  }
+}
 
-/* A mapping of regex patterns (as strings) to the URLs they should link to.
- * These regexes are written/edited on an as-needed basis and may be fragile.
+/** A set of class names to highlight with the "special" color in code blocks.
+ */ // prettier-ignore
+const classNames = new Set([
+  // Class names from the Botstrap library.
+  "Botstrap", "CliColors", "CliStrings", "Color", "Option", "Results",
+  "Argstrap", "CliSession", "Metadata", "Secret", "Token",
+  // Class names from the "discord" package.
+  "Activity", "ActivityType", "AllowedMentions", "Bot",
+  // Class names from the "typing" package.
+  "Any", "Callable", "ClassVar", "Final",
+  "Iterable", "Iterator", "Literal", "TypeAlias",
+  // Class names from miscellaneous packages/libs.
+  "AlphaBot", "ArgumentParser", "Fernet", "Fore", "Path",
+  "Pattern", "RawTextHelpFormatter", "Style", "Template",
+  // Error names from various packages/libs.
+  "MessageError", "PackageNotFoundError", "InvalidToken",
+]);
+
+/** A mapping of regex patterns (as strings) to the URLs they should link to.
+ *  These regexes are written/edited on an as-needed basis & may be fragile.
  */ // prettier-ignore
 const referenceMap = {
   // Top-level pages in the Botstrap library documentation.
