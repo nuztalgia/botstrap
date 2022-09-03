@@ -145,8 +145,8 @@ class Metadata:
         guess". :disguised_face:
 
         The first source of a possible name is
-        [`get_package_info()`][botstrap.internal.Metadata.get_package_info], called with
-        an empty `package_name` (which doesn't necessarily result in well-defined
+        [`get_package_info()`][botstrap.internal.Metadata.get_package_info], called
+        without a `package_name` (which doesn't necessarily result in well-defined
         behavior). Failing that, this function will try to pick a relevant name out of
         the path of the [`"__main__"`][botstrap.internal.Metadata.get_main_file_path]
         module (if it's available) or the current working directory. If neither source

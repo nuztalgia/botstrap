@@ -76,7 +76,7 @@ class CliColors:
     """A model for the colors used by the Botstrap-provided CLI.
 
     The fields of this class are `Callable[[str], str]` functions that can add color to
-    specific types of messages displayed in the console, such as success and error text.
+    particular types of text shown in the console, such as success and error messages.
     Simple color presets are provided by the [`default()`][botstrap.CliColors.default]
     and [`off()`][botstrap.CliColors.off] class methods.
 

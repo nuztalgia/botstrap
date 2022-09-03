@@ -49,7 +49,7 @@
         For reference, here's how the `#!py if` condition on line `12` (highlighted
         above) can be equivalently written using a `#!py dict`:
 
-        ```{.py .line-numbers-off}
+        ```{.py .line-numbers-off title=""}
         if (
             args_dict["message"]
             and args_dict["daily_limit"]

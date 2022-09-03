@@ -1,12 +1,13 @@
 /** Adds links to specific references (defined at the bottom of this file). */
 function addReferenceLinks(element) {
-  for (const [regex, url] of Object.entries(referenceMap)) {
+  for (const [regex, rawUrl] of Object.entries(referenceMap)) {
     for (const match of element.innerHTML.matchAll(new RegExp(regex, "g"))) {
-      const onPage = window.location.href.match(new RegExp(url + "(#.*)?$"));
-      let replacement = `<a href="${onPage ? "#" : url}">${match[0]}</a>`;
-      if (window.location.href.match(/\/en\/latest\//)) {
-        replacement = "/en/latest" + replacement;
-      }
+      const url =
+        (window.location.href.match(/\/en\/latest\//) && rawUrl.match(/^\/.*/)
+          ? "/en/latest"
+          : "") + rawUrl;
+      const isOnPage = window.location.href.match(new RegExp(url + "(#.*)?$"));
+      const replacement = `<a href="${isOnPage ? "#" : url}">${match[0]}</a>`;
       element.innerHTML = element.innerHTML.replace(match[0], replacement);
     }
   }
@@ -67,6 +68,7 @@ const referenceMap = {
   "^CliStrings$": "/api/cli-strings/",
   "^Color$": "/api/color/",
   "^Option$": "/api/option/",
+  "^Argstrap$": "/internal/argstrap/",
   "^CliSession$": "/internal/cli-session/",
   "^Secret$": "/internal/secret/",
   "\\bToken\\b": "/internal/token/",

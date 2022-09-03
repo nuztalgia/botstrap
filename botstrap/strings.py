@@ -93,8 +93,7 @@ class CliStrings:
     4. `#!py tuple` objects containing any number of strings
 
     Within each of these sections, fields are sorted alphabetically, with an extra
-    newline separating each prefix group. See the [info box](./#prefix-info) in the
-    class description for an explanation of field name prefixes.
+    newline separating each prefix group.
     """
 
     # region FIELDS

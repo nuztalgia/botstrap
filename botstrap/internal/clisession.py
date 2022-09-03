@@ -192,12 +192,14 @@ class CliSession:
 
         Args:
             prompt:
-                A short human-readable prompt for the user. Will always be followed by a
-                colon (`:`) and a space, and will be highlighted if colors are enabled.
+                A short human-readable prompt for the user.
+                Will always be followed by a colon (`:`) and a single space,
+                and will also be highlighted if colors are enabled.
             format_input:
-                A function that accepts the raw input and returns a string that can be
-                safely displayed. If omitted, the input will be displayed as a sequence
-                of asterisks (one `*` for each character in the input).
+                A function that accepts the raw user input and returns a
+                string that can be safely displayed on the screen.
+                If omitted, the input will be shown as a sequence of asterisks
+                (one `*` for each character in the original input).
 
         Returns:
             The user's response as a string, stripped of leading & trailing whitespace.
@@ -268,7 +270,8 @@ class CliSession:
                 printed, followed by a space instead of the usual newline. This allows
                 subsequent text to be printed on the same line (after the prefix).
             is_error:
-                Whether an error label should be included in the prefix.
+                Whether an error label should be included in the prefix (after the
+                program name).
             suppress_newline:
                 Whether to end the printed message with a space instead of a newline,
                 even if `message` is non-empty.

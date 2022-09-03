@@ -15,12 +15,7 @@ h3 > .doc-labels > .doc-label-class-attribute {
 
 /* Adjust width of the annotation tooltip in the `choices` example. */
 [id$="choices"] + * > .example .annotate code .md-annotation .md-tooltip {
-  width: 15.2rem;
-}
-
-/* Hide the header for the extra Python code block in the `Results` example. */
-.doc-class ~ .doc-class + .example .language-py.line-numbers-off .filename {
-  display: none;
+  width: 15.4rem;
 }
 
 /* Slightly decrease the line height for the text in the `Results` example. */

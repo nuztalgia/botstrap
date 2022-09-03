@@ -53,18 +53,20 @@ class Argstrap(argparse.ArgumentParser):
             cli:
                 A `CliSession` providing the UX used by the CLI.
             tokens:
-                The tokens that are defined for the bot. Will be used to determine its
-                available command-line arguments (e.g. if multiple tokens are supported,
-                a "token id" argument may be specified to select the one to use).
+                The tokens that are defined for the bot.
+                Will be used to determine its available command-line args (e.g. if
+                multiple tokens are supported, a "token id" arg may be specified to
+                select the [active token][botstrap.Botstrap.retrieve_active_token]).
             description:
-                A short human-readable description of the bot. Will be displayed when
-                the `--help` option is passed to the CLI. If omitted, Botstrap will try
-                to fill this field from package metadata. If unsuccessful, this line
-                will be left blank.
+                A short human-readable description of the bot.
+                Will be displayed when the `--help` option is passed to the CLI.
+                If omitted, Botstrap will try to fill this field from package
+                [metadata][botstrap.internal.Metadata.get_package_info].
+                If unsuccessful, this line will be left blank.
             version:
-                A string representing the current version of the bot. Will be displayed
-                when the `--version` option is specified. If omitted, that option will
-                not be present in the bot's CLI.
+                A string representing the current version of the bot.
+                Will be displayed when the `--version` option is specified.
+                If omitted, that option will not be present in the bot's CLI.
             **custom_options:
                 Keyword args specifying the bot's custom-defined command-line options.
                 If omitted, only the default Botstrap options will be available in the
@@ -280,17 +282,17 @@ class Argstrap(argparse.ArgumentParser):
         """Parses command-line args and returns the results along with the active token.
 
         This method relies on [`parse_args()`][1] for most of the heavy lifting to do
-        with parsing command-line arguments and switching to the `--help` or `--version`
-        paths if those options are detected. On its own, it does a similar check for
-        `--tokens`, which will result in a call to
+        with parsing command-line arguments and switching to the`--help` or `--version`
+        paths if those options are detected.
+        On its own, it does a similar check for `--tokens`, which triggers a call to
         [`manage_tokens()`][botstrap.internal.Argstrap.manage_tokens].
 
-        If no default options are provided to trigger an alternate program flow,
-        this method will select the [active][botstrap.Botstrap.retrieve_active_token]
-        token, either based on the "token id" argument (if it was specified) or a
-        reasonable default. It will package the `Token` along with an `Option.Results`
-        containing the parsed values for any custom options that were defined, and
-        return both objects together in a `tuple`.
+        If no default options are provided to trigger an alternate program flow, this
+        method will select the [active token][botstrap.Botstrap.retrieve_active_token],
+        either based on the "token id" argument (if it was specified) or a reasonable
+        default. It will package the `Token` along with an `Option.Results` containing
+        the parsed values for any custom options that were defined, and return both
+        objects together in a `tuple`.
 
         [1]: https://docs.python.org/3/library/argparse.html#the-parse-args-method
 
@@ -325,7 +327,7 @@ class Argstrap(argparse.ArgumentParser):
             ```
 
         Returns:
-            A tuple containing the active `Token` and the `Results` for custom options.
+            A tuple of the active `Token` and the `Results` for custom options.
 
         Raises:
             SystemExit: If a parsed option calls for an alternate program flow that
@@ -371,8 +373,8 @@ class Argstrap(argparse.ArgumentParser):
 
             - The user has **no existing files** for any of the
               [`tokens`][botstrap.internal.Argstrap.__init__] in the list that was
-              provided when this class was instantiated. If the `"default"` token
-              wasn't included in that original list, it will be appended for the
+              provided when this `Argstrap` instance was created. If the `"default"`
+              token wasn't included in that original list, it will be appended for the
               purposes of this method, just in case the user has existing files
               associated with it.
 

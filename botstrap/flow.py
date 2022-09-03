@@ -38,7 +38,7 @@ class Botstrap(CliSession):
                 disable all colors.
             strings:
                 The strings to be used by the CLI. Defaults to English text with ample
-                vertical spacing for readability. Set this to `CliStrings.compact()` to
+                vertical spacing for legibility. Set this to `CliStrings.compact()` to
                 minimize spacing.
         """
         name = name or Metadata.guess_program_name() or "bot"
@@ -132,12 +132,13 @@ class Botstrap(CliSession):
                 retrieve this token.
             display_name:
                 A human-readable string describing this token. Will be displayed in the
-                CLI when referring to this token. If omitted, the `uid` will be
-                displayed instead.
+                CLI when referring to this token. If omitted, the `uid` will be shown
+                instead.
             storage_directory:
                 Where to store the files containing this token's data. If omitted, the
                 files will be saved in a folder named `.botstrap_keys`, which will be
-                created in the same location as the main module of your bot's script.
+                created in the same location as the file containing the main module of
+                your bot's script.
             allow_overwrites:
                 Whether to allow this token to be registered even if `uid` already
                 belongs to a registered token. If `True`, this token will clobber the
@@ -149,7 +150,7 @@ class Botstrap(CliSession):
         Raises:
             ValueError: If `storage_directory` does not point to a valid directory (i.e.
                 it doesn't exist or points to a file), **OR** if `allow_overwrites` is
-                `False` and `uid` belongs to a token that has already been registered.
+                `False` and `uid` belongs to a token that was already registered.
         """
         token = Token(self, uid, requires_password, display_name, storage_directory)
         if (not allow_overwrites) and (token.uid in self._tokens_by_uid):
@@ -188,8 +189,8 @@ class Botstrap(CliSession):
             To add custom command-line options, simply create `Option` objects and pass
             them in as keyword arguments when you call this method. The **names** you
             choose for your keyword arguments will determine the names of the options.
-            For example, an argument named `my_custom_flag` will create the command-line
-            option `--my-custom-flag`.
+            For example, an argument named `my_custom_flag` will create the CLI option
+            `--my-custom-flag`.
 
             ---
             For more information, check out:
@@ -231,8 +232,8 @@ class Botstrap(CliSession):
                 A short human-readable description of your bot. Will be displayed when
                 the `--help` or `-h` option is specified on the command line.
                 If omitted, Botstrap will try to fill this field from package metadata.
-                If this is unsuccessful, the `-h` option will only display your bot's
-                usage instructions.
+                If unsuccessful, the `-h` option will only display your bot's usage
+                instructions.
             version:
                 A string representing the current version of your bot. Will be displayed
                 when the `--version` or `-v` option is specified on the command line.
@@ -240,7 +241,7 @@ class Botstrap(CliSession):
             **options:
                 Keyword args defining your bot's custom command-line options (see the
                 [tip](./#custom-options) for more info). If none are provided, then
-                only the default options will be available in your bot's CLI.
+                only the default options will be available in the CLI.
 
         Returns:
             An object with attribute names & values corresponding to the parsed options.
@@ -420,11 +421,11 @@ class Botstrap(CliSession):
 
         Raises:
             ImportError: If `bot_class` is a `str` that refers to a type that
-                cannot be imported in the current environment.
+                can't be imported in the current environment.
             TypeError: If `bot_class` (after it's converted to a `type`, if it
-                wasn't one already) is not an instantiable type.
+                wasn't one already) isn't an instantiable type.
             SystemExit: If Discord login fails, which means the bot can't run. This
-                may be caused by an invalid bot token.
+                may be caused by an invalid token.
         """
 
         def filter_options(**target_options: Any) -> dict[str, Any]:

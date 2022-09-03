@@ -35,8 +35,8 @@ class Option:
     """Whether this option represents a boolean flag (i.e. an on/off switch).
 
     A **flag** is the most basic type of option. It doesn't require another command-line
-    argument to tell it what its parsed value should be - it'll simply be `True` if its
-    name (or abbreviation) was specified on the command line, or `False` if not.
+    argument to tell it what its value should be - it'll simply be `True` if its name
+    (or abbreviation) was specified on the command line, or `False` if not.
 
     ??? question "FAQ - How does this field affect the others?"
         - If this field is set to `True`, you should **ignore** the
@@ -103,7 +103,7 @@ class Option:
 
     If this field is omitted or otherwise empty, the given value for this option
     will not be checked. This means that **any** value with the same `type` as the
-    [`default`][botstrap.Option.default] value will be considered "acceptable".
+    [`default`][botstrap.Option.default] value will be considered acceptable.
 
     ??? example "Example - Defining valid values for an option"
         ```{.py title="example.py" .annotate}

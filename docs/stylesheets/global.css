@@ -11,6 +11,14 @@
   --task-list-item-margin: 2em;
 }
 
+/* Adjust some colors to make them easier to read for light theme users. */
+[data-md-color-scheme="default"] {
+  --color-cyan: #00c7df;
+  --color-green: #4cbd29;
+  --color-grey: #b5b5b5;
+  --color-yellow: #ffab00;
+}
+
 /* Adjust some features of the layout on bigger (i.e. non-mobile) screens. */
 @media screen and (min-width: 76.25em) {
   /* Constrain the width of the content area to keep it easy-to-read. */
@@ -20,6 +28,14 @@
   /* Use bold text for the expandable section headers in the primary nav. */
   .md-nav--primary .md-nav__link--index {
     font-weight: bold;
+  }
+  /* Slightly increase the size of code text inside non-heading elements. */
+  .md-typeset :not(.doc-heading) > code {
+    font-size: 0.9em;
+  }
+  /* Clip scrolling for code in "pre" elements (unnecessary + distracting). */
+  .md-typeset pre > code {
+    overflow-x: clip;
   }
 }
 
@@ -87,7 +103,6 @@ a[href^="../../"].md-footer__link {
 /* Color all the code/span elements that are tagged with a color class. */
 :is(code, span).blue {
   color: var(--color-blue);
-  font-weight: bold;
 }
 :is(code, span).cyan {
   color: var(--color-cyan);
@@ -97,15 +112,12 @@ a[href^="../../"].md-footer__link {
 }
 :is(code, span).grey {
   color: var(--color-grey);
-  font-weight: bold;
 }
 :is(code, span).pink {
   color: var(--color-pink);
-  font-weight: bold;
 }
 :is(code, span).red {
   color: var(--color-red);
-  font-weight: bold;
 }
 :is(code, span).yellow {
   color: var(--color-yellow);
@@ -116,7 +128,6 @@ code .md-annotation [data-md-annotation-id]:before {
   font-size: 0.64rem;
   padding-bottom: unset;
   transform: unset;
-  vertical-align: -0.01rem;
 }
 
 /* Adjust the sizing and spacing of task list items and their checkboxes. */

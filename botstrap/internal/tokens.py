@@ -43,14 +43,15 @@ class Token(Secret):
                 A `CliSession` providing the UX used by the CLI.
             uid:
                 A unique string identifying this token. Will be used in the names of
-                the files holding this token's data.
+                the encrypted [`.key`](../secret/#key-files) files containing this
+                token's data.
             requires_password:
                 Whether a user-provided password is required to store and subsequently
-                retrieve this token's value.
+                retrieve the token value.
             display_name:
-                A human-readable string describing this token. Will be shown in the
-                CLI when referring to this token. If omitted, the `uid` will be
-                displayed instead.
+                A human-readable string describing this token. Will be displayed in the
+                CLI when referring to this token. If omitted, the `uid` will be shown
+                instead.
             storage_directory:
                 Where to store the encrypted files containing this token's data.
                 If omitted, the files will be saved in a default
