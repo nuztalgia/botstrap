@@ -1,8 +1,64 @@
 ::: botstrap.internal.Token
     options:
       heading_level: 1
-      members:
-        - __init__
+      members: false
+
+??? abstract "Diagram - Class Relationships & Structure"
+
+    <figure markdown>
+      ```mermaid
+      classDiagram
+          direction BT
+          class Token {
+              cli: CliSession
+              resolve(allow_token_creation)
+          }
+          class Botstrap {
+              _tokens_by_uid: dict[str, Token]
+              _active_token: Token | None
+              register_token(uid, ...)
+              parse_args(..., **options)
+              retrieve_active_token(*, ...)
+              run_bot(bot_class, **options)
+          }
+          class Secret {
+              uid: str
+              requires_password: bool
+              display_name: str
+              storage_directory: Path
+              file_path: Path
+              min_pw_length: int
+              clear()
+              read(password)
+              validate(data)
+              write(data, password)
+          }
+          class CliSession {
+              name: str
+              colors: CliColors
+              strings: CliStrings
+              confirm_or_exit(question)
+              exit_process(reason, is_error)
+              get_bool_input(question)
+              get_hidden_input(prompt, ...)
+              get_input(prompt, ...)
+              print_prefixed(message, ...)
+          }
+
+          Token --|> Secret : inheritance
+          Token "*" ..* "1" Botstrap : composition
+          Botstrap --|> CliSession : inheritance
+          CliSession "1" ..o "*" Token : aggregation
+
+          link Token "#"
+          link Botstrap "../../api/botstrap/"
+          link CliSession "../cli-session/"
+          link Secret "../secret/"
+      ```
+    </figure>
+
+::: botstrap.internal.Token.__init__
+    options:
       show_signature_annotations: false
 
 ::: botstrap.internal.Token.get_default

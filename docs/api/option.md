@@ -24,7 +24,7 @@
 ??? example "Example - Viewing and using parsed option values"
 
     === "Python Code"
-        ```py title="example.py" hl_lines="12"
+        ```{.py title="example.py" hl_lines="12" .annotate}
         from botstrap import Botstrap, Option
 
         args = Botstrap().parse_args(
@@ -33,7 +33,7 @@
             ping_on_reply=Option(flag=True),
             daily_limit=Option(default=10, choices=range(-1, 101)),
         )
-        print(f"\nargs as 'Results':\n    {args}")
+        print(f"\nargs as 'Results':\n    {args}") # (1)
         print(f"args as a 'dict':\n    {(args_dict := vars(args))}\n")
 
         if args.message and args.daily_limit and (chance := max(0, min(args.reply_chance, 1))):
@@ -45,6 +45,9 @@
         else:
             print("> Random replies are disabled.")
         ```
+
+        1.  **Note:** `args` is an instance of `Option.Results`. The following line
+            creates `args_dict`, which is a `#!py dict[str, bool | str | int | float]`.
 
         For reference, here's how the `#!py if` condition on line `12` (highlighted
         above) can be equivalently written using a `#!py dict`:

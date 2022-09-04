@@ -82,6 +82,19 @@ a[href^="../../"].md-footer__link {
   display: none;
 }
 
+/* Adjust the dimensions and position of annotation "+" buttons in code. */
+.annotate code .md-annotation [data-md-annotation-id]:before {
+  font-size: 0.64rem;
+  padding-bottom: unset;
+  transform: unset;
+  vertical-align: -0.01rem;
+}
+
+/* Adjust the width of annotation tooltips in code. */
+.annotate code .md-annotation .md-tooltip {
+  width: 16.67rem;
+}
+
 /* Make each clickable grid card actually appear clickable. */
 .clickable.grid :is(.card, li) :not(a) {
   pointer-events: none;
@@ -138,13 +151,6 @@ a[href^="../../"].md-footer__link {
 }
 :is(.language-py, .language-pycon, .quote) code .si {
   color: var(--md-code-hl-punctuation-color);
-}
-
-/* Adjust the dimensions and position of annotation "+" buttons in code. */
-code .md-annotation [data-md-annotation-id]:before {
-  font-size: 0.64rem;
-  padding-bottom: unset;
-  transform: unset;
 }
 
 /* Adjust the sizing and spacing of task list items and their checkboxes. */

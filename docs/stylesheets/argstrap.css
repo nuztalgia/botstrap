@@ -1,4 +1,4 @@
-/* Fix the inconsistent number coloring in the example for `parse_bot_args()`. */
+/* Fix the inconsistent number colors in the example for `parse_bot_args()`. */
 [id$="parse_bot_args"] + * > .example .language-console code .m {
   color: var(--md-code-fg-color);
 }
@@ -8,7 +8,7 @@
   user-select: text;
 }
 
-/* Adjust width of the annotation tooltip in the `manage_tokens()` example. */
-[id$="manage_tokens"] + * > .example .annotate code .md-annotation .md-tooltip {
-  width: 16.67rem;
+/* Fix alignment of annotation "+" button in the `manage_tokens()` example. */
+[id$="manage_tokens"] + * > .example .annotate [data-md-annotation-id]:before {
+  vertical-align: revert;
 }

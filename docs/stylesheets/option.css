@@ -13,8 +13,8 @@ h3 > .doc-labels > .doc-label-class-attribute {
   display: revert;
 }
 
-/* Adjust width of the annotation tooltip in the `choices` example. */
-[id$="choices"] + * > .example .annotate code .md-annotation .md-tooltip {
+/* Adjust width of annotation tooltips in the `choices` & `Results` examples. */
+.example .annotate code .md-annotation .md-tooltip {
   width: 15.4rem;
 }
 

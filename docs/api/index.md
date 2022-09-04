@@ -18,9 +18,10 @@ you're in the right place.
 
 <div class="clickable grid" style="margin-bottom: 0.4rem" markdown>
 <div class="card" markdown>
-### ![](../images/logo-48.png){.twemoji width=24} [`Botstrap`](botstrap)
+### ![](../images/logo-48.png){.twemoji} [`Botstrap`](botstrap)
 ---
-The primary point of integration between Botstrap and your Discord bot.
+The primary point of integration between a Discord bot and the Botstrap library.
+&nbsp;Start here!
 </div>
 </div>
 

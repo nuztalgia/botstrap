@@ -24,5 +24,3 @@
     [1]: https://docs.python.org/3/library/dataclasses.html#dataclasses.KW_ONLY
 
 ::: botstrap.CliColors.off
-
-<link rel="stylesheet" href="../../stylesheets/cli-colors.css" />

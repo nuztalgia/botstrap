@@ -141,32 +141,32 @@ class Option:
         from botstrap import Botstrap, Option
 
         args = Botstrap().parse_args(
-            a=Option(help="A user-friendly option with help text!"),
-            b=Option(),
-            c=Option(help=Option.HIDE_HELP),
+            x=Option(help="A user-friendly option with help text!"),
+            y=Option(),
+            z=Option(help=Option.HIDE_HELP),
         )
         print(args)
         ```
 
         ```console title="Console Session"
         $ python example.py -h
-        usage: example.py [-a <str>] [-b <str>] [-t] [--help]
+        usage: example.py [-x <str>] [-y <str>] [-t] [--help]
 
           Run "python example.py" with no parameters to start the bot.
 
         options:
-          -a <>         A user-friendly option with help text!
-          -b <>
+          -x <>         A user-friendly option with help text!
+          -y <>
           -t, --tokens  View/manage your saved Discord bot tokens.
           -h, --help    Display this help message.
 
-        $ python example.py -b "a mysterious option" -c "a super secret option"
-        Results(a='', b='a mysterious option', c='a super secret option')
+        $ python example.py -y "a mysterious option" -z "a super secret option"
+        Results(z='', y='a mysterious option', z='a super secret option')
         ```
 
-        Notice that `-b` appears without a description because it didn't specify a value
-        for its `help` field, while `-c` does not appear in the help menu at all because
-        it specified `Option.HIDE_HELP`. However, both options are equally usable.
+        Notice that `-y` appears without a description because it didn't specify a value
+        for its `help` field, while `-z` does not appear in the help menu at all because
+        it specified `#!py Option.HIDE_HELP`. However, both options are equally usable.
     """
 
     # endregion FIELDS
