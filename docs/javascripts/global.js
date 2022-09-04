@@ -1,4 +1,4 @@
-window.addEventListener("DOMContentLoaded", (event) => {
+document$.subscribe(function () {
   // Remove the "#" comment characters preceding annotations in code blocks.
   for (const comment of document.querySelectorAll(".annotate code span.c1")) {
     if (comment.innerHTML.match(/# .*?\(\d\)$/)) {
@@ -20,6 +20,9 @@ window.addEventListener("DOMContentLoaded", (event) => {
   // Run custom logic for specific pages if the current location matches up.
   if (window.location.href.match(/\/(api|internal)\/$/)) {
     handleReferencePage();
+  }
+  if (window.location.href.match(/\/api\/option\//)) {
+    handleOptionPage();
   }
   // Remove the title header anchor link on every page.
   document.querySelector("h1 a.headerlink")?.remove();
@@ -73,5 +76,36 @@ function handleReferencePage() {
       const destination = event.target.querySelector("a")?.getAttribute("href");
       window.location.href = destination ?? window.location.href;
     });
+  }
+}
+
+/** Execute special logic to improve clarity on the "Option" page. */
+function handleOptionPage() {
+  for (const heading of document.querySelectorAll("h3.doc-heading > code")) {
+    processOptionHeading(heading);
+  }
+  // Standardize numeric (int/float) option coloring in console code spans.
+  for (const codeSpan of document.querySelectorAll(
+    ".doc-class ~ .doc-class + .example .language-console code > span",
+  )) {
+    const match = codeSpan.innerHTML.match(/\$.*?(-\d|\.\d+)/);
+    if (match) {
+      const replacement = `<span class="m">${match[1]}</span>`;
+      codeSpan.innerHTML = codeSpan.innerHTML.replace(match[1], replacement);
+    }
+  }
+}
+
+/** Clarifies constant and inner class headings for the "Option" class. */
+function processOptionHeading(heading) {
+  if (heading.innerText.match(/^[a-z_]*: /)) {
+    // This is a field heading. No need for special processing.
+    return;
+  }
+  // This is a constant or inner class heading. Prepend the outer class name.
+  heading.innerHTML = `Option.${heading.innerHTML}`;
+  // Additional processing for constant headings: Remove the default value.
+  if (heading.innerText.match(/^Option.[A-Z_]*: /)) {
+    heading.innerHTML = heading.innerHTML.replace(/ <span class="o">=.*$/, "");
   }
 }

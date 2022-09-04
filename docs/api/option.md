@@ -90,4 +90,3 @@
         ```
 
 <link rel="stylesheet" href="../../stylesheets/option.css" />
-<script src="../../javascripts/option.js"></script>

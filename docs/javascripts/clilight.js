@@ -1,5 +1,4 @@
-/** Adds color to console output text on the current page, if applicable. */
-function colorConsoleOutput() {
+document$.subscribe(function () {
   // Add color to certain strings that appear in console output (defined below).
   for (const element of document.querySelectorAll(
     ":is(.language-console, .language-pycon):not(.custom-colors) span.go",
@@ -22,9 +21,9 @@ function colorConsoleOutput() {
       '<span class="yellow">I</span><span class="green">D</span>' +
       '<span class="cyan">E</span><span class="blue">!</span>';
   }
-}
+});
 
-/** Adds color to all text matched by the regex pattern in the bound element. */
+/** Adds color to all text matched by the regex pattern in the given element. */
 function addColorByRegex(element, colorName, regexPattern) {
   for (const match of element.innerHTML.matchAll(regexPattern)) {
     const colorSpan = `<span class="${colorName}">`;
@@ -36,7 +35,7 @@ function addColorByRegex(element, colorName, regexPattern) {
   }
 }
 
-/** A mapping of color names to the regex patterns for text to be colored. */
+/** A mapping of color names to regex patterns capturing text to be colored. */
 const colorPatterns = {
   cyan: [
     /^  (\d)\. .*-&gt;  .*\.\*$/g,
@@ -64,6 +63,3 @@ const colorPatterns = {
     /development/g,
   ],
 };
-
-// Call the main function for this file.
-colorConsoleOutput();

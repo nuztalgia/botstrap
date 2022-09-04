@@ -1,4 +1,4 @@
-window.addEventListener("DOMContentLoaded", (event) => {
+document$.subscribe(function () {
   // Add reference links and syntax highlighting to inline code elements.
   for (const codeElement of document.querySelectorAll(
     ".doc-contents :not(.doc-heading, .doc-label, a, pre, summary) > code",
