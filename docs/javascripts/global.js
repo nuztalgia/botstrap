@@ -1,3 +1,9 @@
+/**
+ * @fileoverview Performs a number of visual improvements that are designed to
+ * improve clarity, such as removing redundant/irrelevant pieces of code and
+ * adding color to example console output. Applies to content on all pages.
+ */
+
 document$.subscribe(function () {
   // Remove the "#" comment characters preceding annotations in code blocks.
   for (const comment of document.querySelectorAll(".annotate code span.c1")) {
@@ -17,15 +23,9 @@ document$.subscribe(function () {
     removeDefaultArgs(docFunction);
     removePropertyParens(docFunction);
   }
-  // Run custom logic for specific pages if the current location matches up.
-  if (window.location.href.match(/\/(api|internal)\/$/)) {
-    handleReferencePage();
-  }
-  if (window.location.href.match(/\/api\/option\//)) {
-    handleOptionPage();
-  }
-  // Remove the title header anchor link on every page.
+  // Remove the primary header anchor link and add color to console output text.
   document.querySelector("h1 a.headerlink")?.remove();
+  colorConsoleOutput();
 });
 
 /** Removes redundant docstrings & irrelevant comments in source code blocks. */
@@ -62,50 +62,60 @@ function removePropertyParens(docFunction) {
   }
 }
 
-/** Execute special logic on "API Reference" and "Internal Reference" pages. */
-function handleReferencePage() {
-  // Remove all header anchor links.
-  for (const link of document.querySelectorAll(".md-typeset a.headerlink")) {
-    link.remove();
-  }
-  // Follow the first detected link when a card in a clickable grid is clicked.
-  for (const cardElement of document.querySelectorAll(
-    ".clickable.grid :is(.card, li)",
-  )) {
-    cardElement.addEventListener("click", function (event) {
-      const destination = event.target.querySelector("a")?.getAttribute("href");
-      window.location.href = destination ?? window.location.href;
-    });
+/** Adds color to all text matched by the regex pattern in the given element. */
+function addColorByRegex(element, colorName, regexPattern) {
+  for (const match of element.innerHTML.matchAll(regexPattern)) {
+    const colorSpan = `<span class="${colorName}">`;
+    const replacement =
+      match.length == 1
+        ? `${colorSpan}${match[0]}</span>`
+        : match[0].replace(match[1], `${colorSpan}${match[1]}</span>`);
+    element.innerHTML = element.innerHTML.replace(match[0], replacement);
   }
 }
 
-/** Execute special logic to improve clarity on the "Option" page. */
-function handleOptionPage() {
-  for (const heading of document.querySelectorAll("h3.doc-heading > code")) {
-    processOptionHeading(heading);
-  }
-  // Standardize numeric (int/float) option coloring in console code spans.
-  for (const codeSpan of document.querySelectorAll(
-    ".doc-class ~ .doc-class + .example .language-console code > span",
+/** Adds color to certain strings (defined below) in console output elements. */
+function colorConsoleOutput() {
+  for (const element of document.querySelectorAll(
+    ":is(.language-console, .language-pycon):not(.custom-colors) span.go",
   )) {
-    const match = codeSpan.innerHTML.match(/\$.*?(-\d|\.\d+)/);
-    if (match) {
-      const replacement = `<span class="m">${match[1]}</span>`;
-      codeSpan.innerHTML = codeSpan.innerHTML.replace(match[1], replacement);
+    for (const [colorName, regexPatterns] of Object.entries(colorPatterns)) {
+      for (const regexPattern of regexPatterns) {
+        addColorByRegex(element, colorName, regexPattern);
+      }
     }
   }
+  for (const element of document.querySelectorAll(".custom-colors span.go")) {
+    addColorByRegex(element, "cyan", /^cyan-bot/g);
+    addColorByRegex(element, "pink", /"(y(es)?)"/g);
+  }
 }
 
-/** Clarifies constant and inner class headings for the "Option" class. */
-function processOptionHeading(heading) {
-  if (heading.innerText.match(/^[a-z_]*: /)) {
-    // This is a field heading. No need for special processing.
-    return;
-  }
-  // This is a constant or inner class heading. Prepend the outer class name.
-  heading.innerHTML = `Option.${heading.innerHTML}`;
-  // Additional processing for constant headings: Remove the default value.
-  if (heading.innerText.match(/^Option.[A-Z_]*: /)) {
-    heading.innerHTML = heading.innerHTML.replace(/ <span class="o">=.*$/, "");
-  }
-}
+/** A mapping of color names to regex patterns capturing text to be colored. */
+const colorPatterns = {
+  cyan: [
+    /^  (\d)\. .*-&gt;  .*\.\*$/g,
+    /^(BOT TOKEN:|PASSWORD:|Enter your password:)/g,
+    /"(y(es)?|\d)"/g,
+    /BotstrapBot#1234/g,
+  ],
+  green: [
+    /^Token successfully deleted\.$/g,
+    /^Your token has been .* saved\.$/g,
+    /production/g,
+  ],
+  grey: [
+    /^  .*\. .*-&gt;  (.*\.\*)$/g,
+    /^Received a [^\.]*\./g,
+    / [\*\.]*$/g,
+    / Exiting process\.$/g,
+    /(&lt;(float|int|str|token id)&gt;)]/g,
+  ],
+  pink: [/^(?:usage: )?(examplebot)/g],
+  red: [/^.* 'exit_process\(\)' function!/g],
+  yellow: [
+    /^That number doesn't match .* tokens\./g,
+    /^Your password must be .* characters long\./g,
+    /development/g,
+  ],
+};

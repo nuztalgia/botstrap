@@ -1,3 +1,9 @@
+/**
+ * @fileoverview Enhances elements containing Python code (both inline and
+ * block) by adding/improving syntax highlighting and automatically creating
+ * links for specific pre-defined references. Applies to content on all pages.
+ */
+
 document$.subscribe(function () {
   // Add reference links and syntax highlighting to inline code elements.
   for (const codeElement of document.querySelectorAll(

@@ -54,7 +54,7 @@ extra_css:
 
 extra_javascript:
   - javascripts/global.js
-  - javascripts/clilight.js
+  - javascripts/local.js
   - javascripts/pylight.js
 
 plugins:
