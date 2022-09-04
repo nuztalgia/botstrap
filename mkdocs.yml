@@ -52,9 +52,9 @@ extra_css:
   - stylesheets/material.css
 
 extra_javascript:
-  - javascripts/autorefs.js
-  - javascripts/colors.js
   - javascripts/global.js
+  - javascripts/clilight.js
+  - javascripts/pylight.js
 
 plugins:
   - exclude:
