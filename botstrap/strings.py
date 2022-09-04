@@ -39,7 +39,7 @@ class CliStrings:
         added as Botstrap grows and acquires new features. :person_juggling:
 
     ??? example "Example - Customizing the Discord login text"
-        ```py title="bot.py" hl_lines="5-6"
+        ```py title="bot.py"
         from botstrap import Botstrap, CliStrings
         from string import Template
 

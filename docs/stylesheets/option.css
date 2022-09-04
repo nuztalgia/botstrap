@@ -18,9 +18,9 @@ h3 > .doc-labels > .doc-label-class-attribute {
   width: 15.4rem;
 }
 
-/* Slightly decrease the line height for the text in the `Results` example. */
+/* Slightly increase the line height for the text in the `Results` example. */
 .doc-class ~ .doc-class + .example .tabbed-block > p {
-  line-height: 1.445;
+  line-height: 1.65;
 }
 
 /* Remove the extra spacing at the very bottom of the `Results` example. */

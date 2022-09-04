@@ -215,7 +215,7 @@ class Botstrap(CliSession):
             )
             ```
 
-            ```console title="Console Session" hl_lines="4"
+            ```console title="Console Session"
             $ python bot.py -h
             usage: bot.py [-t] [--help]
 

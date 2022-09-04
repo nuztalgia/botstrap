@@ -123,6 +123,23 @@ a[href^="../../"].md-footer__link {
   color: var(--color-yellow);
 }
 
+/* Change the colors assigned to some classes for better syntax highlighting. */
+:is(.language-py, .language-pycon, .quote) code :is(.kc, .se) {
+  color: var(--md-code-hl-number-color);
+}
+:is(.language-py, .language-pycon, .quote) code :is(.nc, .ne) {
+  color: var(--md-code-hl-special-color);
+}
+:is(.language-py, .language-pycon, .quote) code .ow {
+  color: var(--md-code-hl-keyword-color);
+}
+:is(.language-py, .language-pycon, .quote) code .sa {
+  color: var(--md-code-hl-string-color);
+}
+:is(.language-py, .language-pycon, .quote) code .si {
+  color: var(--md-code-hl-punctuation-color);
+}
+
 /* Adjust the dimensions and position of annotation "+" buttons in code. */
 code .md-annotation [data-md-annotation-id]:before {
   font-size: 0.64rem;

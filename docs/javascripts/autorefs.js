@@ -21,80 +21,70 @@ window.addEventListener("DOMContentLoaded", (event) => {
 /** Adds links to specific references (defined at the bottom of this file). */
 function addReferenceLinks(element) {
   for (const [regex, rawUrl] of Object.entries(referenceMap)) {
+    const url =
+      (window.location.href.match(/\/en\/latest\//) && rawUrl.match(/^\/.*/)
+        ? "/en/latest"
+        : "") + rawUrl;
+    const isOnPage = window.location.href.match(new RegExp(url + "(#.*)?$"));
     for (const match of element.innerHTML.matchAll(new RegExp(regex, "g"))) {
-      const url =
-        (window.location.href.match(/\/en\/latest\//) && rawUrl.match(/^\/.*/)
-          ? "/en/latest"
-          : "") + rawUrl;
-      const isOnPage = window.location.href.match(new RegExp(url + "(#.*)?$"));
       const replacement = `<a href="${isOnPage ? "#" : url}">${match[0]}</a>`;
       element.innerHTML = element.innerHTML.replace(match[0], replacement);
     }
   }
 }
 
-/** Adds syntax highlighting to text matched by a regex in the bound element. */
-function addSyntaxHighlighting(spanClass, regexPattern) {
-  for (const match of this.innerHTML.matchAll(new RegExp(regexPattern, "g"))) {
-    const replacement =
-      match.length === 1
-        ? `<span class="${spanClass}">${match[0]}</span>`
-        : match[0].replace(
-            (matchItem = match.filter((item) => item != null).slice(-1)[0]),
-            `<span class="${spanClass}">${matchItem}</span>`,
-          );
-    this.innerHTML = this.innerHTML.replace(match[0], replacement);
+/** Adds syntax highlighting (based on crude regexes) to the given code element.
+ *  These regexes are written/edited on an as-needed basis & may be fragile. */
+function highlightCodeInline(element) {
+  for (const [spanClass, regexPattern] of Object.entries({
+    k: /\b(if|return)\b/g,
+    kc: /\b(None|True|False)\b/g,
+    mi: /^\d+$/g,
+    nb: /(^|[^">]{2}|\b)(bool|float|object|str|t.pl?e|p?[dlr]?i[csn]t)\b\]?/g,
+    ne: /\b(SystemExit|[A-Z][a-z]+Error)\b/g,
+    o: /((\*\*|\|)[^<>]|(=)[^"]|^[a-z_]*(\.))/g,
+    p: /(^|<\/[a-z]*>|\b)({}|,|\[+|"?(\]+,?)|\(\)$)/g,
+    s2: /('.*'|^".*"$|[^=]("[^<>]*")[^>])/g,
+  })) {
+    for (const match of element.innerHTML.matchAll(regexPattern)) {
+      const replacement =
+        match.length == 1
+          ? `<span class="${spanClass}">${match[0]}</span>`
+          : match[0].replace(
+              (matchItem = match.filter((item) => item != null).slice(-1)[0]),
+              `<span class="${spanClass}">${matchItem}</span>`,
+            );
+      element.innerHTML = element.innerHTML.replace(match[0], replacement);
+    }
   }
 }
 
-/** Adds syntax highlighting (based on crude regexes) to the given element.
- *  These regexes are written/edited on an as-needed basis & may be fragile. */
-function highlightCodeInline(element) {
-  const highlight = addSyntaxHighlighting.bind(element);
-  highlight("k", /\b(if|return)\b/);
-  highlight("kc", /\b(None|True|False)\b/);
-  highlight("mi", /^\d+$/);
-  highlight(
-    "nb",
-    /(^|[^">]{2}|\b)(bool|dict|float|int|list|object|print|str|tuple|type)\b\]?/,
-  );
-  highlight("ne", /\b(SystemExit|[A-Z][a-z]+Error)\b/);
-  highlight("o", /((\*\*|\|)[^<>]|(=)[^"]|^[a-z_]*(\.))/);
-  highlight("p", /(^|<\/[a-z]*>|\b)({}|,|\[+|"?(\]+,?)|\(\)$)/);
-  highlight("s2", /('.*'|^".*"$|[^=]("[^<>]*")[^>])/);
-}
-
-/** Improve existing syntax highlighting & color usage in the given element. */
+/** Improves existing syntax highlighting in the given code block element. */
 function highlightCodeBlock(element) {
+  // Change text to "function" color (pink) if it looks like a function name.
   for (const match of element.innerHTML.matchAll(
     /="(n|fm)"(>[a-z_][a-zA-Z_]*<\/span><span class="p">\()/g,
   )) {
-    // Change text to "function" color (pink) if it looks like a function name.
     element.innerHTML = element.innerHTML.replace(match[0], `="nf"${match[2]}`);
   }
-  for (const stringElement of element.querySelectorAll(":is(.sa, .se)")) {
-    // Recolor existing string affixes (.sa) and string escapes (.se).
-    stringElement.className = "s1"; // Change to "string" color (green).
+  // Properly color string interpolation sequences in Template strings.
+  const stringInterpolPattern = /="sx">Template.{23}\(.{24}[^<>]*(\$[a-z_]+)/;
+  while ((match = element.innerHTML.match(stringInterpolPattern))) {
+    element.innerHTML = element.innerHTML.replace(
+      match[0],
+      match[0].replace(match[1], `<span class="si">${match[1]}</span>`),
+    );
   }
-  for (const nameElement of element.querySelectorAll(":is(.nc, .ne)")) {
-    // Recolor existing class names (.nc) and exception names (.ne).
-    nameElement.className = "se"; // Change to "special" color (red).
-  }
-  for (const nameElement of element.querySelectorAll(".n")) {
-    // Recolor class names (explicitly listed below) outside of imports.
-    const importNames = nameElement.parentElement.querySelectorAll(".kn");
-    if (importNames.length != 2 && classNames.has(nameElement.innerHTML)) {
-      nameElement.className = "se"; // Change to "special" color (red).
+  element.innerHTML = element.innerHTML.replaceAll(
+    '$</span><span class="si">{',
+    '</span><span class="si">${',
+  );
+  // Recolor class names (explicitly listed below) outside of imports.
+  for (const childElement of element.querySelectorAll(".n")) {
+    const importNames = childElement.parentElement.querySelectorAll(".kn");
+    if (importNames.length != 2 && classNames.has(childElement.innerHTML)) {
+      childElement.className = "sx"; // Change to "special" color (red).
     }
-  }
-  for (const keywordConstant of element.querySelectorAll(".kc")) {
-    keywordConstant.className = "mi"; // Change to "number" color (orange).
-  }
-  for (const operatorWord of element.querySelectorAll(".ow")) {
-    operatorWord.className = "k"; // Change to "keyword" color (blue).
-  }
-  for (const stringInterpol of element.querySelectorAll(".si")) {
-    stringInterpol.className = "p"; // Change to "punctuation" color (grey).
   }
 }
 
@@ -130,7 +120,6 @@ const referenceMap = {
   "^CliSession$": "/internal/cli-session/",
   "^Secret$": "/internal/secret/",
   "\\bToken\\b": "/internal/token/",
-
   // Anchors within pages in the Botstrap library documentation.
   "^CliColors\\.default\\(\\)$":
       "/api/cli-colors/#botstrap.colors.CliColors.default",
@@ -142,7 +131,6 @@ const referenceMap = {
       "/api/cli-strings/#botstrap.strings.CliStrings.compact",
   "(^Results$|\\bOption\\.Results\\b)":
       "/api/option/#botstrap.options.Option.Results",
-
   // Pages and/or anchors in the official Python documentation.
   "\\bAny\\b":
       "https://docs.python.org/3/library/typing.html#typing.Any",

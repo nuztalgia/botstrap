@@ -12,3 +12,11 @@ div#botstrap-example span.filename {
 div#botstrap-example .tabbed-block p:last-child {
   margin-block-end: 0;
 }
+
+/* Fix the colors of some words in the `extras.py` code in the main example. */
+div#botstrap-example span#line-2-12 > .linenos + .nb {
+  color: var(--md-code-hl-name-color);
+}
+div#botstrap-example span#line-2-13 > .s2 + .si {
+  color: var(--md-code-hl-string-color);
+}

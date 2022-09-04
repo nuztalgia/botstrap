@@ -116,7 +116,7 @@ class CliColors:
         change the highlight color too! This example demonstrates how to change the
         primary color to `cyan`{.cyan} and the highlight color to `pink`{.pink}.
 
-        ```py title="bot.py" hl_lines="3"
+        ```py title="bot.py"
         from botstrap import Botstrap, CliColors, Color
 
         bot_colors = CliColors(Color.cyan, highlight=Color.pink)
