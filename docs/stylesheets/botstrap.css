@@ -26,11 +26,16 @@ div#botstrap-example span#line-2-13 > .s2 + .si {
 }
 
 /* Hide unnecessary lines of code in the "Tokens" tab. */ /* prettier-ignore */
-div#botstrap-example .tabbed-block:nth-child(5) :is(
+div#botstrap-example .tabbed-block:nth-last-child(2) :is(
   .highlight:first-child code > :nth-child(n + 14):nth-child(-n + 17),
   .highlight:last-child code > :nth-child(n + 8):nth-child(-n + 12)
 ) {
   display: none;
+}
+
+/* Remove syntax highlighting for console input text in the "Options" tab. */
+div#botstrap-example .tabbed-block:last-child code span:last-child:is(.m, .s2) {
+  color: var(--md-code-fg-color);
 }
 
 /* Make tab labels containing code text behave like regular tab labels. */

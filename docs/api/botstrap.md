@@ -93,14 +93,23 @@ a lightly-customized Botstrap integration.
 
         - **CLI #1: Basics**
             1.  `python -m examplebot -h` :fontawesome-solid-arrow-right:
-                Checking out the bot's help menu.
+                Viewing the bot's help menu.
             2.  `python -m examplebot` :fontawesome-solid-arrow-right:
-                Running the bot using the command from the help menu.
+                Running the bot for the first time using the command from the help menu.
+            3.  `python -m examplebot` :fontawesome-solid-arrow-right:
+                Demonstrating automatic bot token decryption on subsequent runs.
         - **CLI #2: Tokens**
             1.  `python -m examplebot prod` :fontawesome-solid-arrow-right:
-                Setting up a new password-protected token.
+                Setting up a new password-protected token for production.
             2.  `python -m examplebot -t` :fontawesome-solid-arrow-right:
                 Viewing existing tokens and deleting one of them.
+        - **CLI #3: Options**
+            1.  `python -m examplebot prod --alpha -a watching -s "you."`
+                :fontawesome-solid-arrow-right: Playing with bot options in prod!
+            2.  `python -m examplebot --alpha -m` :fontawesome-solid-arrow-right:
+                Running the alpha bot in dev mode with mentions enabled.
+            3.  `python -m examplebot --alpha -m -l 1` :fontawesome-solid-arrow-right:
+                Same as above, but with the minimum log level set to 1.
 
         **Note:** All of these commands are run from the outermost (`workspace`)
         directory.
@@ -127,7 +136,7 @@ a lightly-customized Botstrap integration.
         [4]: https://docs.pycord.dev/
 
     === "CLI #1: Basics"
-        ```console title="1A) Checking out the bot's help menu."
+        ```console title="1A) Viewing the bot's help menu."
         $ python -m examplebot -h
         {% include "../../examples/README.md" start="```text\n" end="```" %}
         ```
@@ -149,7 +158,7 @@ a lightly-customized Botstrap integration.
         examplebot: development: Successfully logged in as "BotstrapBot#1234".
         ```
 
-        ```console title="1C) No need to re-enter the bot token after initial setup."
+        ```console title="1C) No need to re-enter the bot token after initial setup!"
         $ python -m examplebot
 
         examplebot: development: Attempting to log in to Discord...
@@ -165,6 +174,52 @@ a lightly-customized Botstrap integration.
         ```console title="2B) Viewing existing tokens and deleting one of them."
         $ python -m examplebot -t
         {% include "../../botstrap/internal/argstrap.py" start="# (1)\n" end="```" %}
+        ```
+
+    === "CLI #3: Options"
+        ```console title="3A) Running the alpha bot in production with a custom status."
+        $ python -m examplebot prod --alpha -a watching -s "you."
+
+        examplebot: Please enter the password to decrypt your production bot token.
+        PASSWORD: ********
+
+        examplebot: production: Attempting to log in to Discord...
+        examplebot: production: Successfully logged in as "BotstrapBot#1234".
+
+        2022-09-04 21:47:57 | I | BotstrapBot is currently watching you.
+        ```
+
+        ```console title="3B) Running the alpha bot in dev mode with mentions enabled."
+        $ python -m examplebot --alpha -m
+
+        examplebot: development: Attempting to log in to Discord...
+        examplebot: development: Successfully logged in as "BotstrapBot#1234".
+
+        2022-09-04 21:48:32 | W | BotstrapBot will ping @everyone in 10 seconds!!!
+        2022-09-04 21:48:39 | W |  3...
+        2022-09-04 21:48:40 | W |  2...
+        2022-09-04 21:48:41 | W |  1...
+        2022-09-04 21:48:42 | I | Just kidding! ^_^
+        ```
+
+        ```console title="3C) Same as above, but with the minimum log level set to 1 (debug)."
+        $ python -m examplebot --alpha -m -l 1
+
+        examplebot: development: Attempting to log in to Discord...
+        examplebot: development: Successfully logged in as "BotstrapBot#1234".
+
+        2022-09-04 21:50:48 | W | BotstrapBot will ping @everyone in 10 seconds!!!
+        2022-09-04 21:50:48 | D | 10...
+        2022-09-04 21:50:49 | D |  9...
+        2022-09-04 21:50:50 | D |  8...
+        2022-09-04 21:50:51 | D |  7...
+        2022-09-04 21:50:52 | D |  6...
+        2022-09-04 21:50:53 | D |  5...
+        2022-09-04 21:50:54 | D |  4...
+        2022-09-04 21:50:55 | W |  3...
+        2022-09-04 21:50:56 | W |  2...
+        2022-09-04 21:50:57 | W |  1...
+        2022-09-04 21:50:58 | I | Just kidding! ^_^
         ```
 
 <!-- prettier-ignore -->
