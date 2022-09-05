@@ -18,10 +18,10 @@ botstrap = (
 
 args = botstrap.parse_args(
     description="A really cool Discord bot that uses Botstrap!",
-    log_thld=Option(
+    loglevel=Option(
         default=2,
         choices=range(1, 5),
-        help="A value from 1-4 specifying the minimum log threshold.",
+        help="A value from 1 to 4 specifying the minimum log level.",
     ),
     status=Option(default="", help="Text to show in the bot's Discord profile status."),
     activity=Option(
@@ -33,7 +33,7 @@ args = botstrap.parse_args(
     alpha=Option(flag=True, help=Option.HIDE_HELP),
 )
 
-extras.initialize_system_logging(log_level=args.log_thld)
+extras.initialize_system_logging(log_level=args.loglevel)
 
 activity = (
     Activity(type=getattr(ActivityType, args.activity.lower()), name=args.status)

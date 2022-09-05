@@ -1,22 +1,46 @@
-/*  Make all console output selectable in the code blocks in the main example. */
+/*  Make all console output selectable in the main example. */
 div#botstrap-example .language-console code .go {
   user-select: text;
 }
 
-/* Hide the redundant filename headers in the code blocks in the main example. */
-div#botstrap-example span.filename {
-  display: none;
-}
-
-/* Remove the extra spacing at the bottom of some tabs in the main example. */
+/* Remove the extra spacing at the bottom of some tabs. */
 div#botstrap-example .tabbed-block p:last-child {
   margin-block-end: 0;
 }
+div#botstrap-example .tabbed-block .language-console:last-child pre {
+  margin-bottom: 0;
+}
 
-/* Fix the colors of some words in the `extras.py` code in the main example. */
+/* Slightly increase the padding (i.e. width) of the first tab label. */
+div#botstrap-example .tabbed-labels > label:first-child {
+  padding-left: 1.5em;
+  padding-right: 1.5em;
+}
+
+/* Fix the colors of some words in the `extras.py` code/tab. */
 div#botstrap-example span#line-2-12 > .linenos + .nb {
   color: var(--md-code-hl-name-color);
 }
 div#botstrap-example span#line-2-13 > .s2 + .si {
   color: var(--md-code-hl-string-color);
+}
+
+/* Hide unnecessary lines of code in the "Tokens" tab. */ /* prettier-ignore */
+div#botstrap-example .tabbed-block:nth-child(5) :is(
+  .highlight:first-child code > :nth-child(n + 14):nth-child(-n + 17),
+  .highlight:last-child code > :nth-child(n + 8):nth-child(-n + 12)
+) {
+  display: none;
+}
+
+/* Make tab labels containing code text behave like regular tab labels. */
+.tabbed-set > input:nth-child(2):checked ~ .tabbed-labels > :nth-child(2) > *,
+.tabbed-set > input:nth-child(3):checked ~ .tabbed-labels > :nth-child(3) > * {
+  color: var(--md-typeset-a-color);
+}
+.md-typeset .tabbed-labels > label:hover > * {
+  color: var(--md-accent-fg-color);
+}
+.md-typeset .tabbed-labels > label > * {
+  transition: color 0.25s;
 }

@@ -56,7 +56,7 @@ positional arguments:
                         Valid options are "dev" and "prod".
 
 options:
-  -l <>, --log-thld <>  A value from 1-4 specifying the minimum log threshold.
+  -l <>, --loglevel <>  A value from 1 to 4 specifying the minimum log level.
   -s <>, --status <>    Text to show in the bot's Discord profile status.
   -a <>, --activity <>  The text preceding '--status'. Defaults to 'playing'.
   -m, --mentions        Allow the bot to @mention members and/or roles.

@@ -57,8 +57,8 @@ a lightly-customized Botstrap integration.
 ??? example "Example - The Botstrap Interface"
 
     <div id="botstrap-example"/>
-    === "Info"
-        ```{.text .line-numbers-off}
+    === "Overview"
+        ```{.text title="" .line-numbers-off}
         📁 workspace/
         └── 📁 examplebot/
             ├── 📄 __main__.py
@@ -77,8 +77,8 @@ a lightly-customized Botstrap integration.
         about what could be clarified!)
 
         ---
-        The next two tabs (after this "Info" tab) provide the contents of the **Python
-        files** used in this example:
+        The next two tabs (after this "Overview" tab) provide the contents of the
+        **Python files** used in this example:
 
         - `__main__.py` - This file contains the entire Botstrap integration and
         exercises all of the recommended methods in this class, as well as a few other
@@ -91,24 +91,27 @@ a lightly-customized Botstrap integration.
         The subsequent tabs demonstrate the **CLI output** for various program flows
         and/or command-line arguments:
 
-        1. `python -m examplebot -h` - The help menu for the example bot.
-        2. `python -m examplebot` - Running in `dev` mode for the first time and adding
-           a token **without** a password.
-        3. `python -m examplebot prod` - Running in `prod` mode for the first time and
-           adding a token **with** a password.
-        4. `python -m examplebot -t` - Exploring the CLI flow for managing tokens, and
-           deleting a saved token.
+        - **CLI #1: Basics**
+            1.  `python -m examplebot -h` :fontawesome-solid-arrow-right:
+                Checking out the bot's help menu.
+            2.  `python -m examplebot` :fontawesome-solid-arrow-right:
+                Running the bot using the command from the help menu.
+        - **CLI #2: Tokens**
+            1.  `python -m examplebot prod` :fontawesome-solid-arrow-right:
+                Setting up a new password-protected token.
+            2.  `python -m examplebot -t` :fontawesome-solid-arrow-right:
+                Viewing existing tokens and deleting one of them.
 
         **Note:** All of these commands are run from the outermost (`workspace`)
         directory.
 
-    === "\_\_main\_\_.py"
-        ```py
+    === "`__main__.py`"
+        ```py title=""
         {% include "../../examples/examplebot/__main__.py" %}
         ```
 
-    === "extras.py"
-        ```py
+    === "`extras.py`"
+        ```py title=""
         {% include "../../examples/examplebot/extras.py" %}
         ```
 
@@ -123,14 +126,13 @@ a lightly-customized Botstrap integration.
         [3]: https://guide.pycord.dev/extensions/tasks/
         [4]: https://docs.pycord.dev/
 
-    === "CLI #1"
-        ```console
+    === "CLI #1: Basics"
+        ```console title="1A) Checking out the bot's help menu."
         $ python -m examplebot -h
         {% include "../../examples/README.md" start="```text\n" end="```" %}
         ```
 
-    === "CLI #2"
-        ```console
+        ```console title="1B) Running the bot using the command from the help menu."
         $ python -m examplebot
 
         examplebot: You currently don't have a saved development bot token.
@@ -141,20 +143,26 @@ a lightly-customized Botstrap integration.
 
         Your token has been successfully encrypted and saved.
 
-        Do you want to use this token to run your bot now? If so, type "yes" or "y": y
+        Do you want to run your bot with this token now? If so, type "yes" or "y": y
 
         examplebot: development: Attempting to log in to Discord...
         examplebot: development: Successfully logged in as "BotstrapBot#1234".
         ```
 
-    === "CLI #3"
-        ```console
+        ```console title="1C) No need to re-enter the bot token after initial setup."
+        $ python -m examplebot
+
+        examplebot: development: Attempting to log in to Discord...
+        examplebot: development: Successfully in as "BotstrapBot#1234".
+        ```
+
+    === "CLI #2: Tokens"
+        ```console title="2A) Setting up a new password-protected token."
         $ python -m examplebot prod
         {% include "../../botstrap/internal/tokens.py" start=".py prod\n" end="```" %}
         ```
 
-    === "CLI #4"
-        ```console
+        ```console title="2B) Viewing existing tokens and deleting one of them."
         $ python -m examplebot -t
         {% include "../../botstrap/internal/argstrap.py" start="# (1)\n" end="```" %}
         ```
