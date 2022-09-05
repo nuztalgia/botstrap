@@ -1,10 +1,64 @@
 <!-- prettier-ignore -->
 ::: botstrap.Option
     options:
+      heading_level: 1
+      members: false
+
+??? abstract "Diagram - Defining an Option"
+
+    Although it's possible to instantiate this class without specifying any custom
+    field values, it's almost always ideal to tailor them to better fit your bot's
+    requirements. However, some fields are mutually exclusive. :crossed_swords:
+
+    This diagram helps to illustrate which fields should (and shouldn't) be set when
+    defining an option. Start at the top, and click on each field name that you
+    encounter on the way down for more details about how to customize its value.
+
+    <figure markdown>
+      ```mermaid
+      flowchart TB
+          A("What is the value type of the option?")
+          A -- bool --> B{{"&thinsp;flag&thinsp;&thinsp;&emsp;"}}
+          A -- str --> C{{"&thinsp;default&ensp;&emsp;"}}
+          A -- int --> C
+          A -- float --> C
+          B --> F{{"&thinsp;help&emsp;"}}
+          C --> D("Is there a restricted set of values?")
+          D -- Yes --> E{{"&thinsp;choices&emsp;"}}
+          D -- No --> F
+          E --> F
+          F --> G(("Done!"))
+
+          click B "#botstrap.options.Option.flag"
+          click C "#botstrap.options.Option.default"
+          click E "#botstrap.options.Option.choices"
+          click F "#botstrap.options.Option.help"
+
+          class B,C,E,F field;
+          classDef field font-family: Roboto Mono, font-size: 14px, font-weight: bold
+          classDef field fill: #7c4dff66, stroke: #7c4dffff, stroke-width: 2px
+
+          class A,D textBox;
+          classDef textBox fill: #00b0ff11, stroke: #00b0ff33, stroke-width: 2px
+
+          class G lastNode;
+          classDef lastNode fill: #00c85366, stroke: #00c853cc
+          classDef lastNode font-weight: bold, stroke-width: 2px
+
+          linkStyle 1,2,3,6 opacity: 0.9, stroke-dasharray: 8 4
+          linkStyle 0,7 opacity: 0.9, stroke-dasharray: 5 6
+          linkStyle 4,5,8,9 opacity: 0.9, stroke-width: 2px
+      ```
+    </figure>
+
+<!-- prettier-ignore -->
+::: botstrap.Option
+    options:
       filters:
         - "^[a-z]"
-      heading_level: 1
       show_category_heading: true
+      show_root_heading: false
+      show_root_toc_entry: false
 
 ## Constants
 

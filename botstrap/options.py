@@ -8,7 +8,19 @@ from typing import Any, ClassVar, Iterable
 
 @dataclass(eq=False, frozen=True, kw_only=True)
 class Option:
-    """A model for a custom option to add to the Botstrap-provided CLI."""
+    """A model for a custom option to add to the Botstrap-provided CLI.
+
+    This is a simple [dataclass][1] whose **attributes** (also referred to as
+    **fields**) define the type and behavior of a command-line option, thus allowing
+    for extensive customization of a bot's CLI.
+
+    To add a custom option, create an instance of this class and pass it into the
+    [`parse_args()`][botstrap.Botstrap.parse_args] method of your `Botstrap`
+    integration. You may add as many options as you want, as long as their names
+    are unique. Their values will be returned as an instance of `Option.Results`.
+
+    [1]: https://docs.python.org/3/library/dataclasses.html
+    """
 
     def __post_init__(self) -> None:
         """Ensures all fields are valid in order to prevent problems down the line."""
@@ -53,6 +65,36 @@ class Option:
 
         - This field has no effect on [`help`][botstrap.Option.help], which should
           always be provided for a user-friendly experience! :sparkles:
+
+    ??? note "Note - The default value of a flag"
+        It's important to avoid confusing the value of this **field** with the value of
+        the resulting command-line **option**:
+
+        - To create an option with a `bool` value type, this field should always be set
+          to `True`.
+        - The default value of the resulting command-line option will always be `False`.
+
+        Consequently, if you'd like to create a custom option corresponding to a `bool`
+        value that normally defaults to `True` (such as [`auto_sync_commands`][1]),
+        it must be semantically negated. For example:
+
+        ```{.py title="" .annotate .line-numbers-off}
+        from botstrap import Botstrap, Option
+
+        botstrap = Botstrap()
+        args = botstrap.parse_args(
+            disable_auto_sync=Option(
+                flag=True, # (1)
+                help="Disable automatic syncing of the bot's slash commands.",
+            )
+        )
+        botstrap.run_bot(auto_sync_commands=(not args.disable_auto_sync))
+        ```
+
+        1.  This creates a flag named `--disable-auto-sync` (or `-d` for short) with
+            a default value of `False`.
+
+        [1]: https://docs.pycord.dev/en/master/api.html#discord.Bot.auto_sync_commands
     """
 
     default: str | int | float = ""
@@ -175,7 +217,7 @@ class Option:
     """Hides an option's `-h` menu entry when used as the value for the `help` field."""
 
     class Results(argparse.Namespace):
-        """A simple class to hold the final parsed values for command-line options.
+        """A basic class to hold the final parsed values of custom command-line options.
 
         This class (like its superclass, [`Namespace`][1]) is essentially just an
         `object` with a readable string representation. The names of its attributes
@@ -183,7 +225,7 @@ class Option:
         as keyword arguments to [`parse_args()`][botstrap.Botstrap.parse_args].
 
         If you prefer to work with a `dict` representation of your parsed option values,
-        simply pass your `Option.Results` instance to the built-in Python function
+        simply pass your instance of this class to the built-in Python function
         [`vars()`][2].
 
         [1]: https://docs.python.org/3/library/argparse.html#the-namespace-object

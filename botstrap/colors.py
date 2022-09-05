@@ -84,6 +84,17 @@ class CliColors:
     specify any values you'd like to change. All constructor arguments correspond to
     field names, and all of them are keyword-only except for [`primary`](./#primary).
 
+    ??? tip "Tip - Set your bot's primary color!"
+        <div id="primary"/>
+        The `primary` field is not assigned a color by default. This is deliberate, as
+        it will be used to color your bot's name and is essentially a personal brand.
+        :rainbow:
+
+        To customize this field, simply instantiate this class with your desired color -
+        such as `#!py CliColors(Color.blue)` - and pass it in as the `colors` parameter
+        to the `Botstrap` constructor. See the [example](./#custom-colors) below for
+        more details.
+
     ??? info "Info - Field names and descriptions"
         The following table lists the names of all the fields in this class,
         demonstrates the colors that they use by default, and describes the types of
@@ -97,17 +108,6 @@ class CliColors:
         |`lowlight`{.grey} | Less important text that may safely be de-emphasized.     |
         |`success`{.green} | Text shown when processes or tasks complete successfully. |
         |`warning`{.yellow}| Text shown when something goes wrong, but is recoverable. |
-
-    ??? tip "Tip - Set your bot's primary color!"
-        <div id="primary"/>
-        The `primary` field is not assigned a color by default. This is deliberate, as
-        it will be used to color your bot's name and is essentially a personal brand.
-        :rainbow:
-
-        To customize this field, simply instantiate this class with your desired color -
-        such as `#!py CliColors(Color.blue)` - and pass it in as the `colors` parameter
-        to the `Botstrap` constructor. See the [example](./#custom-colors) below for
-        more details.
 
     ??? example "Example - Customizing specific colors"
         <div id="custom-colors"/>
