@@ -1,6 +1,6 @@
-from . import extras
 from botstrap import Botstrap, CliColors, Color, Option
 from discord import Activity, ActivityType, AllowedMentions
+from examplebot.extras import AlphaBot, initialize_system_logging
 
 
 botstrap = (
@@ -33,7 +33,7 @@ args = botstrap.parse_args(
     alpha=Option(flag=True, help=Option.HIDE_HELP),
 )
 
-extras.initialize_system_logging(log_level=args.loglevel)
+initialize_system_logging(log_level=args.loglevel)
 
 activity = (
     Activity(type=getattr(ActivityType, args.activity.lower()), name=args.status)
@@ -42,5 +42,5 @@ activity = (
 )
 allowed_mentions = AllowedMentions.all() if args.mentions else AllowedMentions.none()
 
-bot_class = extras.AlphaBot if args.alpha else "discord.Bot"
+bot_class = AlphaBot if args.alpha else "discord.Bot"
 botstrap.run_bot(bot_class, activity=activity, allowed_mentions=allowed_mentions)

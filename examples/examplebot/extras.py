@@ -7,13 +7,13 @@ from discord.ext import tasks
 
 def initialize_system_logging(log_level: int) -> None:
     logging.basicConfig(
-        level=(log_level := (log_level * 10)),
+        level=log_level * 10,
         style="{",
         format="{asctime} | {levelname[0]} | {message}",
         datefmt="%Y-%m-%d %H:%M:%S",
         stream=sys.stdout,
     )
-    logging.getLogger("discord").setLevel(logging.WARNING)
+    logging.getLogger("discord").setLevel(logging.ERROR)
 
 
 class AlphaBot(Bot):
