@@ -108,6 +108,11 @@ a[href^="../../"].md-footer__link {
   display: none;
 }
 
+/* Hide the injected version picker widget - it's irrelevant. */
+.rst-versions.rst-badge {
+  display: none;
+}
+
 /* Add some extra horizontal spacing around emoji so they don't look cramped. */
 .twemoji {
   margin: 0 var(--emoji-margin);

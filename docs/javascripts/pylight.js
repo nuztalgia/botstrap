@@ -10,7 +10,7 @@ document$.subscribe(function () {
     ".doc-contents :not(.doc-heading, .doc-label, a, pre, summary) > code",
   )) {
     if (codeElement.innerText) {
-      codeElement.innerHTML = codeElement.innerText; // Clear existing markup.
+      codeElement.textContent = codeElement.innerText; // Clear existing markup.
     }
     codeElement.classList.add("highlight");
     addReferenceLinks(codeElement);
@@ -33,8 +33,10 @@ function addReferenceLinks(element) {
         : "") + rawUrl;
     const isOnPage = window.location.href.match(new RegExp(url + "(#.*)?$"));
     for (const match of element.innerHTML.matchAll(new RegExp(regex, "g"))) {
-      const replacement = `<a href="${isOnPage ? "#" : url}">${match[0]}</a>`;
-      element.innerHTML = element.innerHTML.replace(match[0], replacement);
+      const link = document.createElement("a");
+      link.appendChild(document.createTextNode(match[0]));
+      link.href = isOnPage ? "#" : url;
+      element.innerHTML = element.innerHTML.replace(match[0], link.outerHTML);
     }
   }
 }
@@ -53,6 +55,7 @@ function highlightCodeInline(element) {
     s2: /('.*'|^".*"$|[^=]("[^<>]*")[^>])/g,
   })) {
     for (const match of element.innerHTML.matchAll(regexPattern)) {
+      let matchItem;
       const replacement =
         match.length == 1
           ? `<span class="${spanClass}">${match[0]}</span>`
@@ -75,6 +78,7 @@ function highlightCodeBlock(element) {
   }
   // Properly color string interpolation sequences in Template strings.
   const stringInterpolPattern = /="sx">Template.{23}\(.{24}[^<>]*(\$[a-z_]+)/;
+  let match;
   while ((match = element.innerHTML.match(stringInterpolPattern))) {
     element.innerHTML = element.innerHTML.replace(
       match[0],

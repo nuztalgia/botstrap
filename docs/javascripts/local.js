@@ -51,7 +51,8 @@ function handleOptionPage() {
   for (const codeSpan of document.querySelectorAll(
     ".doc-class ~ .doc-class + .example .language-console code > span",
   )) {
-    if ((match = codeSpan.innerHTML.match(/\$.*?(-\d|\.\d+)/))) {
+    const match = codeSpan.innerHTML.match(/\$.*?(-\d|\.\d+)/);
+    if (match) {
       const replacement = `<span class="m">${match[1]}</span>`;
       codeSpan.innerHTML = codeSpan.innerHTML.replace(match[1], replacement);
     }
