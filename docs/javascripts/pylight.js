@@ -146,6 +146,8 @@ const referenceMap = {
       "https://docs.python.org/3/library/typing.html#typing.Any",
   "\\bCallable\\b":
       "https://docs.python.org/3/library/typing.html#typing.Callable",
+  "\\bNamedTuple\\b":
+      "https://docs.python.org/3/library/typing.html#typing.NamedTuple",
   "(pathlib\\.)?Path\\b":
       "https://docs.python.org/3/library/pathlib.html#concrete-paths",
   "(re\\.)?Pattern":

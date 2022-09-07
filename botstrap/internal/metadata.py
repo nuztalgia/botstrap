@@ -4,10 +4,15 @@ from __future__ import annotations
 import sys
 from email.errors import MessageError
 from importlib import import_module
-from importlib.metadata import PackageNotFoundError, entry_points, metadata
+from importlib.metadata import (
+    PackageNotFoundError,
+    entry_points,
+    metadata,
+    packages_distributions,
+)
 from pathlib import Path
 from types import ModuleType
-from typing import Final, Iterator
+from typing import Final, Iterator, NamedTuple
 
 _CURRENT_DIR: Final[Path] = Path(".").resolve()
 _MAIN_MODULE: Final[ModuleType] = sys.modules["__main__"]
@@ -26,6 +31,68 @@ class Metadata:
     [3]: https://docs.python.org/3/library/importlib.html
     [4]: https://docs.python.org/3/library/index.html
     """
+
+    class BotClassInfo(NamedTuple):
+        """A `NamedTuple` containing information for an available Discord bot class."""
+
+        qualified_name: str
+        """The fully-qualified name of an available class representing a Discord bot."""
+
+        run_method_name: str = "run"
+        """The name of the method to run the bot. May accept a bot token parameter."""
+
+        init_with_token: bool = False
+        """Whether to pass the token into the constructor instead of the run method."""
+
+    @classmethod
+    def get_bot_class_info(cls) -> BotClassInfo:
+        """Returns info about a Discord bot class that may be imported and instantiated.
+
+        The return value of this method is a subclass of `NamedTuple` that will contain
+        information about a bot class from **one** of the Python Discord libraries for
+        which Botstrap includes built-in support: [discord.py][1],&nbsp;
+        [disnake][2],&nbsp; [hikari][3],&nbsp; [interactions.py][4],&nbsp;
+        [NAFF][5],&nbsp; [Nextcord][6], or&thinsp;&thinsp;[Pycord][7].
+
+        [1]: https://github.com/Rapptz/discord.py
+        [2]: https://github.com/DisnakeDev/disnake
+        [3]: https://github.com/hikari-py/hikari
+        [4]: https://github.com/interactions-py/library
+        [5]: https://github.com/NAFTeam/NAFF
+        [6]: https://github.com/nextcord/nextcord
+        [7]: https://github.com/Pycord-Development/pycord
+
+        Returns:
+            A `NamedTuple` containing information about the bot class to instantiate.
+
+        Raises:
+            RuntimeError: If none of the Python Discord libraries with built-in support
+                are installed and/or recognized.
+        """
+        discord_libs = [
+            lib_name
+            for p, package_library_names in packages_distributions().items()
+            if p in ("discord", "disnake", "hikari", "interactions", "naff", "nextcord")
+            # Pycord is supported too - it's included under the "discord" namespace.
+            for lib_name in package_library_names
+            if not ((p == "discord") and (lib_name == "nextcord"))  # False positive.
+        ]
+        try:
+            return cls.BotClassInfo(
+                *{  # type: ignore[arg-type]
+                    "discord.py": ("discord.Client",),
+                    "py-cord": ("discord.Bot",),
+                    "disnake": ("disnake.ext.commands.InteractionBot",),
+                    "hikari": ("hikari.GatewayBot", "run", True),
+                    "discord-py-interactions": ("interactions.Client", "start", True),
+                    "naff": ("naff.Client", "start"),
+                    "nextcord": ("nextcord.ext.commands.Bot",),
+                }[discord_libs[0]]
+            )
+        except (IndexError, KeyError):
+            raise RuntimeError(
+                "Cannot automatically determine the class to use for the Discord bot."
+            ) from None
 
     @classmethod
     def get_default_keys_dir(cls) -> Path:
@@ -133,8 +200,25 @@ class Metadata:
         """
         if program_name in entry_points(group="console_scripts").names:
             return [program_name]
-        else:
-            return list(cls._get_top_level_args())
+
+        def get_top_level_args() -> Iterator[str]:
+            """Yields strings from `orig_argv` up to/including a non-option arg/file."""
+            for arg in sys.orig_argv:
+                arg_as_path = Path(arg)
+                if arg == sys.executable:  # The Python executable (e.g. "python").
+                    yield arg_as_path.stem
+                elif arg_as_path.exists():
+                    try:
+                        yield str(arg_as_path.relative_to("."))
+                    except ValueError:
+                        yield arg_as_path.name
+                    return  # Stop iteration upon encountering the name of a valid file.
+                else:
+                    yield arg
+                    if not arg.startswith("-"):
+                        return  # Stop iteration upon encountering a "non-option" arg.
+
+        return list(get_top_level_args())
 
     @classmethod
     def guess_program_name(cls) -> str | None:
@@ -201,21 +285,3 @@ class Metadata:
             return result
         else:
             raise ImportError(f"Failed to import '{qualified_class_name}'.")
-
-    @classmethod
-    def _get_top_level_args(cls) -> Iterator[str]:
-        """Yields strings from `sys.orig_argv` up to/including a non-option arg/file."""
-        for arg in sys.orig_argv:
-            arg_as_path = Path(arg)
-            if arg == sys.executable:  # This is the Python executable (e.g. "python").
-                yield arg_as_path.stem
-            elif arg_as_path.exists():
-                try:
-                    yield str(arg_as_path.relative_to("."))
-                except ValueError:
-                    yield arg_as_path.name
-                return  # Stop iteration upon encountering the name of an existing file.
-            else:
-                yield arg
-                if not arg.startswith("-"):
-                    return  # Stop iteration upon encountering a "non-option" argument.
