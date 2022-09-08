@@ -48,11 +48,15 @@ class Metadata:
     def get_bot_class_info(cls) -> BotClassInfo:
         """Returns info about a Discord bot class that may be imported and instantiated.
 
-        The return value of this method is a subclass of `NamedTuple` that will contain
-        information about a bot class from **one** of the Python Discord libraries for
-        which Botstrap includes built-in support: [discord.py][1],&nbsp;
+        The return value of this function is a subclass of `NamedTuple` that will
+        contain information about a bot class from **one** of the Python Discord
+        libraries for which Botstrap includes built-in support: [discord.py][1],&nbsp;
         [disnake][2],&nbsp; [hikari][3],&nbsp; [interactions.py][4],&nbsp;
         [NAFF][5],&nbsp; [Nextcord][6], or&thinsp;&thinsp;[Pycord][7].
+
+        If multiple supported libraries are installed, then one of them will be chosen
+        arbitrarily. If **none** of the supported libraries are installed, this function
+        will raise a `RuntimeError`.
 
         [1]: https://github.com/Rapptz/discord.py
         [2]: https://github.com/DisnakeDev/disnake
@@ -61,6 +65,19 @@ class Metadata:
         [5]: https://github.com/NAFTeam/NAFF
         [6]: https://github.com/nextcord/nextcord
         [7]: https://github.com/Pycord-Development/pycord
+
+        ??? info "Info - Contents of the resulting tuple"
+            This function's return type, `BotClassInfo`, is fundamentally just a `tuple`
+            with three named fields:
+
+            - `qualified_name: str` <br>
+              The fully-qualified name of an available class representing a Discord bot.
+            - `run_method_name: str` <br>
+              The name of the method to run the bot. May accept a bot token parameter.
+              Defaults to `"run"`.
+            - `init_with_token: bool` <br>
+              Whether to pass the token into the constructor instead of the run method.
+              Defaults to `False`.
 
         Returns:
             A `NamedTuple` containing information about the bot class to instantiate.

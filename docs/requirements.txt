@@ -104,13 +104,13 @@ mkdocs-autorefs==0.4.1 \
 mkdocs-exclude==1.0.2 \
     --hash=sha256:ba6fab3c80ddbe3fd31d3e579861fd3124513708271180a5f81846da8c7e2a51
     # via -r docs/requirements.in
-mkdocs-include-markdown-plugin==3.6.1 \
-    --hash=sha256:5e7416f23081085a220f7534b2fc7456e74c5a65f3b401da1f29b9e9132b46e5 \
-    --hash=sha256:ea36a7d50ee98028f03574d7bf40a307e16211ad3013a4e42f64494b3c106e9e
+mkdocs-include-markdown-plugin==3.7.1 \
+    --hash=sha256:7175ace62e81b4a7fe9863b392c6ea0bfdfca45ffedd97e549a2d2ab7b280a23 \
+    --hash=sha256:cd106246eb2adc4818e076aa63e9b26a138d22afc7fb051072f98183be841e75
     # via -r docs/requirements.in
-mkdocs-material==8.4.2 \
-    --hash=sha256:166287bb0e4197804906bf0389a852d5ced43182c30127ac8b48a4e497ecd7e5 \
-    --hash=sha256:704c64c3fff126a3923c2961d95f26b19be621342a6a4e49ed039f0bb7a5c540
+mkdocs-material==8.4.3 \
+    --hash=sha256:d5cc6f5023061a663514f61810052ad266f5199feafcf15ad23ea4891b21e6bc \
+    --hash=sha256:f39af3234ce0b60024b7712995af0de5b5227ab6504f0b9c8709c9a770bd94bf
     # via -r docs/requirements.in
 mkdocs-material-extensions==1.0.3 \
     --hash=sha256:a82b70e533ce060b2a5d9eb2bc2e1be201cf61f901f93704b4acf6e3d5983a44 \
