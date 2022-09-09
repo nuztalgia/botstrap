@@ -344,13 +344,20 @@ class Botstrap(CliSession):
             self.exit_process(self.strings.m_exit_by_interrupt, is_error=False)
             return None  # Appease mypy, even though this is technically unreachable.
 
-    def run_bot(self, bot_class: str | type = "discord.Bot", **options: Any) -> None:
-        """Instantiates the bot class and passes the active token to its `run()` method.
+    def run_bot(
+        self,
+        bot_class: str | type = "",
+        *,
+        run_method_name: str = "run",
+        init_with_token: bool = False,
+        **options: Any,
+    ) -> None:
+        """Instantiates the bot class as specified, and runs it using the active token.
 
         In the simplest use case, this method will work out-of-the-box with no
-        customization required. But in practice, you will likely have to specify
-        information such as the fully-qualified name of your `bot_class`, and/or
-        any `**options` expected by its constructor.
+        customization required. But in practice, you will most likely have to specify
+        information such as the fully-qualified name (or the `type`) of your
+        `bot_class`, and/or any `**options` expected by its constructor.
 
         These two parameters provide a straightforward solution for complex use cases
         while preserving most, if not all, of the flexibility afforded by your chosen
@@ -360,10 +367,10 @@ class Botstrap(CliSession):
         ??? example "Example - The simplest use case"
             This example makes the following assumptions:
 
-            - You're using one of the more common Python libraries for Discord:
-              either [discord.py][2] or [Pycord][3].
+            - You're using one of the most common Python API wrappers for Discord:
+              [Pycord][2].
             - Your bot does not subclass `discord.Bot`.
-              (**Note:** Subclassing is often useful. [This guide][4] explains why.)
+              (**Note:** Subclassing is often useful. [This guide][3] explains why.)
             - You've already completed the CLI flow to set up the `"default"` token
               for your bot.
 
@@ -384,35 +391,43 @@ class Botstrap(CliSession):
             ```
 
             Of course, this simple example probably isn't very helpful unless you're
-            trying to play [golf][5] with your bot start-up code.
+            trying to play [golf][4] with your bot start-up code.
             For a much more complex and interesting example, check out the one
             [at the top](./#botstrap-example) of this page.
 
         [1]: https://discord.com/developers/docs/topics/community-resources
-        [2]: https://github.com/Rapptz/discord.py
-        [3]: https://github.com/Pycord-Development/pycord
-        [4]: https://guide.pycord.dev/popular-topics/subclassing-bots/
-        [5]: https://www.geeksforgeeks.org/code-golfing-in-python/
+        [2]: https://github.com/Pycord-Development/pycord
+        [3]: https://guide.pycord.dev/popular-topics/subclassing-bots/
+        [4]: https://www.geeksforgeeks.org/code-golfing-in-python/
 
         Args:
             bot_class:
-                The fully-qualified class name or the `type` of your bot.
-                Will be instantiated with the `**options` keyword args.
-                The default value of this argument is compatible with the
-                [`discord.py`](https://pypi.org/project/discord.py/) and
-                [`py-cord`](https://pypi.org/project/py-cord/) packages.
+                The fully-qualified class name or the `type` of your bot. If omitted,
+                Botstrap will look for installed Discord libraries and try to select
+                a class from one of them. The class identified by this arg will be
+                instantiated with the `**options` keyword args, as well as the
+                value of the active token **if** `init_with_token` is set to `True`.
+            run_method_name:
+                The name of the `bot_class` method that logs the bot in using its token
+                and connects to Discord, effectively "running" or "starting" the bot.
+                This method will receive the token value **unless** `init_with_token`
+                is set to `True`, in which case it will be called with no args.
+            init_with_token:
+                Whether to pass the token value into the constructor of the `bot_class`,
+                instead of the method specified by `run_method_name`. By default, it
+                will go to the latter.
             **options:
                 Optional keyword arguments that will each be forwarded to one of two
                 possible destinations:
 
-                1. Any args accepted by
+                1. Any arguments with names matching the ones accepted by
                 [`retrieve_active_token()`][botstrap.Botstrap.retrieve_active_token]
                 will be passed to that method when it gets called by this one in order
                 to obtain the token to run your bot.
 
-                2. The remaining args will be passed to the constructor of `bot_class`
-                upon instantiation. A common use case for this is specifying any special
-                [`intents`][1] your bot might need.
+                2. The remaining arguments will be passed to the constructor of
+                `bot_class` upon instantiation. This allows you to, for example, define
+                any special [`intents`][1] that might be required by your bot.
 
                 Any options that aren't specified will simply use the default values
                 defined by their respective methods.
@@ -420,12 +435,12 @@ class Botstrap(CliSession):
                 [1]: https://discord.com/developers/docs/topics/gateway#gateway-intents
 
         Raises:
-            ImportError: If `bot_class` is a `str` that refers to a type that
-                can't be imported in the current environment.
-            TypeError: If `bot_class` (after it's converted to a `type`, if it
-                wasn't one already) isn't an instantiable type.
-            SystemExit: If Discord login fails, which means the bot can't run. This
-                may be caused by an invalid token.
+            RuntimeError: If `bot_class` is not provided and a class to use can't be
+                determined from installed packages.
+            ImportError: If `bot_class` is a `str` that refers to a type that can't be
+                imported in the current environment.
+            TypeError: If `bot_class` (after it's converted to a `type`, if it wasn't
+                already) isn't an instantiable type.
         """
 
         def filter_options(**target_options: Any) -> dict[str, Any]:
@@ -443,31 +458,41 @@ class Botstrap(CliSession):
         if (not token_value) or not (token := self._active_token):
             return
 
+        # Begin the process of trying to determine and/or instantiate the bot class.
         original_bot_class = bot_class
+        token_kwarg = {"token": token_value}
+
+        if not bot_class:
+            bot_class, run_method_name, init_with_token = Metadata.get_bot_class_info()
+
         if isinstance(bot_class, str):
-            bot_class = Metadata.import_class(bot_class) or ""
+            bot_class = Metadata.import_class(bot_class)
 
         if not isinstance(bot_class, type):
             raise TypeError(f'Unable to instantiate bot class: "{original_bot_class}"')
 
-        bot = bot_class(**options)  # Token-related `**options` have been filtered out.
+        # `bot_class` is a type, and token-related `**options` have been filtered out.
+        bot = bot_class(**(options | (token_kwarg if init_with_token else {})))
 
-        @bot.event
-        async def on_connect() -> None:
-            bot_id = self.colors.highlight(getattr(bot, "user", type(bot).__name__))
-            self.print_prefixed(
-                self.strings.m_login_success.substitute(bot_id=bot_id, token=token)
-            )
+        if getattr(bot, "event", None):
+            # If we can easily add an event listener, do so to confirm successful login.
+            success_text = self.strings.m_login_success
 
-        self.print_prefixed(
-            self.strings.m_login.substitute(token=token),
-            suppress_newline=True,
-        )
+            @bot.event
+            async def on_connect() -> None:
+                bot_id = self.colors.highlight(getattr(bot, "user", type(bot).__name__))
+                self.print_prefixed(success_text.substitute(bot_id=bot_id, token=token))
 
+        self.print_prefixed(self.strings.m_login.substitute(token=token))
+
+        # Invoke the run method, and try to handle keyboard interrupts & login failures.
         try:
-            bot.run(token_value)
+            getattr(bot, run_method_name)(**({} if init_with_token else token_kwarg))
         except KeyboardInterrupt:
             self.exit_process(self.strings.m_exit_by_interrupt, is_error=False)
-        except Metadata.import_class("discord.LoginFailure"):  # type: ignore[misc]
-            self.print_prefixed(is_error=True)
-            self.exit_process(self.strings.m_login_failure)
+        except Exception as exception:
+            if type(exception).__name__ in ("LoginFailure", "UnauthorizedError"):
+                self.print_prefixed(is_error=True)
+                self.exit_process(self.strings.m_login_failure)
+            else:
+                raise  # Propagate the exception.
