@@ -42,5 +42,5 @@ activity = (
 )
 allowed_mentions = AllowedMentions.all() if args.mentions else AllowedMentions.none()
 
-bot_class = AlphaBot if args.alpha else "discord.Bot"
+bot_class: str | type = AlphaBot if args.alpha else "discord.Bot"
 botstrap.run_bot(bot_class, activity=activity, allowed_mentions=allowed_mentions)

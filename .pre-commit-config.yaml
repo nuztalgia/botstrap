@@ -28,7 +28,7 @@ repos:
       - id: mixed-line-ending
         args: ["--fix=auto"]
       - id: trailing-whitespace
-        exclude: ^\.github\/(ISSUE_TEMPLATE\/[a-z-]*|PULL_REQUEST_TEMPLATE)\.md$
+        exclude: ^\.github\/.*_TEMPLATE.*\.md$
 
   - repo: https://github.com/pre-commit/pygrep-hooks
     rev: v1.9.0
@@ -51,7 +51,6 @@ repos:
     hooks:
       - id: mypy
         args: ["--ignore-missing-imports", "--show-error-codes"]
-        exclude: ^examples\/.*$
 
   - repo: https://github.com/myint/autoflake
     rev: v1.5.3
@@ -86,7 +85,7 @@ repos:
     hooks:
       - id: prettier
         args: ["--config=.github/prettier.json", "--no-error-on-unmatched-pattern"]
-        exclude: ^(.github\/.*_TEMPLATE.*|docs\/internal\/[a-z\-]*)\.md$
+        exclude: ^(\.github\/.*_TEMPLATE.*|docs\/internal\/[a-z\-]*)\.md$
 
   - repo: https://github.com/macisamuele/language-formatters-pre-commit-hooks
     rev: v2.4.0
@@ -101,7 +100,7 @@ repos:
 
   # TODO: Update this when https://github.com/jazzband/pip-tools/pull/1584 is merged.
   - repo: https://github.com/AndydeCleyre/pip-tools
-    rev: ae15c4d
+    rev: bed2edb
     hooks:
       - id: pip-compile
         files: ^docs/requirements\.(in|txt)$
