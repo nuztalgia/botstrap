@@ -22,6 +22,9 @@ class Botstrap(CliSession):
     def __init__(
         self,
         name: str | None = None,
+        *,
+        desc: str | None = None,
+        version: str | None = None,
         colors: CliColors = CliColors.default(),
         strings: CliStrings = CliStrings.default(),
     ) -> None:
@@ -30,8 +33,17 @@ class Botstrap(CliSession):
         Args:
             name:
                 The name of your bot. If omitted, Botstrap will try to determine an
-                appropriate name from package and/or file metadata. If unsuccessful, it
-                will use the default name: `"bot"`.
+                appropriate name from the package and/or file metadata. If unsuccessful,
+                it will use the default name: `"bot"`.
+            desc:
+                A short, human-readable description of your bot. Will be displayed
+                when `--help` or `-h` is specified on the command line. If omitted,
+                Botstrap will try to get a description from the package metadata.
+                If unsuccessful, the `-h` menu will only display usage instructions.
+            version:
+                A string representing the current version of your bot. Will be displayed
+                when `--version` is specified on the command line. If omitted, this
+                option will not be available in your bot's CLI.
             colors:
                 The colors to be used by the CLI. Defaults to commonly-used colors (e.g.
                 green for success, red for error). Set this to `CliColors.off()` to
@@ -43,12 +55,15 @@ class Botstrap(CliSession):
         """
         name = name or Metadata.guess_program_name() or "bot"
         super().__init__(name, colors, strings)
+        self._desc: Final[str | None] = desc
+        self._version: Final[str | None] = version
         self._tokens_by_uid: Final[dict[str, Token]] = {}
         self._active_token: Token | None = None
 
     def register_token(
         self,
         uid: str,
+        *,
         requires_password: bool = False,
         display_name: str | None = None,
         storage_directory: str | Path | None = None,
@@ -158,33 +173,24 @@ class Botstrap(CliSession):
         self._tokens_by_uid[token.uid] = token
         return self
 
-    def parse_args(
-        self,
-        *,
-        description: str | None = None,
-        version: str | None = None,
-        **options: Option,
-    ) -> Option.Results:
+    def parse_args(self, **custom_options: Option) -> Option.Results:
         """Parses any arguments and options passed in via the command line.
 
         This should only be invoked after **all** of your bot's tokens are declared
-        using [`register_token()`][botstrap.Botstrap.register_token], in order to
-        ensure that the [active token][botstrap.Botstrap.retrieve_active_token]
-        can be correctly determined from any command-line arguments passed to your
-        bot's script.
+        using [`register_token()`][botstrap.Botstrap.register_token] in order to ensure
+        that the [active token][botstrap.Botstrap.retrieve_active_token] can be
+        correctly determined from the command that was used to run your bot's script.
 
-        After reading through the rest of this method's documentation, you should decide
-        whether your bot requires the extra customization it provides. **If not**, you
+        If you decide that your bot doesn't need any custom command-line options, you
         may safely skip ahead to the [next step](./#botstrap-flowchart) in the flow.
-        Behind the scenes, this method will be called automatically with the default
-        params.
+        Behind the scenes, this method will be called with no params so that Botstrap
+        can identify the active token and process any built-in options (such as `-h`).
 
         ??? tip "Tip - Define your own command-line options!"
-            <div id="custom-options"/>
             By default, your bot's CLI will include options for `--tokens` and `--help`
             (and `--version`, if you specify a version). However, you aren't limited to
-            those three - this method can accept as many `**options` as you want to
-            define! :tada:
+            just those three - you can define as many `**custom_options` as you want!
+            :tada:
 
             To add custom command-line options, simply create `Option` objects and pass
             them in as keyword arguments when you call this method. The **names** you
@@ -195,9 +201,9 @@ class Botstrap(CliSession):
             ---
             For more information, check out:
 
-            - The **API reference** for `Option`. It includes examples and goes into
-              detail about the fields you need to specify when defining your own custom
-              options.
+            - The **API reference** for `Option`. It includes plenty of examples and
+              goes into detail about the fields you need to specify when defining your
+              own custom options.
             - The documentation for this method's **return type**, `Option.Results`.
               (It only occupies a short section at the very bottom, so it might be
               easy to miss.)
@@ -206,42 +212,35 @@ class Botstrap(CliSession):
               read [this note](../../internal/argstrap#abbr-priority), which explains
               this process and the reasoning behind it.
 
-        ??? example "Example - Customizing your bot's description"
+        ??? example "Example - Adding a custom option to the CLI"
             ```py title="bot.py"
-            from botstrap import Botstrap
+            from botstrap import Botstrap, Option
 
-            Botstrap().parse_args(
-                description="A really cool Discord bot that uses Botstrap!"
+            Botstrap(
+                desc="An example bot with a single custom option that does nothing.",
+            ).parse_args(
+                custom_flag=Option(flag=True, help="Hello! I'm a command-line flag!"),
             )
             ```
 
             ```console title="Console Session"
             $ python bot.py -h
-            usage: bot.py [-t] [--help]
+            usage: bot.py [-c] [-t] [--help]
 
-              A really cool Discord bot that uses Botstrap!
+              An example bot with a single custom option that does nothing.
               Run "python bot.py" with no parameters to start the bot.
 
             options:
-              -t, --tokens  View/manage your saved Discord bot tokens.
-              -h, --help    Display this help message.
+              -c, --custom-flag  Hello! I'm a command-line flag!
+              -t, --tokens       View/manage your saved Discord bot tokens.
+              -h, --help         Display this help message.
             ```
 
         Args:
-            description:
-                A short human-readable description of your bot. Will be displayed when
-                the `--help` or `-h` option is specified on the command line.
-                If omitted, Botstrap will try to fill this field from package metadata.
-                If unsuccessful, the `-h` option will only display your bot's usage
-                instructions.
-            version:
-                A string representing the current version of your bot. Will be displayed
-                when the `--version` or `-v` option is specified on the command line.
-                If omitted, the `-v` option will not be available in your bot's CLI.
-            **options:
-                Keyword args defining your bot's custom command-line options (see the
-                [tip](./#custom-options) for more info). If none are provided, then
-                only the default options will be available in the CLI.
+            **custom_options:
+                Keyword arguments that define your bot's custom command-line options.
+                If none are provided, then only the default options will be available
+                in your bot's CLI.
 
         Returns:
             An object with attribute names & values corresponding to the parsed options.
@@ -253,9 +252,9 @@ class Botstrap(CliSession):
         argstrap = Argstrap(
             cli=self,
             tokens=list(self._tokens_by_uid.values()),
-            description=description,
-            version=version,
-            **options,
+            description=self._desc,
+            version=self._version,
+            **custom_options,
         )
         # The following call to `parse_bot_args()` may raise a `SystemExit` depending on
         # which options were specified on the command line. If it doesn't, then it will
@@ -359,23 +358,28 @@ class Botstrap(CliSession):
         information such as the fully-qualified name (or the `type`) of your
         `bot_class`, and/or any `**options` expected by its constructor.
 
-        These two parameters provide a straightforward solution for complex use cases
-        while preserving most, if not all, of the flexibility afforded by your chosen
-        [Discord library][1] - as long as you're using one of the Python ones, of
-        course. :snake: See the parameter descriptions below for more details.
+        This method's parameters provide a straightforward solution for more complex use
+        cases while preserving most, if not all, of the flexibility afforded by your
+        chosen [Discord API wrapper][1] - as long as you're using one of the Python
+        ones, of course. :snake: See the parameter descriptions below for more detailed
+        usage instructions.
 
         ??? example "Example - The simplest use case"
             This example makes the following assumptions:
 
-            - You're using one of the most common Python API wrappers for Discord:
-              [Pycord][2].
-            - Your bot does not subclass `discord.Bot`.
-              (**Note:** Subclassing is often useful. [This guide][3] explains why.)
+            - You're using one of the Python Discord libraries for which Botstrap
+              includes built-in support:<br>[discord.py][2A],&nbsp; [disnake][2B],&nbsp;
+              [hikari][2C],&nbsp; [interactions.py][2D],&nbsp; [NAFF][2E],&nbsp;
+              [Nextcord][2F], or&thinsp;&thinsp;[Pycord][2G].
+            - Your bot does **not** subclass the default `bot_class` (often named `Bot`
+              or `Client`) from your chosen library.<br>**Note:** Subclassing is often
+              useful, especially when integrating with Botstrap. [This guide][3]
+              explains the basics.
             - You've already completed the CLI flow to set up the `"default"` token
               for your bot.
 
-            If all of the above statements are true, you can run your bot with this
-            extremely basic code:
+            If all of the above statements are true, then you can run your bot with
+            this extremely pared-down code:
 
             ```py title="bot.py"
             from botstrap import Botstrap
@@ -391,12 +395,18 @@ class Botstrap(CliSession):
             ```
 
             Of course, this simple example probably isn't very helpful unless you're
-            trying to play [golf][4] with your bot start-up code.
+            trying to play [golf][4] with your bot's setup code.
             For a much more complex and interesting example, check out the one
             [at the top](./#botstrap-example) of this page.
 
         [1]: https://discord.com/developers/docs/topics/community-resources
-        [2]: https://github.com/Pycord-Development/pycord
+        [2A]: https://github.com/Rapptz/discord.py
+        [2B]: https://github.com/DisnakeDev/disnake
+        [2C]: https://github.com/hikari-py/hikari
+        [2D]: https://github.com/interactions-py/library
+        [2E]: https://github.com/NAFTeam/NAFF
+        [2F]: https://github.com/nextcord/nextcord
+        [2G]: https://github.com/Pycord-Development/pycord
         [3]: https://guide.pycord.dev/popular-topics/subclassing-bots/
         [4]: https://www.geeksforgeeks.org/code-golfing-in-python/
 
@@ -471,7 +481,13 @@ class Botstrap(CliSession):
         if not isinstance(bot_class, type):
             raise TypeError(f'Unable to instantiate bot class: "{original_bot_class}"')
 
-        # `bot_class` is a type, and token-related `**options` have been filtered out.
+        qualified_bot_class_name = ".".join((bot_class.__module__, bot_class.__name__))
+        if (not options) and (qualified_bot_class_name == "discord.client.Client"):
+            # The constructor of discord.py's `Client` requires the `intents` parameter.
+            intents = Metadata.import_class("discord.Intents")
+            options["intents"] = intents.default()  # type: ignore[attr-defined]
+
+        # At this point, `bot_class` is a `type`, and all `**options` are bot-related.
         bot = bot_class(**(options | (token_kwarg if init_with_token else {})))
 
         if getattr(bot, "event", None):

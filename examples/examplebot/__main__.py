@@ -4,11 +4,12 @@ from examplebot.extras import AlphaBot, initialize_system_logging
 
 
 botstrap = (
-    Botstrap(name="examplebot", colors=CliColors(Color.pink))
-    .register_token(
-        uid="dev",
-        display_name=Color.yellow("development"),
+    Botstrap(
+        name="examplebot",
+        desc="A really cool Discord bot that uses Botstrap!",
+        colors=CliColors(primary=Color.pink),
     )
+    .register_token("dev", display_name=Color.yellow("development"))
     .register_token(
         uid="prod",
         requires_password=True,
@@ -17,7 +18,6 @@ botstrap = (
 )
 
 args = botstrap.parse_args(
-    description="A really cool Discord bot that uses Botstrap!",
     loglevel=Option(
         default=2,
         choices=range(1, 5),

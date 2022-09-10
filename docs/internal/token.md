@@ -16,10 +16,10 @@
           class Botstrap {
               _tokens_by_uid: dict[str, Token]
               _active_token: Token | None
-              register_token(uid, ...)
-              parse_args(..., **options)
-              retrieve_active_token(*, ...)
-              run_bot(bot_class, **options)
+              register_token(...)
+              parse_args(...)
+              retrieve_active_token(...)
+              run_bot(...)
           }
           class Secret {
               uid: str
@@ -37,12 +37,12 @@
               name: str
               colors: CliColors
               strings: CliStrings
-              confirm_or_exit(question)
-              exit_process(reason, is_error)
-              get_bool_input(question)
-              get_hidden_input(prompt, ...)
-              get_input(prompt, ...)
-              print_prefixed(message, ...)
+              confirm_or_exit(...)
+              exit_process(...)
+              get_bool_input(...)
+              get_hidden_input(...)
+              get_input(...)
+              print_prefixed(...)
           }
 
           Token --|> Secret : inheritance

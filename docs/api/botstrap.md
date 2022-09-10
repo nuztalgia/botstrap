@@ -12,6 +12,11 @@ a lightly-customized Botstrap integration.
 ??? abstract "Diagram - The Botstrap Flowchart"
 
     <div id="botstrap-flowchart"/>
+    The following diagram provides a high-level roadmap for this class and illustrates
+    which methods are (and aren't) necessary to invoke as you proceed through the flow.
+    Start at the top, and click on each method name that you encounter on the way down
+    for more detailed information and usage instructions.
+
     <figure markdown>
       ```mermaid
       flowchart TB
@@ -20,10 +25,10 @@ a lightly-customized Botstrap integration.
           B -- Yes --> C{{"&thinsp;register_token()&thinsp;&emsp;&emsp;"}}
           C --> D("Do you have more tokens?")
           D -- Yes --> C
-          D -- No --> E("Do you want to customize the CLI?")
+          D -- No --> E("Do you want to customize your bot's CLI?")
           B -- No --> E
           E -- Yes --> F{{"&thinsp;parse_args()&ensp;&emsp;"}}
-          F --> G("Is your bot simple to instantiate?")
+          F --> G("Is your bot simple to create and set up?")
           E -- No --> G
           G -- Yes --> H{{"&thinsp;run_bot()&ensp;&emsp;"}}
           G -- No --> I{{"&thinsp;retrieve_active_token() &ensp;&emsp;&emsp;"}}
@@ -65,16 +70,15 @@ a lightly-customized Botstrap integration.
             └── 📄 extras.py
         ```
 
-        This is an extensive, multi-part example that utilizes the directory structure
-        outlined above.
+        This is an extensive, multi-part example that uses the file structure outlined
+        above, along with the [Pycord][1] library.
 
         If any of the code or console output in the following tabs is unclear, try using
         the search bar at the top of the page to look up the key terms and read through
         the relevant documentation, then come back to this example.
 
-        (And if the docs aren't helpful, please do start a
-        [discussion](https://github.com/nuztalgia/botstrap/discussions)
-        about what could be clarified!)
+        (And if the docs aren't helpful, please do start a [discussion][2] about what
+        could be clarified or improved!)
 
         ---
         The next two tabs (after this "Overview" tab) provide the contents of the
@@ -125,15 +129,16 @@ a lightly-customized Botstrap integration.
         ```
 
         **Note:** For more information about the contents of this file, check out these
-        helpful guides about [setting up logging][1], [subclassing bots][2], and the
-        [tasks extension][3]. (Those links point to the [Pycord][4] website, but the
-        concepts they explain are useful regardless of which Discord API wrapper you're
-        using.)
+        helpful guides about [setting up logging][3], [subclassing bots][4], and the
+        [tasks extension][5]. (Those links point to the [Pycord][1] website, but the
+        concepts they explain are likely useful regardless of which Discord API wrapper
+        you're using.)
 
-        [1]: https://docs.pycord.dev/en/master/logging.html
-        [2]: https://guide.pycord.dev/popular-topics/subclassing-bots/
-        [3]: https://guide.pycord.dev/extensions/tasks/
-        [4]: https://docs.pycord.dev/
+        [1]: https://docs.pycord.dev/
+        [2]: https://github.com/nuztalgia/botstrap/discussions
+        [3]: https://docs.pycord.dev/en/master/logging.html
+        [4]: https://guide.pycord.dev/popular-topics/subclassing-bots/
+        [5]: https://guide.pycord.dev/extensions/tasks/
 
     === "CLI #1: Basics"
         ```console title="1A) Viewing the bot's help menu."
