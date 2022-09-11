@@ -53,6 +53,7 @@ extra_css:
   - stylesheets/material.css
 
 extra_javascript:
+  - https://unpkg.com/tablesort@5.3.0/dist/tablesort.min.js
   - javascripts/global.js
   - javascripts/local.js
   - javascripts/pylight.js
@@ -107,6 +108,7 @@ markdown_extensions:
       alternate_style: true
   - pymdownx.tasklist:
       custom_checkbox: true
+  - tables
   - toc:
       permalink: ☍
       permalink_title: Link to this section

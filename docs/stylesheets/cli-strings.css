@@ -1,0 +1,26 @@
+/* Remove extraneous margins in the tab containing the strings table. */
+.note .tabbed-block > .md-typeset__scrollwrap,
+.note .tabbed-block > .md-typeset__scrollwrap > .md-typeset__table {
+  margin-top: -1px;
+  margin-bottom: -0.3rem;
+}
+
+/* Reduce the line height of all non-header text in the strings table. */
+.note .md-typeset__table tbody {
+  line-height: 1.1;
+}
+
+/* Make the group # in each row appear center-aligned relative to its header. */
+.note .md-typeset__table tbody td:first-child {
+  text-align: center !important;
+}
+.note .md-typeset__table tbody td:first-child::after {
+  content: "";
+  display: inline-block;
+  width: 2.6em;
+}
+
+/* Prevent the field name/type table cells from line-wrapping their contents. */
+.note .md-typeset__table tbody td:not(:first-child, :last-child) {
+  white-space: nowrap;
+}

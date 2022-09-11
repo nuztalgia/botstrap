@@ -84,16 +84,14 @@ class CliStrings:
         default_items = asdict(cls.default()).items()
         return cls(**{key: _get_compact_value(value) for key, value in default_items})
 
-    """ NOTE: This class defines *a lot* of fields.
-    To keep things organized, they're split up according to the following categories:
+    """
+    NOTE: This class defines a lot of fields.
+    To keep things organized, they're divided into the following groups:
 
     1. Basic `#!py str` values (a.k.a. string literals)
     2. `Template` strings with only a `#!py ${token}` placeholder
     3. `Template` strings with assorted placeholders
     4. `#!py tuple` objects containing any number of strings
-
-    Within each of these sections, fields are sorted alphabetically, with an extra
-    newline separating each prefix group.
     """
 
     # region FIELDS
