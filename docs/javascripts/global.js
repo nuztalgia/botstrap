@@ -61,13 +61,13 @@ function insertSpans(element, className, regexPattern, unescapeText = false) {
 function cleanUpSourceCode(lineSpans) {
   let inDocString = false;
   for (const lineSpan of lineSpans) {
-    if (lineSpan.textContent.match(/ {4}"{3}(.*\.)?\n/)) {
-      if (inDocString) {
-        return; // End of docstring; all unwanted lines have been hidden.
+    if (lineSpan.textContent.startsWith('    """')) {
+      if (lineSpan.textContent.endsWith(".\n")) {
+        inDocString = true; // First line of docstring; hide subsequent lines.
       } else {
-        inDocString = true; // Start hiding unwanted lines at the next line.
+        return; // End of docstring; all unwanted lines have been hidden.
       }
-    } else if (inDocString || lineSpan.textContent.match(/ *# noinspection /)) {
+    } else if (inDocString) {
       lineSpan.remove();
     }
   }
@@ -116,28 +116,28 @@ function colorConsoleOutput() {
 /** A mapping of color names to regex patterns capturing text to be colored. */
 const colorPatterns = Object.entries({
   cyan: [
-    /^  (\d)\. .*-&gt;  .*\.\*$/g,
-    /^(BOT TOKEN:|PASSWORD:|Enter your password:)/g,
+    /^  (\d)\. .+ +-&gt;  ~\/[a-z\/]+\.botstrap_keys\/\.[a-z]+\.\*$/g,
+    /^(?:BOT TOKEN|PASSWORD|Enter your password):/g,
     /"(y(?:es)?|\d)"/g,
     /BotstrapBot#1234/g,
   ],
   green: [
     /^Token successfully deleted\.$/g,
-    /^Your token has been .* saved\.$/g,
+    /^Your token has been successfully encrypted and saved\.$/g,
     /production/g,
   ],
   grey: [
-    /^  .*\. .*-&gt;  (.*\.\*)$/g,
-    /^Received a [^\.]*\./g,
-    / [\*\.]*$/g,
+    /^  .+\. .+ +-&gt;  (~\/[a-z\/]+\.botstrap_keys\/\.[a-z]+\.\*)$/g,
+    /^Received a non-affirmative response\./g,
+    / [\*\.]+$/g,
     / Exiting process\.$/g,
-    /(&lt;(float|int|str|token id)&gt;)]/g,
+    /(&lt;(?:float|int|str|token id)&gt;)\]/g,
   ],
   pink: [/^(?:usage: )?(examplebot)/g],
-  red: [/^.* 'exit_process\(\)' function!/g],
+  red: [/^Just testing the 'exit_process\(\)' function!/g],
   yellow: [
-    /^That number doesn't match .* tokens\./g,
-    /^Your password must be .* characters long\./g,
+    /^That number doesn't match any of the above tokens\./g,
+    /^Your password must be at least \d characters long\./g,
     /development/g,
   ],
 });

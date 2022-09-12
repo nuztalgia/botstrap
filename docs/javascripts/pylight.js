@@ -29,17 +29,19 @@ document$.subscribe(function () {
 /** Returns a list of functions that add reference links to a given element. */
 function getReferenceLinkBuilders() {
   const refLinkBuilders = [];
-  const isOnline = window.location.href.match(/\/en\/latest\//);
+  const isOnline = window.location.href.includes(".io/en/latest/");
   // Regexes and raw URLs for references are defined at the bottom of this file.
   for (const [regexPattern, rawUrl] of referenceLinkUrls) {
-    const url = (isOnline && rawUrl.match(/^\//) ? "/en/latest" : "") + rawUrl;
-    const isOnPage = window.location.href.match(new RegExp(url + "(#.*)?$"));
-    const linkHref = isOnPage ? "#" : url;
+    const isLocal = rawUrl.startsWith("/");
+    let url = (isOnline && isLocal ? "/en/latest" : "") + rawUrl;
+    if (isLocal && window.location.href.includes(url) && !url.includes("#")) {
+      url = "#"; // Jump to the top of the current page instead of reloading it.
+    }
     // Each list item is a function that modifies the provided element in-place.
     refLinkBuilders.push((element) => {
       for (const match of element.innerHTML.matchAll(regexPattern)) {
         const link = document.createElement("a");
-        link.href = linkHref; // Closure.
+        link.href = url; // Closure.
         link.appendChild(document.createTextNode(match[0]));
         element.innerHTML = element.innerHTML.replace(match[0], link.outerHTML);
       }
@@ -52,10 +54,10 @@ function getReferenceLinkBuilders() {
 function highlightCodeBlock(element) {
   // Add color to elements that match the position and text of function names.
   for (const punctuationSpan of element.querySelectorAll("span.p")) {
-    if (punctuationSpan.textContent.match(/^\(/)) {
+    if (punctuationSpan.textContent.startsWith("(")) {
       const prevSpan = punctuationSpan.previousElementSibling;
       const isName = prevSpan.className === "n" || prevSpan.className === "fm";
-      if (isName && prevSpan.textContent.match(/^[a-z_][a-zA-Z_]*/)) {
+      if (isName && prevSpan.textContent.match(/^[a-z_][a-zA-Z_]*$/)) {
         prevSpan.className = "nf"; // Change to "function" color (pink).
       }
     }
@@ -109,25 +111,15 @@ const referenceLinkUrls = [
   [/^Secret$/g, "/internal/secret/"],
   [/\bToken\b/g, "/internal/token/"],
   // Anchors within pages in the Botstrap library documentation.
-  [/^CliColors\.default\(\)$/g,
-    "/api/cli-colors/#botstrap.colors.CliColors.default"],
-  [/^CliColors\.off\(\)$/g,
-    "/api/cli-colors/#botstrap.colors.CliColors.off"],
-  [/^CliStrings\.default\(\)$/g,
-    "/api/cli-strings/#botstrap.strings.CliStrings.default"],
-  [/^CliStrings\.compact\(\)$/g,
-    "/api/cli-strings/#botstrap.strings.CliStrings.compact"],
-  [/(^Results$|\bOption\.Results\b)/g,
-    "/api/option/#botstrap.options.Option.Results"],
+  [/^CliColors\.default\(\)$/g, "/api/cli-colors/#botstrap.colors.CliColors.default"],
+  [/^CliColors\.off\(\)$/g, "/api/cli-colors/#botstrap.colors.CliColors.off"],
+  [/^CliStrings\.default\(\)$/g, "/api/cli-strings/#botstrap.strings.CliStrings.default"],
+  [/^CliStrings\.compact\(\)$/g, "/api/cli-strings/#botstrap.strings.CliStrings.compact"],
+  [/(^Results$|\bOption\.Results\b)/g, "/api/option/#botstrap.options.Option.Results"],
   // Pages and/or anchors in the official Python documentation.
-  [/\bAny\b/g,
-    "https://docs.python.org/3/library/typing.html#typing.Any"],
-  [/\bCallable\b/g,
-    "https://docs.python.org/3/library/typing.html#typing.Callable"],
-  [/\bNamedTuple\b/g,
-    "https://docs.python.org/3/library/typing.html#typing.NamedTuple"],
-  [/(pathlib\.)?Path\b/g,
-    "https://docs.python.org/3/library/pathlib.html#concrete-paths"],
-  [/(re\.)?Pattern\b/g,
-    "https://docs.python.org/3/library/re.html#regular-expression-objects"],
+  [/\bAny\b/g, "https://docs.python.org/3/library/typing.html#typing.Any"],
+  [/\bCallable\b/g, "https://docs.python.org/3/library/typing.html#typing.Callable"],
+  [/\bNamedTuple\b/g, "https://docs.python.org/3/library/typing.html#typing.NamedTuple"],
+  [/(pathlib\.)?Path\b/g, "https://docs.python.org/3/library/pathlib.html#concrete-paths"],
+  [/(re\.)?Pattern\b/g, "https://docs.python.org/3/library/re.html#regular-expression-objects"],
 ];

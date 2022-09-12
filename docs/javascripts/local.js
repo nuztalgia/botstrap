@@ -91,11 +91,7 @@ function handleStringsPage() {
   tableBody.querySelector("tr").remove(); // Remove the placeholder table row.
   for (const rowData of tableData) {
     const tableRow = document.createElement("tr");
-    for (let i = 0; i < rowData.length; i++) {
-      const tableCell = document.createElement("td");
-      tableCell.appendChild(getStringsCellContent(i, rowData[i]));
-      tableRow.appendChild(tableCell);
-    }
+    rowData.forEach(addStringsTableCell, tableRow);
     tableBody.appendChild(tableRow);
   }
   new Tablesort(tableRoot); // Make the entire table sortable.
@@ -104,30 +100,34 @@ function handleStringsPage() {
     .forEach((stringSpan) => insertSpans(stringSpan, "si", /\$[a-z_]+/g));
 }
 
-/** Returns a node/element to put in a table cell for the "CliStrings" class. */
-function getStringsCellContent(cellIndex, cellData) {
+/** Creates a table cell with the given data and appends it to the bound row. */
+function addStringsTableCell(cellData, cellIndex) {
+  const tableCell = document.createElement("td");
   const textNode = document.createTextNode(cellData);
   if (cellIndex === 0) {
-    return textNode; // No special formatting for the group number.
-  }
-  const codeElement = document.createElement("code");
-  if (cellIndex === 1) {
-    codeElement.appendChild(textNode); // No need to highlight the field name.
+    tableCell.appendChild(textNode); // No code formatting for the group number.
   } else {
-    codeElement.className = "highlight no-pylight";
-    const spanElement = createElement("span", "s", textNode);
-    if (cellIndex === 2) {
-      // Simple highlighting for the field type (class name or built-in name).
-      spanElement.className = cellData === "Template" ? "nc" : "nb";
+    const codeElement = document.createElement("code");
+    if (cellIndex === 1) {
+      codeElement.appendChild(textNode); // No need to highlight the field name.
     } else {
-      // More complex highlighting based on regex matching for the field value.
-      insertSpans(spanElement, "m", /[^>]((?:\\n)+)/g);
-      insertSpans(spanElement, "o", /\${[a-z_]+}/g);
-      insertSpans(spanElement, "n", /\${([a-z_]+)}/g);
-      insertSpans(spanElement, "p", /(?:^\(|\)$)/g);
-      insertSpans(spanElement, "p", /(?:[^^]")(,)(?: "[^$])/g);
+      codeElement.className = "highlight no-pylight";
+      const spanElement = createElement("span", "s", textNode);
+      if (cellIndex === 2) {
+        // Simple highlighting for the field type (class name or built-in name).
+        spanElement.className = cellData === "Template" ? "nc" : "nb";
+      } else {
+        // More complex highlighting (using regex matching) for the field value.
+        Object.entries({
+          m: /[^>]((?:\\n)+)/g, // Newline characters.
+          p: /(?:^\(|\)$|\${[a-z_]+})/g, // Tuple/placeholder containers.
+          n: /\${([a-z_]+)}/g, // Placeholder names.
+          o: /(?:[^^]")(,)(?: "[^$])/g, // Commas in tuples.
+        }).forEach((entry) => insertSpans(spanElement, ...entry));
+      }
+      codeElement.appendChild(spanElement);
     }
-    codeElement.appendChild(spanElement);
+    tableCell.appendChild(codeElement);
   }
-  return codeElement;
+  this.appendChild(tableCell); // Append the table cell to the bound table row.
 }
