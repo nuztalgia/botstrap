@@ -1,4 +1,4 @@
-/* Define global variables. */
+/* Define console output colors as global variables. */
 :root {
   --color-blue: #55f;
   --color-cyan: #5ff;
@@ -7,11 +7,9 @@
   --color-pink: #f5f;
   --color-red: #f55;
   --color-yellow: #ff5;
-  --emoji-margin: 0.25em;
-  --task-list-item-margin: 2em;
 }
 
-/* Adjust some colors to make them easier to read for light theme users. */
+/* Adjust some colors in light mode to make them easier to read. */
 [data-md-color-scheme="default"] {
   --color-cyan: #00c7df;
   --color-green: #4cbd29;
@@ -41,9 +39,11 @@
 
 /* Adjust some features of the layout on smaller (i.e. mobile) screens. */
 @media screen and (max-width: 76.25em) {
-  /* Hide the "Back to top" button that normally appears when scrolling up. */
-  .md-top.md-icon {
-    display: none;
+  /* Hide the "Back to top" button that normally appears when scrolling up, and
+     other things that don't look good on small screens & are marked as such. */
+  .md-top.md-icon,
+  .hide-on-small-screens {
+    display: none !important;
   }
 }
 
@@ -82,12 +82,15 @@ a[href^="../../"].md-footer__link {
   display: none;
 }
 
-/* Adjust the dimensions and position of annotation "+" buttons in code. */
-.annotate code .md-annotation [data-md-annotation-id]:before {
+/* Adjust the dimensions and position of annotation "+" and "x" buttons. */
+.md-annotation__index [data-md-annotation-id]:before {
   font-size: 0.64rem;
   padding-bottom: unset;
   transform: unset;
   vertical-align: -0.01rem;
+}
+:focus-within > .md-annotation__index [data-md-annotation-id]:before {
+  transform: rotate(45deg) scale(1.25) translate(0.02rem, -0.01rem);
 }
 
 /* Adjust the width of annotation tooltips in code. */
@@ -115,7 +118,7 @@ a[href^="../../"].md-footer__link {
 
 /* Add some extra horizontal spacing around emoji so they don't look cramped. */
 .twemoji {
-  margin: 0 var(--emoji-margin);
+  margin: 0 0.25em;
 }
 
 /* Color all the code/span elements that are tagged with a color class. */
@@ -160,16 +163,16 @@ a[href^="../../"].md-footer__link {
 
 /* Adjust the sizing and spacing of task list items and their checkboxes. */
 [dir="ltr"] .md-typeset .task-list .task-list-item {
-  margin-left: var(--task-list-item-margin);
+  margin-left: 2em;
 }
 [dir="rtl"] .md-typeset .task-list .task-list-item {
-  margin-right: var(--task-list-item-margin);
+  margin-right: 2em;
 }
 [dir="ltr"] .md-typeset .task-list-indicator:before {
-  left: calc(-1 * var(--task-list-item-margin));
+  left: -2em;
 }
 [dir="rtl"] .md-typeset .task-list-indicator:before {
-  right: calc(-1 * var(--task-list-item-margin));
+  right: -2em;
 }
 .md-typeset .task-list-indicator:before {
   -webkit-mask-size: auto;

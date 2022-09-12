@@ -195,7 +195,7 @@ class Botstrap(CliSession):
             To add custom command-line options, simply create `Option` objects and pass
             them in as keyword arguments when you call this method. The **names** you
             choose for your keyword arguments will determine the names of the options.
-            For example, an argument named `my_custom_flag` will create the CLI option
+            For example, an arg named `my_custom_flag` will create the CLI option
             `--my-custom-flag`.
 
             ---
@@ -276,7 +276,7 @@ class Botstrap(CliSession):
         will be the basic `"default"` token.
 
         The **value** of the token is a string containing its decrypted data,
-        which can be plugged into your bot's `run()` method to log it into Discord.
+        which can be plugged into your bot to log it into Discord.
         This can (and for security reasons, should) be handled automatically by
         [`run_bot()`][botstrap.Botstrap.run_bot] - which means that ideally, you
         won't need to call this method at all.

@@ -4,10 +4,9 @@
       heading_level: 1
       members: false
 
-For an overview of this class's usage, see the [flowchart](./#botstrap-flowchart) below.
-It establishes a foundation for the subsequent [example](./#botstrap-example), which
-includes code snippets and demonstrates the **CLI** (command-line interface) created by
-a lightly-customized Botstrap integration.
+For an overview of this class's usage, see the flowchart below. It establishes a
+foundation for the subsequent example, which includes code snippets and demonstrates the
+**CLI** (command-line interface) created by a lightly-customized Botstrap integration.
 
 ??? abstract "Diagram - The Botstrap Flowchart"
 

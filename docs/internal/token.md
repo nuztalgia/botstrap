@@ -3,7 +3,7 @@
       heading_level: 1
       members: false
 
-??? abstract "Diagram - Class Relationships & Structure"
+??? abstract hide-on-small-screens "Diagram - Class Relationships & Structure"
 
     <figure markdown>
       ```mermaid

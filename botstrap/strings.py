@@ -23,7 +23,6 @@ class CliStrings:
     [1]: https://docs.python.org/3/library/string.html#template-strings
 
     ??? info "Info - Field name prefixes"
-        <div id="prefix-info"/>
         Each field name begins with a **single-letter prefix** that indicates the
         subject of the string, defined as follows:
 
@@ -58,9 +57,8 @@ class CliStrings:
         ```
 
         **Note:** The strings customized in this example belong to the fields named
-        `m_login` and `m_login_success`.<br>
-        See the info box [above](./#prefix-info) for an explanation of `m_` and other
-        prefixes used in the naming of this class's fields.
+        `m_login` and `m_login_success`.<br>See the info box above for an explanation
+        of `m_` and other prefixes used in the naming of this class's fields.
     """
 
     @classmethod
@@ -88,10 +86,10 @@ class CliStrings:
     NOTE: This class defines a lot of fields.
     To keep things organized, they're divided into the following groups:
 
-    1. Basic `#!py str` values (a.k.a. string literals)
-    2. `Template` strings with only a `#!py ${token}` placeholder
+    1. Basic `str` values (a.k.a. string literals)
+    2. `Template` strings with only a `${token}` placeholder
     3. `Template` strings with assorted placeholders
-    4. `#!py tuple` objects containing any number of strings
+    4. `tuple` objects containing any number of strings
     """
 
     # region FIELDS

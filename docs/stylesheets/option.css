@@ -27,3 +27,16 @@ h3 > .doc-labels > .doc-label-class-attribute {
 .doc-class ~ .doc-class + .example pre {
   margin-bottom: 0;
 }
+
+/* Hide parts of the `Results` example that don't look good on small screens. */
+@media screen and (max-width: 76.25em) {
+  .highlight .hll {
+    all: unset;
+  }
+  .doc-class ~ .doc-class + .example .tabbed-block > .highlight ~ *,
+  .doc-class ~ .doc-class + .example .annotate code .md-annotation,
+  .doc-class ~ .doc-class + .example .language-console code > :nth-child(-n + 8),
+  .doc-class ~ .doc-class + .example .language-console code > :nth-child(18) {
+    display: none;
+  }
+}

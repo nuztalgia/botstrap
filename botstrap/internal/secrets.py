@@ -48,12 +48,12 @@ class Secret:
         to decipher the original data.
 
         If a password is provided when a secret's
-        [`write()`][botstrap.internal.Secret.write] method is invoked,
-        the specified data will be encrypted using an algorithm based on [this][3]
-        reference implementation. The password will be run through the [`PBKDF2HMAC`][4]
-        key derivation function in order to obtain the Fernet key for the secret.
-        The result of this process is that the original password will be required to
-        "complete" the key **every time** the secret is decrypted.
+        [`write()`][botstrap.internal.Secret.write] method is invoked, the data will be
+        encrypted using an algorithm based on [this][3] reference implementation. The
+        password will be run through the [`PBKDF2HMAC`][4] key derivation function to
+        obtain the Fernet key for the secret. As a result, the original password will
+        have to be accurately entered in order to "complete" the key **every time** the
+        secret is decrypted.
 
     [1]:https://cryptography.io/en/latest/fernet/
     [2]:https://pypi.org/project/cryptography/

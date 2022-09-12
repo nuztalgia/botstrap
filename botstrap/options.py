@@ -208,7 +208,7 @@ class Option:
 
         Notice that `-y` appears without a description because it didn't specify a value
         for its `help` field, while `-z` does not appear in the help menu at all because
-        it specified `#!py Option.HIDE_HELP`. However, both options are equally usable.
+        it specified `Option.HIDE_HELP`. However, both options are equally usable.
     """
 
     # endregion FIELDS

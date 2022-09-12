@@ -1,6 +1,6 @@
 /* Fine-tune the alignment of the emoji in the title of the example box. */
 .admonition.example .admonition-title > .twemoji[title=":rainbow_flag:"] {
-  margin: 0.05em calc(var(--emoji-margin) * 1.4) 0;
+  margin: 0.05em 0.35em 0;
 }
 
 /* Make the syntax highlighting colors in the example a bit less noisy. */

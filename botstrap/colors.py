@@ -91,9 +91,8 @@ class CliColors:
         :rainbow:
 
         To customize this field, simply instantiate this class with your desired color -
-        such as `#!py CliColors(Color.blue)` - and pass it in as the `colors` parameter
-        to the `Botstrap` constructor. See the [example](./#custom-colors) below for
-        more details.
+        such as `CliColors(Color.blue)` - and pass it in as the `colors` parameter to
+        the `Botstrap` constructor. See the example below for more details.
 
     ??? info "Info - Field names and descriptions"
         The following table lists the names of all the fields in this class,
@@ -110,7 +109,6 @@ class CliColors:
         |`warning`{.yellow}| Text shown when something goes wrong, but is recoverable. |
 
     ??? example "Example - Customizing specific colors"
-        <div id="custom-colors"/>
         Let's say you want to use cyan as your bot's primary color... but cyan is the
         default highlight color, so that might be confusing. Fortunately, it's easy to
         change the highlight color too! This example demonstrates how to change the
