@@ -7,14 +7,14 @@
 document$.subscribe(function () {
   // Remove the "#" comment characters preceding annotations in code blocks.
   for (const comment of document.querySelectorAll(".annotate code span.c1")) {
-    if (comment.innerHTML.match(/# .*?\(\d\)$/)) {
-      comment.innerHTML = comment.innerHTML.replace(/# .*?\(/, "(");
+    if (comment.textContent.match(/# .*?\(\d\)$/)) {
+      comment.textContent = comment.textContent.replace(/# .*?\(/, "(");
     }
   }
   // Remove redundant docstrings and irrelevant comments in source code blocks.
-  const sourceCodeSummary = /^Source code in <code>botstrap.*\.py<\/code>$/;
   for (const quote of document.querySelectorAll("details.quote")) {
-    if (quote.querySelector("summary").innerHTML.match(sourceCodeSummary)) {
+    const summaryText = quote.querySelector("summary").textContent;
+    if (summaryText.match(/^Source code in botstrap.*\.py$/)) {
       cleanUpSourceCode(quote.querySelectorAll("pre code > span"));
     }
   }
@@ -28,12 +28,45 @@ document$.subscribe(function () {
   colorConsoleOutput();
 });
 
+/** Returns a new element with a class, optionally appending a child node. */
+function createElement(tagName, className, content = null) {
+  const element = document.createElement(tagName);
+  element.className = className;
+  if (content) {
+    element.appendChild(
+      typeof content === "string" ? document.createTextNode(content) : content,
+    );
+  }
+  return element;
+}
+
+/** Wraps each string that matches the regex in a <span> of the given class. */
+function insertSpans(element, className, regexPattern, unescapeText = false) {
+  const getSpanReplacement = (content) => {
+    if (unescapeText) {
+      content = content.replaceAll("&gt;", ">").replaceAll("&lt;", "<");
+    }
+    return createElement("span", className, content).outerHTML;
+  };
+  for (const match of element.innerHTML.matchAll(regexPattern)) {
+    const replacement =
+      match.length === 1
+        ? getSpanReplacement(match[0])
+        : match[0].replace(match[1], getSpanReplacement(match[1]));
+    element.innerHTML = element.innerHTML.replace(match[0], replacement);
+  }
+}
+
 /** Removes redundant docstrings & irrelevant comments in source code blocks. */
 function cleanUpSourceCode(lineSpans) {
   let inDocString = false;
   for (const lineSpan of lineSpans) {
     if (lineSpan.textContent.match(/ {4}"{3}(.*\.)?\n/)) {
-      inDocString = !inDocString;
+      if (inDocString) {
+        return; // End of docstring; all unwanted lines have been hidden.
+      } else {
+        inDocString = true; // Start hiding unwanted lines at the next line.
+      }
     } else if (inDocString || lineSpan.textContent.match(/ *# noinspection /)) {
       lineSpan.remove();
     }
@@ -44,9 +77,9 @@ function cleanUpSourceCode(lineSpans) {
 function removeDefaultArgs(docFunction) {
   const heading = docFunction.querySelector(".doc-heading code");
   for (const match of heading.innerHTML.matchAll(
-    / ?<span class="o">=<\/span>.*?<span class="p">(\(\))?(,|\))<\/span>/g,
+    / ?<span class="o">=<\/span>.*?<span class="p">(?:\(\))?(,|\))<\/span>/g,
   )) {
-    const replacement = `<span class="p">${match[2]}</span>`;
+    const replacement = createElement("span", "p", match[1]).outerHTML;
     heading.innerHTML = heading.innerHTML.replace(match[0], replacement);
   }
 }
@@ -57,20 +90,8 @@ function removePropertyParens(docFunction) {
     const navLink = document.querySelector(
       `.md-nav__link[href="#${docFunction.querySelector("h2").id}"]`,
     );
-    navLink.innerHTML = navLink.innerHTML.replace(/\(\)/, "");
+    navLink.textContent = navLink.textContent.replace("()", "");
     docFunction.querySelector(".doc-heading code > .p")?.remove();
-  }
-}
-
-/** Adds color to all text matched by the regex pattern in the given element. */
-function addColorByRegex(element, colorName, regexPattern) {
-  for (const match of element.innerHTML.matchAll(regexPattern)) {
-    const colorSpan = `<span class="${colorName}">`;
-    const replacement =
-      match.length == 1
-        ? `${colorSpan}${match[0]}</span>`
-        : match[0].replace(match[1], `${colorSpan}${match[1]}</span>`);
-    element.innerHTML = element.innerHTML.replace(match[0], replacement);
   }
 }
 
@@ -79,24 +100,25 @@ function colorConsoleOutput() {
   for (const element of document.querySelectorAll(
     ":is(.language-console, .language-pycon):not(.custom-colors) span.go",
   )) {
-    for (const [colorName, regexPatterns] of Object.entries(colorPatterns)) {
+    for (const [colorName, regexPatterns] of colorPatterns) {
+      const unescapeText = colorName === "grey";
       for (const regexPattern of regexPatterns) {
-        addColorByRegex(element, colorName, regexPattern);
+        insertSpans(element, colorName, regexPattern, unescapeText);
       }
     }
   }
   for (const element of document.querySelectorAll(".custom-colors span.go")) {
-    addColorByRegex(element, "cyan", /^cyan-bot/g);
-    addColorByRegex(element, "pink", /"(y(es)?)"/g);
+    insertSpans(element, "cyan", /^cyan-bot/g);
+    insertSpans(element, "pink", /"(y(?:es)?)"/g);
   }
 }
 
 /** A mapping of color names to regex patterns capturing text to be colored. */
-const colorPatterns = {
+const colorPatterns = Object.entries({
   cyan: [
     /^  (\d)\. .*-&gt;  .*\.\*$/g,
     /^(BOT TOKEN:|PASSWORD:|Enter your password:)/g,
-    /"(y(es)?|\d)"/g,
+    /"(y(?:es)?|\d)"/g,
     /BotstrapBot#1234/g,
   ],
   green: [
@@ -118,4 +140,4 @@ const colorPatterns = {
     /^Your password must be .* characters long\./g,
     /development/g,
   ],
-};
+});

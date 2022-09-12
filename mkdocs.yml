@@ -98,7 +98,6 @@ markdown_extensions:
       linenums_style: pymdownx-inline
       pygments_lang_class: true
       use_pygments: true
-  - pymdownx.inlinehilite
   - pymdownx.superfences:
       custom_fences:
         - name: mermaid

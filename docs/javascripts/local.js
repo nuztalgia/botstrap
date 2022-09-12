@@ -6,77 +6,68 @@
 
 document$.subscribe(function () {
   // Run custom logic if the url matches the pattern for a specific page.
-  for (const [urlPattern, customHandler] of Object.entries({
-    "/(api|internal)/$": handleReferencePage,
-    "/api/cli-strings/": handleStringsPage,
-    "/api/color/": handleColorPage,
-    "/api/option/": handleOptionPage,
-  })) {
+  for (const [urlPattern, customHandler] of [
+    ["/(api|internal)/$", handleReferencePage],
+    ["/api/cli-strings/", handleStringsPage],
+    ["/api/color/", handleColorPage],
+    ["/api/option/", handleOptionPage],
+  ]) {
     if (window.location.href.match(urlPattern)) {
       customHandler();
     }
   }
 });
 
-/** Executes custom logic on "API Reference" and "Internal Reference" pages. */
-function handleReferencePage() {
-  // Remove all header anchor links.
-  for (const link of document.querySelectorAll(".md-typeset a.headerlink")) {
-    link.remove();
-  }
-  // Follow the first detected link when a card in a clickable grid is clicked.
-  for (const cardElement of document.querySelectorAll(
-    ".clickable.grid :is(.card, li)",
-  )) {
-    cardElement.addEventListener("click", function () {
-      cardElement.querySelector("a")?.click();
-    });
-  }
-}
-
 /** Executes custom logic to complete the example on the "Color" page. */
 function handleColorPage() {
-  // Append the colorful "PRIDE!" console output to the end of the example.
-  document.querySelector(".admonition.example code").innerHTML +=
-    '<span class="pink">P</span><span class="red">R</span>' +
-    '<span class="yellow">I</span><span class="green">D</span>' +
-    '<span class="cyan">E</span><span class="blue">!</span>';
+  const outputSpan = document
+    .querySelector(".admonition.example code")
+    .appendChild(document.createElement("span"))
+    .appendChild(createElement("span", "go"));
+  // prettier-ignore
+  const outputCharacters = Object.entries({
+    pink: "P", red: "R", yellow: "I", green: "D", cyan: "E", blue: "!",
+  });
+  // Add the colorful "PRIDE!" console output to the end of the example.
+  for (const [colorClass, outputCharacter] of outputCharacters) {
+    outputSpan.appendChild(createElement("span", colorClass, outputCharacter));
+  }
 }
 
 /** Executes custom logic to improve clarity on the "Option" page. */
 function handleOptionPage() {
   for (const heading of document.querySelectorAll("h3.doc-heading > code")) {
-    processOptionHeading(heading);
-  }
-  // Standardize numeric (int/float) option coloring in console code spans.
-  for (const codeSpan of document.querySelectorAll(
-    ".doc-class ~ .doc-class + .example .language-console code > span",
-  )) {
-    const match = codeSpan.innerHTML.match(/\$.*?(-\d|\.\d+)/);
-    if (match) {
-      const replacement = `<span class="m">${match[1]}</span>`;
-      codeSpan.innerHTML = codeSpan.innerHTML.replace(match[1], replacement);
+    if (!heading.textContent.match(/^[a-z_]*: /)) {
+      // This is a constant or inner class heading. Prepend the main class name.
+      const classNameNode = document.createTextNode("Option.");
+      heading.insertBefore(classNameNode, heading.firstChild);
+    }
+    // Additional processing for constant headings: Remove the default value.
+    if (heading.textContent.match(/^Option.[A-Z_]*: /)) {
+      heading.innerHTML = heading.innerHTML.replace(/ <span class="o">=.*/, "");
     }
   }
+  document // Standardize numeric argument coloring in the "Results" example.
+    .querySelectorAll("h2#nested-classes ~ .example .language-console code > *")
+    .forEach((lineSpan) => insertSpans(lineSpan, "m", /\$ .*?(-\d|\.\d+)/g));
 }
 
-/** Clarifies constant and inner class headings for the "Option" class. */
-function processOptionHeading(heading) {
-  if (heading.innerText.match(/^[a-z_]*: /)) {
-    // This is a field heading. No need for special processing.
-    return;
-  }
-  // This is a constant or inner class heading. Prepend the outer class name.
-  heading.innerHTML = `Option.${heading.innerHTML}`;
-  // Additional processing for constant headings: Remove the default value.
-  if (heading.innerText.match(/^Option.[A-Z_]*: /)) {
-    heading.innerHTML = heading.innerHTML.replace(/ <span class="o">=.*$/, "");
-  }
+/** Executes custom logic on "API Reference" and "Internal Reference" pages. */
+function handleReferencePage() {
+  document // Remove all header anchor links.
+    .querySelectorAll(".md-typeset a.headerlink")
+    .forEach((linkElement) => linkElement.remove());
+  document // Follow the first link when a card in a clickable grid is clicked.
+    .querySelectorAll(".clickable.grid :is(.card, li)")
+    .forEach((clickableCardElement) => {
+      const onClick = () => clickableCardElement.querySelector("a")?.click();
+      clickableCardElement.addEventListener("click", onClick);
+    });
 }
 
 /** Executes custom logic to create a dynamic table on the "CliStrings" page. */
 function handleStringsPage() {
-  const tableData = []; // First, populate this data by parsing the source code.
+  const tableData = []; // First, populate this list by parsing the source code.
   const sourceContent = document.querySelector(".note pre > code").textContent;
   const groupMatches = Array.from(
     sourceContent.matchAll(/#(?: -)*\n\n((?:.*\n?)*?)(?:\n#(?: -)*|$)/g),
@@ -108,6 +99,9 @@ function handleStringsPage() {
     tableBody.appendChild(tableRow);
   }
   new Tablesort(tableRoot); // Make the entire table sortable.
+  document // Minor footnote - highlight Template placeholders in the example.
+    .querySelectorAll(".example > .language-py code span.s2")
+    .forEach((stringSpan) => insertSpans(stringSpan, "si", /\$[a-z_]+/g));
 }
 
 /** Returns a node/element to put in a table cell for the "CliStrings" class. */
@@ -120,39 +114,20 @@ function getStringsCellContent(cellIndex, cellData) {
   if (cellIndex === 1) {
     codeElement.appendChild(textNode); // No need to highlight the field name.
   } else {
-    codeElement.classList.add("highlight"); // Highlight the field type & value.
-    const spanElement = document.createElement("span");
-    spanElement.appendChild(textNode);
+    codeElement.className = "highlight no-pylight";
+    const spanElement = createElement("span", "s", textNode);
     if (cellIndex === 2) {
       // Simple highlighting for the field type (class name or built-in name).
-      spanElement.classList.add(cellData === "Template" ? "nc" : "nb");
+      spanElement.className = cellData === "Template" ? "nc" : "nb";
     } else {
       // More complex highlighting based on regex matching for the field value.
-      spanElement.classList.add("s");
       insertSpans(spanElement, "m", /[^>]((?:\\n)+)/g);
       insertSpans(spanElement, "o", /\${[a-z_]+}/g);
+      insertSpans(spanElement, "n", /\${([a-z_]+)}/g);
       insertSpans(spanElement, "p", /(?:^\(|\)$)/g);
       insertSpans(spanElement, "p", /(?:[^^]")(,)(?: "[^$])/g);
     }
     codeElement.appendChild(spanElement);
   }
   return codeElement;
-}
-
-/** Wraps each string that matches the regex in a <span> of the given class. */
-function insertSpans(containerElement, spanClassName, regexPattern) {
-  for (const match of containerElement.innerHTML.matchAll(regexPattern)) {
-    const newSpan = document.createElement("span");
-    newSpan.classList.add(spanClassName);
-    let newHTML;
-    if (match.length === 1) {
-      newSpan.appendChild(document.createTextNode(match[0]));
-      newHTML = newSpan.outerHTML;
-    } else {
-      newSpan.appendChild(document.createTextNode(match[1]));
-      newHTML = match[0].replace(match[1], newSpan.outerHTML);
-    }
-    newHTML = containerElement.innerHTML.replace(match[0], newHTML);
-    containerElement.innerHTML = newHTML;
-  }
 }
