@@ -11,20 +11,14 @@ document$.subscribe(function () {
       comment.textContent = comment.textContent.replace(/# .*?\(/, "(");
     }
   }
-  // Remove redundant docstrings and irrelevant comments in source code blocks.
-  for (const quote of document.querySelectorAll("details.quote")) {
-    const summaryText = quote.querySelector("summary").textContent;
-    if (summaryText.match(/^Source code in botstrap.*\.py$/)) {
-      cleanUpSourceCode(quote.querySelectorAll("pre code > span"));
-    }
-  }
   // Clean up headings for all functions and remove parentheses for properties.
   for (const docFunction of document.querySelectorAll(".doc-function")) {
     removeDefaultArgs(docFunction);
     removePropertyParens(docFunction);
   }
-  // Remove the primary header anchor link and add color to console output text.
+  // Remove the 1st anchor link and process source code & console output blocks.
   document.querySelector("h1 a.headerlink")?.remove();
+  processSourceCode();
   colorConsoleOutput();
 });
 
@@ -57,15 +51,37 @@ function insertSpans(element, className, regexPattern, unescapeText = false) {
   }
 }
 
-/** Removes redundant docstrings & irrelevant comments in source code blocks. */
-function cleanUpSourceCode(lineSpans) {
+/** Adds a GitHub link and removes irrelevant elements in source code blocks. */
+function processSourceCode() {
+  const repoUrl = document.querySelector(".md-header__source > a").href;
+  const getLine = (lineSpan) => lineSpan.id.match(/^line-\d-(\d+)$/)[1];
+  for (const element of document.querySelectorAll("details.quote")) {
+    const summaryText = element.querySelector("summary").textContent;
+    const fileMatch = summaryText.match(/^Source code in ([\w\/\\]+\.[a-z]+)$/);
+    if (fileMatch) {
+      const lineSpans = element.querySelectorAll("pre > code > span");
+      const button = createElement("button", "md-icon source-link-button");
+      button.title = "View source on GitHub";
+      const link = createElement("a", "source-link", button);
+      link.href =
+        `${repoUrl}/tree/main/${fileMatch[1].replaceAll("\\", "/")}#L` +
+        `${getLine(lineSpans[0])}-L${getLine(lineSpans[lineSpans.length - 1])}`;
+      element.querySelector("pre > :first-child").after(link);
+      element.querySelector("span.filename").remove();
+      removeSourceCodeDocs(lineSpans);
+    }
+  }
+}
+
+/** Removes redundant docstring lines in source code blocks. */
+function removeSourceCodeDocs(lineSpans) {
   let inDocString = false;
   for (const lineSpan of lineSpans) {
     if (lineSpan.textContent.startsWith('    """')) {
       if (lineSpan.textContent.endsWith(".\n")) {
-        inDocString = true; // First line of docstring; hide subsequent lines.
+        inDocString = true; // First line of docstring; remove subsequent lines.
       } else {
-        return; // End of docstring; all unwanted lines have been hidden.
+        return; // End of docstring; all unwanted lines have been removed.
       }
     } else if (inDocString) {
       lineSpan.remove();
@@ -95,11 +111,16 @@ function removePropertyParens(docFunction) {
   }
 }
 
-/** Adds color to certain strings (defined below) in console output elements. */
+/** Adds color to certain strings (defined below) in console output lines. */
 function colorConsoleOutput() {
   for (const element of document.querySelectorAll(
     ":is(.language-console, .language-pycon):not(.custom-colors) span.go",
   )) {
+    const match = element.textContent.match(/(?:,|:) ([a-z01\.]+|(?:doo ?)+)$/);
+    if (match) {
+      element.textContent = element.textContent.slice(0, match.index + 2);
+      element.after(document.createTextNode(match[1])); // Move user input out.
+    }
     for (const [colorName, regexPatterns] of colorPatterns) {
       const unescapeText = colorName === "grey";
       for (const regexPattern of regexPatterns) {

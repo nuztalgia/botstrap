@@ -161,6 +161,43 @@ a[href^="../../"].md-footer__link {
   color: var(--md-code-hl-punctuation-color);
 }
 
+/* Define the source link button (a link to GitHub in a source code block). */
+.source-link-button {
+  color: var(--md-default-fg-color--lightest);
+  cursor: pointer;
+  height: 1.5em;
+  position: absolute;
+  right: 0.5em;
+  top: 0.5em;
+  transition: color 0.25s;
+  width: 1.5em;
+}
+
+/* Define the icon used by the source link button. */
+.source-link-button:after {
+  background-color: currentcolor;
+  content: "";
+  display: block;
+  height: 1.25em;
+  margin: 0 auto;
+  mask-image: var(--md-search-result-icon);
+  -webkit-mask-image: var(--md-search-result-icon);
+  width: 1.25em;
+}
+
+/* Fix source link button coloring in hover states. */
+:hover > .source-link > .source-link-button {
+  color: var(--md-default-fg-color--light);
+}
+.source-link-button:hover {
+  color: var(--md-accent-fg-color) !important;
+}
+
+/* Hide the "copy to clipboard" button if a source link button is present. */
+.quote pre > .source-link + .md-clipboard.md-icon {
+  display: none;
+}
+
 /* Adjust the sizing and spacing of task list items and their checkboxes. */
 [dir="ltr"] .md-typeset .task-list .task-list-item {
   margin-left: 2em;
