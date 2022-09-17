@@ -61,7 +61,8 @@ extra_javascript:
 plugins:
   - exclude:
       regex:
-        - ^(.*/)?README\.md$
+        - ^(.+/)*readme\.md$
+        - ^(.+/)*venv.*$
         - ^images/robot-happy.*$
         - ^requirements\.(in|txt)$
   - include-markdown

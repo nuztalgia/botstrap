@@ -26,7 +26,7 @@ repos:
       - id: fix-encoding-pragma
         args: ["--remove"]
       - id: mixed-line-ending
-        args: ["--fix=auto"]
+        args: ["--fix=lf"]
       - id: trailing-whitespace
         exclude: ^\.github\/.*_TEMPLATE.*\.md$
 
@@ -97,14 +97,3 @@ repos:
     rev: 0.18.2
     hooks:
       - id: check-readthedocs
-
-  # TODO: Update this when https://github.com/jazzband/pip-tools/pull/1584 is merged.
-  - repo: https://github.com/AndydeCleyre/pip-tools
-    rev: bed2edb
-    hooks:
-      - id: pip-compile
-        files: ^docs/requirements\.(in|txt)$
-        args: ["--force-lf-newlines", "--generate-hashes", "-q", "docs/requirements.in"]
-
-ci:
-  skip: [pip-compile]
