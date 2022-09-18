@@ -189,7 +189,7 @@ a[href^="../../"].md-footer__link {
 :hover > .source-link > .source-link-button {
   color: var(--md-default-fg-color--light);
 }
-.source-link-button:hover {
+.source-link-button:is(:focus, :hover) {
   color: var(--md-accent-fg-color) !important;
 }
 

@@ -57,14 +57,14 @@ function processSourceCode() {
   const getLine = (lineSpan) => lineSpan.id.match(/^line-\d-(\d+)$/)[1];
   for (const element of document.querySelectorAll("details.quote")) {
     const summaryText = element.querySelector("summary").textContent;
-    const fileMatch = summaryText.match(/^Source code in ([\w\/\\]+\.[a-z]+)$/);
-    if (fileMatch) {
+    const match = summaryText.match(/^Source code in ([\w\/\\]+\.[a-z]+)$/);
+    if (match) {
       const lineSpans = element.querySelectorAll("pre > code > span");
       const button = createElement("button", "md-icon source-link-button");
       button.title = "View source on GitHub";
       const link = createElement("a", "source-link", button);
       link.href =
-        `${repoUrl}/tree/main/${fileMatch[1].replaceAll("\\", "/")}#L` +
+        `${repoUrl}/tree/main/${encodeURI(match[1].replaceAll("\\", "/"))}#L` +
         `${getLine(lineSpans[0])}-L${getLine(lineSpans[lineSpans.length - 1])}`;
       element.querySelector("pre > :first-child").after(link);
       element.querySelector("span.filename").remove();
