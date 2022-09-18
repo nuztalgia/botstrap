@@ -9,8 +9,25 @@ please start a [discussion](https://github.com/nuztalgia/botstrap/discussions) o
 could be clarified and/or improved! Our goal is to make this library as easy-to-use as
 possible, so all feedback is welcome and appreciated. :sparkling_heart:
 
-The rest of this file contains information on how to build the documentation from source
-and preview changes locally before deploying them.
+The rest of this file contains information about building the **documentation site**
+from the source files in this directory.
+
+<table>
+<tr><th>Table of Contents</th></tr>
+<tr><td><p>
+
+1. [Configuration & Requirements](#configuration--requirements)
+   - [Setting up a virtual environment](#setting-up-a-virtual-environment)&nbsp;&ensp;
+2. [Installing/Updating Dependencies](#installingupdating-dependencies)
+   - [Installing all requirements](#installing-all-requirements)
+   - [Updating `requirements.txt`](#updating-requirementstxt)
+3. [Building & Previewing the Site](#building--previewing-the-site)
+   - [For general development](#for-general-development)
+   - [For one-off builds](#for-one-off-builds)
+4. [Miscellaneous Questions](#miscellaneous-questions)
+
+</p></td></tr>
+</table>
 
 ## Configuration & Requirements
 
@@ -42,7 +59,7 @@ are pinned and listed in <a href="requirements.in"><code>requirements.in</code><
 In order to make sure the site is built consistently and deterministically, we'll use
 [`pip-tools`](https://pip-tools.readthedocs.io/) inside a
 [virtual environment](https://docs.python.org/3/tutorial/venv.html). This allows us to
-install the exact versions of _all_ of the dependencies required to build this
+install the exact versions of all of the dependencies required to build this
 documentation, without conflicting with any other projects or apps.
 
 ### Setting up a virtual environment
@@ -75,14 +92,14 @@ will (most of the time) be its latest stable release, thanks to
 [Renovate](https://github.com/renovatebot/renovate). However, this setup is not quite
 immune to problems:
 
-- An automatic update to a direct dependency might introduce a change that breaks
+- An automatic, unchecked update to a dependency might introduce a change that breaks
   something on the documentation site.
 - Transitive dependencies are not specified, which might result in inconsistencies when
   building the site across different environments.
 
 To mitigate these potential issues, we use
 [`pip-compile`](https://pip-tools.readthedocs.io/en/latest/#example-usage-for-pip-compile)
-to generate the [`requirements.txt`](requirements.txt) file, which is a complete list of
+to generate the [`requirements.txt`](requirements.txt) file with a complete list of all
 direct **and** transitive dependencies, along with their respective pinned versions and
 [hashes](https://pip.pypa.io/en/stable/topics/secure-installs/#hash-checking-mode) in
 order to ensure correctness. This file is therefore the "canonical" set of requirements
@@ -110,9 +127,9 @@ system-wide package installs.
 pip-compile --generate-hashes docs/requirements.in
 ```
 
-In general, this command will be sufficient to properly update `docs/requirements.txt`
-based on the current contents of `docs/requirements.in`. After doing so, however, there
-are a few things to check and adjust if necessary:
+In general, this command will be sufficient to properly update `requirements.txt` based
+on the current contents of `requirements.in`. However, after doing so, there are a few
+things to double-check and adjust if necessary:
 
 - Re-run `pip-sync docs/requirements.txt` to ensure that the packages installed in your
   virtual env match the newly specified versions.
@@ -169,4 +186,38 @@ Most of the time, this command will only be used by the automated build system o
 and serve the official documentation site. In certain cases, however, it may be useful
 to invoke this command manually to produce a static local copy of the site. The result
 will be saved in the `site` directory, which can be found in the project root (alongside
-[`.gitignore`](../../.gitignore), where it makes an appearance).
+[`.gitignore`](../.gitignore), where it's already listed).
+
+## Miscellaneous Questions
+
+<ul><li>
+
+<b>Why isn't the name of this file (</b><code>readme.md</code><b>) capitalized?</b>
+
+MkDocs recognizes `index.md` and `README.md` as valid names for
+[index pages](https://www.mkdocs.org/user-guide/writing-your-docs/#index-pages). If both
+are present, then the `index.md` file is used as the index page and the `README.md` file
+is ignored, but a warning is emitted every time the site is built. This project includes
+both files, but for different purposes - one is the actual home page of the
+documentation site, and the other is this file, for displaying dev info on GitHub.
+
+Fortunately, MkDocs' `README.md` file name detection is case-sensitive (as of version
+1.3.1) and GitHub's isn't. This means that this file can be named `readme.md` without
+triggering the aforementioned warning, while still being rendered for this directory on
+GitHub.
+
+Further reading: mkdocs/mkdocs#608, mkdocs/mkdocs#1580, mkdocs/mkdocs#2846,
+sindresorhus/ama#197
+
+</li><li>
+
+<b>Why is this file (and/or the documentation) so overly and unnecessarily detailed?</b>
+
+It was written with love and neurodivergence. :purple_heart: I had to comb through quite
+a few different resources to learn these concepts and how to put them all together, so
+it's nice to have all the information (including the reasoning behind each step, and
+plenty of links) in one place for easy recovery when it's inevitably and inexplicably
+wiped from my memory. Hopefully it can be helpful to you too! &ensp;&ndash;
+[@nuztalgia](https://github.com/nuztalgia)
+
+</li></ul>
