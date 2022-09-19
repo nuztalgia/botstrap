@@ -1,8 +1,28 @@
 site_name: Botstrap
 site_url: https://botstrap.readthedocs.io
+site_description: An easy-to-use utility toolbelt for Discord bots written in Python.
+site_author: Nuztalgia
+copyright: Copyright &copy; 2022 Nuztalgia
 repo_name: nuztalgia/botstrap
 repo_url: https://github.com/nuztalgia/botstrap
 edit_uri: ""
+
+nav:
+  - Home: index.md
+  - API Reference:
+      - api/index.md
+      - Botstrap: api/botstrap.md
+      - CliColors: api/cli-colors.md
+      - CliStrings: api/cli-strings.md
+      - Color: api/color.md
+      - Option: api/option.md
+  - Internal Reference:
+      - internal/index.md
+      - Argstrap: internal/argstrap.md
+      - CliSession: internal/cli-session.md
+      - Metadata: internal/metadata.md
+      - Secret: internal/secret.md
+      - Token: internal/token.md
 
 theme:
   name: material
@@ -31,22 +51,12 @@ theme:
     - navigation.top
     - toc.integrate
 
-nav:
-  - Home: index.md
-  - API Reference:
-      - api/index.md
-      - Botstrap: api/botstrap.md
-      - CliColors: api/cli-colors.md
-      - CliStrings: api/cli-strings.md
-      - Color: api/color.md
-      - Option: api/option.md
-  - Internal Reference:
-      - internal/index.md
-      - Argstrap: internal/argstrap.md
-      - CliSession: internal/cli-session.md
-      - Metadata: internal/metadata.md
-      - Secret: internal/secret.md
-      - Token: internal/token.md
+extra:
+  social:
+    - icon: fontawesome/brands/python
+      link: https://pypi.org/project/botstrap/
+    - icon: fontawesome/brands/github
+      link: https://github.com/nuztalgia/botstrap
 
 extra_css:
   - stylesheets/global.css

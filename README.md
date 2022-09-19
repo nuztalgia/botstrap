@@ -1,14 +1,16 @@
 <div align="center">
 
-[![Botstrap Logo](docs/images/logo-192.png)](https://botstrap.rtfd.io)
+[![Botstrap Logo](https://raw.githubusercontent.com/nuztalgia/botstrap/main/docs/images/logo-192.png)](https://botstrap.readthedocs.io)
 
 # Botstrap
 
-[![Project License](https://img.shields.io/github/license/nuztalgia/botstrap?color=993388)](LICENSE)
-[![Python Version](https://img.shields.io/badge/python-3.10-blue)](pyproject.toml)
+[![Project License](https://img.shields.io/github/license/nuztalgia/botstrap?color=7e56c2)](LICENSE)
+[![Python Version](https://img.shields.io/pypi/pyversions/botstrap)](pyproject.toml)
+[![PyPI Release](https://img.shields.io/pypi/v/botstrap)](https://pypi.org/project/botstrap/)
 [![Read the Docs](https://img.shields.io/readthedocs/botstrap)](https://botstrap.readthedocs.io)
-[![LGTM Code Quality](https://img.shields.io/lgtm/grade/python/github/nuztalgia/botstrap?label=code%20quality)](https://lgtm.com/projects/g/nuztalgia/botstrap/context:python)
+<br>
 [![LGTM Lines of Code](https://badgen.net/lgtm/lines/g/nuztalgia/botstrap/python?label=lines%20of%20code&color=33aadd)](https://lgtm.com/projects/g/nuztalgia/botstrap/latest/files/botstrap/)
+[![LGTM Code Quality](https://img.shields.io/lgtm/grade/python/github/nuztalgia/botstrap?label=code%20quality)](https://lgtm.com/projects/g/nuztalgia/botstrap/context:python)
 [![Black Code Style](https://img.shields.io/badge/code%20style-black-000000)](https://github.com/psf/black)
 
 An easy-to-use utility toolbelt for Discord bots written in Python.<br>
@@ -23,7 +25,7 @@ Do you store your Discord bot token in
 down. Strap in!
 
 **Botstrap** is a Python library that augments your bot with features overlooked by most
-Discord API wrappers. It provides:
+Discord API wrappers:
 
 - **Secure encryption** and password protection to keep your bot tokens safe
 - A straightforward way to **manage multiple tokens** and/or bot configurations

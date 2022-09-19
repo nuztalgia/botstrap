@@ -1,7 +1,6 @@
 from setuptools import setup
 
 setup(
-    url="https://github.com/nuztalgia/botstrap",
     project_urls={
         "Documentation": "https://botstrap.readthedocs.io",
         "Issue Tracker": "https://github.com/nuztalgia/botstrap/issues",
