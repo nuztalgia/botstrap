@@ -1,0 +1,11 @@
+/** Adjust the vertical alignment of inline badge images from shields.io. */
+img[src^="https://img.shields.io/"]
+{
+  margin-top: 0.075em;
+  vertical-align: text-top;
+}
+
+/* Fix the alignment of the annotation "+" button in the "Installation" note. */
+h2[id="installation"] ~ .note > .annotate [data-md-annotation-id]:before {
+  vertical-align: revert;
+}

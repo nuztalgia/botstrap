@@ -4,8 +4,8 @@
 
 # Botstrap
 
-[![Project License](https://img.shields.io/github/license/nuztalgia/botstrap?color=7e56c2)](LICENSE)
-[![Python Version](https://img.shields.io/pypi/pyversions/botstrap)](pyproject.toml)
+[![License](https://img.shields.io/github/license/nuztalgia/botstrap)](https://github.com/nuztalgia/botstrap/blob/main/LICENSE)
+[![Python Version](https://img.shields.io/pypi/pyversions/botstrap)](https://pypi.org/project/botstrap/)
 [![PyPI Release](https://img.shields.io/pypi/v/botstrap)](https://pypi.org/project/botstrap/)
 [![Read the Docs](https://img.shields.io/readthedocs/botstrap)](https://botstrap.readthedocs.io)
 <br>
@@ -24,13 +24,21 @@ Do you store your Discord bot token in
 [plaintext](https://en.wikipedia.org/wiki/Plaintext)? Don't get caught with your pants
 down. Strap in!
 
-**Botstrap** is a Python library that augments your bot with features overlooked by most
-Discord API wrappers:
+**Botstrap** is a ~~Python library~~ suit of power armor that perfectly fits your
+Discord bot. It provides:
 
-- **Secure encryption** and password protection to keep your bot tokens safe
-- A straightforward way to **manage multiple tokens** and/or bot configurations
-- An intuitive, colorful, and easily-customizable **command-line interface** for your
-  bot
-- Out-of-the-box **compatibility** with all of the most popular Python
+- 🔐 **Secure encryption** and password protection to keep your bot tokens extra-safe
+- 🤹 A straightforward way to **manage multiple tokens** and/or bot configurations
+- 🌈 An intuitive, colorful, and easily-customizable **command-line interface**
+- 🤝 Out-of-the-box **compatibility** with all of the most popular Python
   [Discord libraries](https://discord.com/developers/docs/topics/community-resources#libraries)
 - ... and more to come!
+
+## Installation
+
+Python 3.10 or higher is required. It's also generally a good idea to upgrade pip
+(`python -m pip install -U pip`).
+
+```sh
+pip install -U botstrap
+```

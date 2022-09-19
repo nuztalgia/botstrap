@@ -9,6 +9,7 @@ edit_uri: ""
 
 nav:
   - Home: index.md
+  - Getting Started: getting-started.md
   - API Reference:
       - api/index.md
       - Botstrap: api/botstrap.md
@@ -53,10 +54,12 @@ theme:
 
 extra:
   social:
-    - icon: fontawesome/brands/python
-      link: https://pypi.org/project/botstrap/
     - icon: fontawesome/brands/github
       link: https://github.com/nuztalgia/botstrap
+      name: Botstrap on GitHub
+    - icon: fontawesome/brands/python
+      link: https://pypi.org/project/botstrap/
+      name: Botstrap on PyPI
 
 extra_css:
   - stylesheets/global.css
@@ -118,6 +121,7 @@ markdown_extensions:
       alternate_style: true
   - pymdownx.tasklist:
       custom_checkbox: true
+  - pymdownx.tilde
   - tables
   - toc:
       permalink: ☍
