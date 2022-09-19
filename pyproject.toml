@@ -1,10 +1,10 @@
 [build-system]
-requires = ["setuptools>=61.0.0"]
+requires = ["setuptools>=61.0.0", "setuptools_scm[toml]>=7.0.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "botstrap"
-description = "Simple and secure token handling for Discord bots written in Python."
+description = "An easy-to-use utility toolbelt for Discord bots written in Python."
 requires-python = ">=3.10"
 authors = [
     { name = "Nuztalgia" },
@@ -13,13 +13,12 @@ authors = [
 readme = "README.md"
 license = { text = "Apache-2.0" }
 classifiers = [
-    "Development Status :: 3 - Alpha",
+    "Development Status :: 4 - Beta",
     "Environment :: Console",
     "Intended Audience :: Developers",
     "License :: OSI Approved :: Apache Software License",
     "Natural Language :: English",
     "Operating System :: OS Independent",
-    "Programming Language :: Python",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
@@ -43,5 +42,8 @@ convention = "google"
 add-ignore = "D417"
 match = "botstrap/[^_].*\\.py"
 
-[tool.setuptools.dynamic]
-version = { attr = "botstrap.__version__.VERSION" }
+[tool.setuptools]
+packages = ["botstrap", "botstrap.internal"]
+
+[tool.setuptools_scm]
+local_scheme = "no-local-version"

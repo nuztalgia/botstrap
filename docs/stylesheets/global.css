@@ -82,6 +82,12 @@ a[href^="../../"].md-footer__link {
   display: none;
 }
 
+/** Adjust the display of the main site title on the home page. */
+div[align="center"] > h1 {
+  font-weight: bold;
+  margin: 0.5em;
+}
+
 /* Adjust the dimensions and position of annotation "+" and "x" buttons. */
 .md-annotation__index [data-md-annotation-id]:before {
   font-size: 0.64rem;
