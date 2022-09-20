@@ -1,7 +1,7 @@
 /** Adjust the vertical alignment of inline badge images from shields.io. */
 img[src^="https://img.shields.io/"]
 {
-  margin-top: 0.075em;
+  margin-top: -0.125em;
   vertical-align: text-top;
 }
 

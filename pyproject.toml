@@ -28,6 +28,7 @@ classifiers = [
     "Topic :: Utilities",
     "Typing :: Typed",
 ]
+keywords = ["bot", "cli", "discord", "encryption", "security", "token", "utilities"]
 dynamic = ["dependencies", "urls", "version"]
 
 [tool.black]

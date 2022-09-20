@@ -25,9 +25,9 @@ Do you store your Discord bot token in
 down. Strap in!
 
 **Botstrap** is a ~~Python library~~ suit of power armor that perfectly fits your
-Discord bot. It provides:
+Discord bot. It offers:
 
-- 🔐 **Secure encryption** and password protection to keep your bot tokens extra-safe
+- 🔐 **Secure encryption** and password protection to keep your bot tokens safe
 - 🤹 A straightforward way to **manage multiple tokens** and/or bot configurations
 - 🌈 An intuitive, colorful, and easily-customizable **command-line interface**
 - 🤝 Out-of-the-box **compatibility** with all of the most popular Python
@@ -36,9 +36,12 @@ Discord bot. It provides:
 
 ## Installation
 
-Python 3.10 or higher is required. It's also generally a good idea to upgrade pip
+Python **3.10** or higher is required. It's also generally a good idea to upgrade pip
 (`python -m pip install -U pip`).
 
 ```sh
 pip install -U botstrap
 ```
+
+For additional/alternative installation instructions, see the
+[documentation](https://botstrap.readthedocs.io/en/latest/getting-started/).
