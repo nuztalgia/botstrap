@@ -31,6 +31,9 @@ classifiers = [
 keywords = ["bot", "cli", "discord", "encryption", "security", "token", "utilities"]
 dynamic = ["dependencies", "urls", "version"]
 
+[project.scripts]
+botstrap = "botstrap.cli:main"
+
 [tool.black]
 target-version = ["py310"]
 
@@ -41,10 +44,10 @@ extend_skip = ["examples"]
 [tool.pydocstyle]
 convention = "google"
 add-ignore = "D417"
-match = "botstrap/[^_].*\\.py"
+match = "botstrap/.*\\.py"
 
 [tool.setuptools]
-packages = ["botstrap", "botstrap.internal"]
+packages = ["botstrap", "botstrap.cli", "botstrap.internal"]
 
 [tool.setuptools_scm]
 local_scheme = "no-local-version"

@@ -1,9 +1,7 @@
-from importlib.metadata import PackageNotFoundError, version
-from pathlib import Path
+"""This module is an entry point for Botstrap's standalone CLI: `python -m botstrap`."""
+from __future__ import annotations
+
+from botstrap import cli
 
 if __name__ == "__main__":
-    install_location = Path(__file__).resolve().parent
-    try:
-        print(f"Botstrap v{version('botstrap')} is installed at '{install_location}'.")
-    except PackageNotFoundError:
-        print("Botstrap is not installed in the current environment.")
+    cli.main()
