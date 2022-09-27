@@ -3,7 +3,7 @@ default_language_version:
 
 repos:
   - repo: https://github.com/asottile/pyupgrade
-    rev: v2.38.0
+    rev: v2.38.2
     hooks:
       - id: pyupgrade
 
@@ -53,7 +53,7 @@ repos:
         args: ["--ignore-missing-imports", "--show-error-codes"]
 
   - repo: https://github.com/PyCQA/autoflake
-    rev: v1.6.0
+    rev: v1.6.1
     hooks:
       - id: autoflake
         args: ["--in-place", "--remove-all-unused-imports", "--remove-unused-variables"]
