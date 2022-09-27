@@ -1,4 +1,4 @@
-"""This module contains the implementation of Botstrap's standalone CLI."""
+"""This module contains most of the implementation of Botstrap's standalone CLI."""
 from __future__ import annotations
 
 import functools
@@ -9,6 +9,7 @@ from argparse import ArgumentParser
 from typing import Any, Callable, Final, Match, cast
 
 from botstrap import CliColors, Color
+from botstrap.cli.scan import check_bot_tokens
 from botstrap.internal import CliSession, Metadata
 
 _CONTENT_WIDTH: Final[int] = 69
@@ -55,6 +56,27 @@ class BotstrapCli(CliSession):
             """Returns the project_url (from metadata) that matches the given label."""
             return next(s.split()[-1] for s in metadata["project_url"] if label in s)
 
+        self._add_subcommand(
+            "scan",
+            "Scan for bot security flaws in the current Git repository.",
+            check_bot_tokens,
+            {
+                _ARG_NAMES: ("paths",),
+                "nargs": "*",
+                "help": "Paths to check. Leave blank to scan the entire repository.",
+            },
+            {
+                _ARG_NAMES: ("-q", "--quiet"),
+                "action": "store_true",
+                "help": "Suppress output if no plaintext bot tokens are detected.",
+            },
+            {
+                _ARG_NAMES: ("-v", "--verbose"),
+                "action": "store_true",
+                "help": "Show output for all scanned files. No effect if `-q` is set.",
+            },
+            colors=self.colors,
+        )
         self._add_subcommand(
             "docs",
             "Open the Botstrap API documentation in your web browser.",
@@ -125,18 +147,18 @@ class BotstrapCli(CliSession):
     ) -> None:
         """Adds a subcommand (with a callback & optional args of its own) to the CLI."""
         subparser = self._command_parsers.add_parser(name, add_help=False)
-        callback_keys = []
+        callback_keys, custom_help = [], []
 
         if callback_args:
-            custom_help = [f"  {description}", self.colors.highlight("\nCommand Args:")]
             usage_keys = []
+            custom_help.extend(
+                [f"  {description}", self.colors.highlight("\nCommand Options:")]
+            )
             for arg_params in callback_args:
                 usage_keys.append((name_or_flags := arg_params.pop(_ARG_NAMES))[0])
                 callback_keys.append(name_or_flags[-1].strip("-"))
                 self._add_argument(subparser, custom_help, *name_or_flags, **arg_params)
             custom_help.insert(0, f"{self._build_usage(name, *usage_keys)}\n")
-        else:
-            custom_help = []
 
         subparser.set_defaults(
             callback=functools.partial(callback, **callback_kwargs),
@@ -150,20 +172,21 @@ class BotstrapCli(CliSession):
         width = _CONTENT_WIDTH + (len(self.colors.primary("")) if enable_colors else 0)
         lines = [(color(s) if enable_colors else s) for s, color in _ASCII_HEADER[:-1]]
         last_line, last_color = _ASCII_HEADER[-1]
-        sub = version.center(sub_width := cast(Match, re.match("^ *", last_line)).end())
-        last_line = self.colors.lowlight(sub + (tail := last_line[sub_width:]))
+        version_width = cast(Match, re.match(r" *", last_line)).end()
+        version = version.center(version_width)
+        last_line = self.colors.lowlight(version + (tail := last_line[version_width:]))
         if enable_colors:
             last_line = last_line.center(width).replace(tail, last_color(tail))
         return "\n".join(line.center(width) for line in [*lines, last_line])
 
     def _build_usage(self, command: str = "", *extra_arg_names: str) -> str:
         """Returns formatted usage info text for the command, or the CLI in general."""
-        label_separator = " " if command else "\n  "
+        name = f" {self.colors.primary(self.name)}" if command else f"\n  {self.name}"
         component_strings = [
-            f"\n{self.colors.highlight('Usage:')}{label_separator}{self.name}",
+            f"\n{self.colors.highlight('Usage:')}{name}",
             self.colors.primary(command or "<command>"),
-            self.colors.lowlight("[options]"),
             *[f"[{extra_arg_name}]" for extra_arg_name in extra_arg_names],
+            self.colors.lowlight("[-h] [-n]" if command else "[options]"),
         ]
         return " ".join(component_strings)
 
