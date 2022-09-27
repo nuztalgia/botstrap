@@ -30,7 +30,7 @@ def _is_text_file(filename: str) -> bool:
         return not bool(file.read(1024).translate(None, _TEXT_CHARS))
 
 
-def check_bot_tokens(
+def detect_bot_tokens(
     paths: Sequence[str] | None = None,
     quiet: bool = False,
     verbose: bool = False,

@@ -9,7 +9,7 @@ from argparse import ArgumentParser
 from typing import Any, Callable, Final, Match, cast
 
 from botstrap import CliColors, Color
-from botstrap.cli.scan import check_bot_tokens
+from botstrap.cli.scan import detect_bot_tokens
 from botstrap.internal import CliSession, Metadata
 
 _CONTENT_WIDTH: Final[int] = 69
@@ -58,8 +58,8 @@ class BotstrapCli(CliSession):
 
         self._add_subcommand(
             "scan",
-            "Scan for bot security flaws in the current Git repository.",
-            check_bot_tokens,
+            "Scan for plaintext bot tokens in the current Git repository.",
+            detect_bot_tokens,
             {
                 _ARG_NAMES: ("paths",),
                 "nargs": "*",
@@ -204,7 +204,8 @@ def main() -> None:
 
     args = BotstrapCli(enable_colors=not has_args(*_NO_COLORS_ARGS)).parser.parse_args()
 
-    if (keys := args.callback_keys) and (not has_args(*_HELP_ARGS)):
-        args.callback(**{k: v for k, v in vars(args).items() if k in keys})
-    else:
-        args.callback()
+    raise SystemExit(
+        args.callback(**{k: v for k, v in vars(args).items() if k in expected_keys})
+        if (expected_keys := args.callback_keys) and (not has_args(*_HELP_ARGS))
+        else args.callback()
+    )
