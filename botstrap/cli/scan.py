@@ -10,7 +10,7 @@ from typing import Callable, Final, Sequence
 from botstrap import CliColors
 
 _IGNORED_DIR_ARGS: Final[tuple[str, ...]] = tuple(
-    f":!:*{ignored_dir}/*" for ignored_dir in (".mypy_cache", "__pycache__", "venv")
+    f":!:*{dir_name}/*" for dir_name in (".*_cache", ".tox", "__pycache__", "venv")
 )
 _TEXT_CHARS: Final[bytearray] = (
     bytearray([7, 8, 9, 10, 11, 12, 13, 27])

@@ -29,7 +29,7 @@ classifiers = [
     "Typing :: Typed",
 ]
 keywords = ["bot", "cli", "discord", "encryption", "security", "token", "utilities"]
-dynamic = ["dependencies", "urls", "version"]
+dynamic = ["dependencies", "optional-dependencies", "urls", "version"]
 
 [project.scripts]
 botstrap = "botstrap.cli:main"
@@ -46,8 +46,28 @@ convention = "google"
 add-ignore = "D417"
 match = "botstrap/.*\\.py"
 
+[tool.pytest.ini_options]
+filterwarnings = ["error"]
+testpaths = ["tests"]
+
 [tool.setuptools]
 packages = ["botstrap", "botstrap.cli", "botstrap.internal"]
 
 [tool.setuptools_scm]
 local_scheme = "no-local-version"
+
+[tool.tox]
+legacy_tox_ini = """
+[tox]
+envlist = py{310, 311}
+skip_missing_interpreters = true
+isolated_build = true
+
+[testenv]
+extras = tests
+commands = pytest {posargs}
+
+[testenv:docs]
+deps = -rdocs/requirements.txt
+commands = mkdocs build --strict {posargs}
+"""
