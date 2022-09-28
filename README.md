@@ -29,7 +29,7 @@ Discord bot. It offers:
 
 - 🔐 **Secure encryption** and password protection to keep your bot tokens safe
 - 🤹 A straightforward way to **manage multiple tokens** and/or bot configurations
-- 🌈 An intuitive, colorful, and easily-customizable **command-line interface**
+- 🌈 An intuitive, colorful, and customizable **command-line interface** for your bot
 - 🤝 Out-of-the-box **compatibility** with all of the most popular Python
   [Discord libraries](https://discord.com/developers/docs/topics/community-resources#libraries)
 - ... and more to come!

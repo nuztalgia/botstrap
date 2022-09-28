@@ -36,7 +36,7 @@ class Option:
                 f"'{str.__name__}', '{int.__name__}', or '{float.__name__}'."
             )
 
-        if any((type(choice) != option_type) for choice in self.choices):
+        if any((not isinstance(choice, option_type)) for choice in self.choices):
             raise TypeError(
                 f"All elements in 'choices' must be {option_type} to match 'default'."
             )

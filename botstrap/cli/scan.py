@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import os
 import re
+import shutil
 import string
 import subprocess
 from typing import Callable, Final, Sequence
@@ -39,7 +40,16 @@ def detect_bot_tokens(
     """Returns 1 if any plaintext tokens are found in the current repo, or 0 if not."""
     all_files: Final[set] = set()
     files_with_tokens: Final[list] = []
+    git_path: Final[str] = shutil.which("git") or "/usr/bin/git"
     line_spacing: Final[str] = "" if quiet else "\n"
+
+    def run_git(*args: str, cwd: str | None = None) -> subprocess.CompletedProcess:
+        """Returns the result of running `git` with the given args in a subprocess."""
+        try:
+            return subprocess.run([git_path, *args], cwd=cwd, capture_output=True)
+        except FileNotFoundError as file_error:
+            stderr = f"fatal: {file_error.strerror.lower()}: git (executable)".encode()
+            return subprocess.CompletedProcess(git_path, returncode=1, stderr=stderr)
 
     def print_error(summary: str, hint_text: str, stderr: bytes) -> None:
         """Prints the `stderr` from a subprocess in a pretty format with hint text."""
@@ -49,19 +59,18 @@ def detect_bot_tokens(
         print(line_spacing)
 
     # https://git-scm.com/docs/git-rev-parse#Documentation/git-rev-parse.txt---show-cdup
-    cdup_proc = subprocess.run(["git", "rev-parse", "--show-cdup"], capture_output=True)
-    if cdup_proc.returncode:
+    if (cdup_proc := run_git("rev-parse", "--show-cdup")).returncode:
         hint = "Is it installed, and are you in a Git repository directory?"
         print_error("Git command failed", hint, cdup_proc.stderr)
         return 1
 
     repo_root = cdup_proc.stdout.decode().strip() or None
-    path_args = [os.path.relpath(path).replace("\\", "/") for path in (paths or [])]
+    repo_paths = [os.path.relpath(path).replace("\\", "/") for path in (paths or [])]
 
-    def get_repo_files(*args: str, use_path_args: bool = True) -> None:
+    def get_repo_files(*args: str, include_repo_path_args: bool = True) -> None:
         """Populates `all_files` by executing `git ls-files` with the specified args."""
-        ls_cmd = ["git", "ls-files", "-z", *(path_args if use_path_args else []), *args]
-        ls_proc = subprocess.run(ls_cmd, cwd=repo_root, capture_output=True)
+        repo_path_args = repo_paths if include_repo_path_args else []
+        ls_proc = run_git("ls-files", "-z", *repo_path_args, *args, cwd=repo_root)
         ls_proc.check_returncode()  # Raise a CalledProcessError if nonzero return code.
         ls_files = ls_proc.stdout.decode().strip("\0").split("\0")
         all_files.update(ls_filename for ls_filename in ls_files if ls_filename)
@@ -69,12 +78,12 @@ def detect_bot_tokens(
     try:
         get_repo_files()  # Files that are tracked/cached by Git.
         get_repo_files("-o", *_IGNORED_DIR_ARGS)  # Untracked files in non-ignored dirs.
-        for path in path_args:
+        for path in repo_paths:
             if path not in all_files:  # Double-check specified paths are valid/present.
-                get_repo_files("--error-unmatch", path, use_path_args=False)
-    except subprocess.CalledProcessError as e:
+                get_repo_files("--error-unmatch", path, include_repo_path_args=False)
+    except subprocess.CalledProcessError as process_error:
         hint = "Specified path(s) must point to files/folders in the active repo."
-        print_error("Invalid path", hint, e.stderr)
+        print_error("Invalid path", hint, process_error.stderr)
         return 1
 
     if not quiet:

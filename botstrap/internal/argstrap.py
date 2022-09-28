@@ -75,7 +75,7 @@ class Argstrap(argparse.ArgumentParser):
         self.cli: Final[CliSession] = cli
         self._tokens: Final[list[Token]] = tokens
         self._custom_keys: Final[tuple[str, ...]] = tuple(
-            custom_key.lower().strip("_") for custom_key in custom_options.keys()
+            custom_key.lower().strip("_") for custom_key in custom_options
         )  # Custom keys are lower-cased and stripped of leading/trailing underscores.
 
         if not description:  # Try to set it from package metadata, if available.

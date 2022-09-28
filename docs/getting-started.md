@@ -7,8 +7,7 @@ hide:
 
 ## Installation
 
-Botstrap is published as a package on [PyPI][1] and can therefore be easily installed
-using `pip`:
+Botstrap is published as a package on [PyPI][1] and can be easily installed using `pip`:
 
 ```{.text .line-numbers-off title=""}
 pip install -U botstrap
