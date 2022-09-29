@@ -1,0 +1,54 @@
+name: Filter Files/Inputs
+
+on:
+  workflow_call:
+    inputs:
+      filters:
+        description: |
+          Filters for detecting changed files and/or applicable input values.
+          Each filter must have a name and a list of rules (glob expressions).
+          The value must be provided as a string containing valid YAML syntax.
+        type: string
+        required: true
+    outputs:
+      matches:
+        description: |
+          A JSON array (as a string) containing the names of the filters that match:
+            - Files that were changed in a 'push' or 'pull_request' event, OR
+            - Inputs that were set to truthy values in a 'workflow_dispatch' event
+          The value may be an empty array ('[]'), but will never be an empty string.
+        value: ${{ jobs.run.outputs.matches }}
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    outputs:
+      matches: ${{ steps.produce.outputs.matches }}
+
+    steps:
+      - if: github.event_name == 'push'
+        uses: actions/checkout@v3
+
+      - if: github.event_name == 'push' || github.event_name == 'pull_request'
+        uses: dorny/paths-filter@v2
+        id: filter
+        with:
+          filters: ${{ inputs.filters }}
+
+      - name: Produce output array
+        id: produce
+        shell: python
+        run: |
+          import json, os, re
+          is_empty = lambda s: (not s) or (s == '[]')
+          outputs = os.environ['OUTPUTS']
+          if is_empty(outputs) and (os.environ['DISPATCH'] == 'true'):
+              inputs = json.loads(os.environ['INPUTS'])
+              filters = re.findall(r'(?:^|\n)([\w-]+):', inputs.pop('filters'))
+              outputs = [k for k, v in inputs.items() if ((k in filters) and v)]
+          print(f'matches: {(outputs := outputs or [])}')
+          print(f'::set-output name=matches::{outputs}')
+        env:
+          DISPATCH: ${{ github.event_name == 'workflow_dispatch' }}
+          INPUTS: ${{ toJSON(inputs) }}
+          OUTPUTS: ${{ steps.filter.outputs.changes }}

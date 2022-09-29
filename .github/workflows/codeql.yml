@@ -6,50 +6,44 @@ on:
   workflow_dispatch:
     inputs:
       python:
-        description: "Analyze Python code."
+        description: Analyze Python code
         type: boolean
-        default: true
         required: true
       javascript:
-        description: "Analyze Javascript code."
+        description: Analyze Javascript code
         type: boolean
-        default: false
         required: true
 
 jobs:
-  changes:
+  filter:
+    uses: ./.github/workflows/filter.yml
+    with:
+      filters: |
+        python: ["**.py"]
+        javascript: ["**.js"]
+
+  analyze:
+    needs: filter
+    if: needs.filter.outputs.matches != '[]'
     runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v3
-        if: github.event_name == 'push'
-
-      - uses: dorny/paths-filter@v2
-        with:
-          filters: |
-            python:
-              - "**.py"
-            javascript:
-              - "**.js"
-        if: github.event_name != 'workflow_dispatch'
-
-  python:
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        language: ${{ fromJSON(needs.filter.outputs.matches) }}
+      fail-fast: false
     permissions:
       security-events: write
 
-    needs: changes
-    if: needs.changes.outputs.python == 'true' || inputs.python
-
     steps:
       - uses: actions/checkout@v3
 
-      - name: Set up Python 3.10
+      - if: matrix.language == 'python'
+        name: Set up Python 3.10
         uses: actions/setup-python@v4
         with:
           python-version: "3.10"
 
-      - name: Install dependencies
+      - if: matrix.language == 'python'
+        name: Install dependencies
         run: |
           python -m pip install -U pip
           pip install -U colorama cryptography
@@ -58,31 +52,10 @@ jobs:
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v2
         with:
-          languages: python
+          languages: ${{ matrix.language }}
           setup-python-dependencies: false
 
-      - name: Perform CodeQL Analysis
+      - name: Perform CodeQL analysis
         uses: github/codeql-action/analyze@v2
         with:
-          category: python
-
-  javascript:
-    runs-on: ubuntu-latest
-    permissions:
-      security-events: write
-
-    needs: changes
-    if: needs.changes.outputs.javascript == 'true' || inputs.javascript
-
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Initialize CodeQL
-        uses: github/codeql-action/init@v2
-        with:
-          languages: javascript
-
-      - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v2
-        with:
-          category: javascript
+          category: "/language:${{ matrix.language }}"
