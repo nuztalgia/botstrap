@@ -47,6 +47,7 @@ add-ignore = "D417"
 match = "botstrap/.*\\.py"
 
 [tool.pytest.ini_options]
+addopts = "--cov --cov-config=tests/.coverage.ini"
 filterwarnings = ["error"]
 testpaths = ["tests"]
 
@@ -59,13 +60,11 @@ local_scheme = "no-local-version"
 [tool.tox]
 legacy_tox_ini = """
 [tox]
-envlist = py{310, 311}
-skip_missing_interpreters = true
 isolated_build = true
 
 [testenv]
 extras = tests
-commands = pytest {posargs}
+commands = {envpython} -m pytest {posargs}
 
 [testenv:docs]
 deps = -rdocs/requirements.txt

@@ -14,6 +14,7 @@ setup(
     extras_require={
         "tests": [
             "pytest >=7.1.0",
+            "pytest-cov >= 4.0.0",
             "tox >= 3.26.0",
         ],
     },
