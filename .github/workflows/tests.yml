@@ -2,11 +2,18 @@ name: Tests
 
 on:
   push:
+    branches:
+      - main
   pull_request:
+    types: [opened, synchronize, reopened]
   workflow_dispatch:
     inputs:
       tests:
-        description: Run "pytest" & upload coverage
+        description: Run "pytest"
+        type: boolean
+        required: true
+      coverage:
+        description: Upload "pytest" coverage
         type: boolean
         required: true
       docs:
@@ -45,6 +52,8 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
+          cache: pip
+          cache-dependency-path: setup.py
 
       - name: Install dependencies
         run: python -m pip install -U pip tox
@@ -52,8 +61,11 @@ jobs:
       - name: Run tests and generate coverage report
         run: tox -e py -- --cov-report=xml
 
-      - if: matrix.python-version == '3.10' && matrix.os == 'ubuntu-latest'
-        name: Upload coverage to Codecov
+      - name: Upload coverage to Codecov
+        if: |
+          matrix.os == 'ubuntu-latest' &&
+          matrix.python-version == '3.10' &&
+          (github.event_name == 'push' || inputs.coverage == 'true')
         uses: codecov/codecov-action@v3
         with:
           fail_ci_if_error: true

@@ -67,14 +67,12 @@ local_scheme = "no-local-version"
 
 [tool.tox]
 legacy_tox_ini = """
-[tox]
-isolated_build = true
-
 [testenv]
-extras = tests
 commands = {envpython} -m pytest {posargs}
+extras = tests
 
 [testenv:docs]
-deps = -rdocs/requirements.txt
 commands = mkdocs build --strict {posargs}
+deps = -rdocs/requirements.txt
+skip_install = true
 """
