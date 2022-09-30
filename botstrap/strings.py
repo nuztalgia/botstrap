@@ -259,13 +259,16 @@ class CliStrings:
             return choice
 
         choices = [get_display_choice(choice) for choice in choices]
-        conjunction = conjunction or self.m_conj_or
-        separator = separator or self.m_list_sep
+        conjunction = conjunction if (conjunction is not None) else self.m_conj_or
+        separator = separator if (separator is not None) else self.m_list_sep
+
+        if separator.endswith(" ") and conjunction and not conjunction.endswith(" "):
+            conjunction += " "
 
         return (
-            f" {conjunction} ".join(choices)
+            f"{' ' if conjunction.endswith(' ') else ''}{conjunction}".join(choices)
             if len(choices) < 3
-            else f"{separator.join(choices[:-1])}{separator}{conjunction} {choices[-1]}"
+            else f"{separator.join(choices[:-1])}{separator}{conjunction}{choices[-1]}"
         )
 
     def get_affirmation_prompt(
@@ -300,17 +303,17 @@ class CliStrings:
 
 
 @overload
-def _get_compact_value(value: str) -> str:  # type: ignore[misc]
-    ...
-
-
-@overload
-def _get_compact_value(value: Iterable[str]) -> tuple[str, ...]:
+def _get_compact_value(value: str) -> str:
     ...
 
 
 @overload
 def _get_compact_value(value: Template) -> Template:
+    ...
+
+
+@overload
+def _get_compact_value(value: tuple[str]) -> tuple[str, ...]:
     ...
 
 
@@ -331,14 +334,11 @@ def _get_compact_value(value: Any) -> str | Template | tuple[str, ...]:
     if isinstance(value, str):
         value = value.strip("\n")  # First, strip any leading and/or trailing newlines.
         return value.replace("\n", " ")  # Then, replace remaining newlines with spaces.
-    elif isinstance(value, Iterable):
-        # Recursively call this function on each item in the iterable, and use
-        # tuple comprehension to assemble the results into an immutable object.
-        return tuple(_get_compact_value(item) for item in value)
     elif isinstance(value, Template):
         # Construct a new Template in which the template string is produced by
         # recursively calling this function on the original template string.
         return Template(_get_compact_value(value.template))
-    else:
-        # In theory, there shouldn't be any other value types, but just in case...
-        return _get_compact_value(str(value))
+    else:  # The value is a tuple.
+        # Recursively call this function on each item in the tuple, and then use
+        # tuple comprehension to assemble the results into an immutable object.
+        return tuple(_get_compact_value(item) for item in value)
