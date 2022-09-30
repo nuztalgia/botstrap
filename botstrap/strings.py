@@ -6,7 +6,7 @@ from string import Template
 from typing import Any, Callable, Iterable, overload
 
 
-@dataclass(eq=False, frozen=True, kw_only=True)
+@dataclass(frozen=True, kw_only=True)
 class CliStrings:
     """A model for the strings used by the Botstrap-provided CLI.
 

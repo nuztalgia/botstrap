@@ -51,6 +51,7 @@ addopts = [
     "--cov",
     "--cov-config=tests/.coverage.ini",
     "--doctest-modules",
+    "--ignore=botstrap/colors.py",
     "--ignore=botstrap/internal/clisession.py",
     "--strict-config",
     "--strict-markers",

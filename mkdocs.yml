@@ -71,6 +71,11 @@ extra_javascript:
   - javascripts/local.js
   - javascripts/pylight.js
 
+watch:
+  - botstrap/
+  - examples/
+  - README.md
+
 plugins:
   - exclude:
       regex:
@@ -78,7 +83,9 @@ plugins:
         - ^(.+/)*venv.*$
         - ^images/robot-happy.*$
         - ^requirements\.(in|txt)$
-  - include-markdown
+  - include-markdown:
+      comments: false
+      dedent: true
   - mkdocstrings:
       handlers:
         python:
@@ -91,10 +98,6 @@ plugins:
             show_source: false
             docstring_options:
               ignore_init_summary: true
-      watch:
-        - botstrap/
-        - examples/
-        - README.md
   - search
 
 markdown_extensions:
