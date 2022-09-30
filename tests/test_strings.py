@@ -1,3 +1,6 @@
+"""Tests for the `botstrap.strings` module (`CliStrings` class)."""
+from __future__ import annotations
+
 from string import Template
 from typing import Any, Callable, Final
 
@@ -62,9 +65,8 @@ def test_compact_strings(name: str, expected: str | tuple[str, ...]) -> None:
         ),
         (
             ["red", "blue", "yellow"],
-            {"format_choice": lambda choice: getattr(Color, choice)(choice)},
-            '"\x1b[31m\x1b[1mred\x1b[22m\x1b[39m", "\x1b[34m\x1b[1mblue\x1b[22m\x1b[39m'
-            '", or "\x1b[33m\x1b[1myellow\x1b[22m\x1b[39m"',
+            {"format_choice": lambda c: getattr(Color, c)(c), "quote_choices": False},
+            f'{Color.red("red")}, {Color.blue("blue")}, or {Color.yellow("yellow")}',
         ),
     ],
 )
@@ -83,8 +85,7 @@ def test_join_choices(
         (
             _DEFAULT_STRINGS,
             Color.green,
-            'If so, type "\x1b[32m\x1b[1myes\x1b[22m\x1b[39m"'
-            ' or "\x1b[32m\x1b[1my\x1b[22m\x1b[39m"',
+            f'If so, type "{Color.green("yes")}" or "{Color.green("y")}"',
         ),
         (
             CliStrings(m_affirm_responses=("yes", "yeah", "yep")),
