@@ -47,9 +47,16 @@ add-ignore = "D417"
 match = "botstrap/.*\\.py"
 
 [tool.pytest.ini_options]
-addopts = "--cov --cov-config=tests/.coverage.ini"
+addopts = [
+    "--cov",
+    "--cov-config=tests/.coverage.ini",
+    "--doctest-modules",
+    "--ignore=botstrap/internal/clisession.py",
+    "--strict-config",
+    "--strict-markers",
+]
 filterwarnings = ["error"]
-testpaths = ["tests"]
+testpaths = ["botstrap", "tests"]
 
 [tool.setuptools]
 packages = ["botstrap", "botstrap.cli", "botstrap.internal"]

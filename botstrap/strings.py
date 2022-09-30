@@ -226,6 +226,7 @@ class CliStrings:
             '"head", "shoulders", "knees", or "toes"'
             >>> strings.join_choices(parts, quote_choices=False)
             'head, shoulders, knees, or toes'
+
             ```
 
         Args:
@@ -287,6 +288,7 @@ class CliStrings:
             >>> pig_latin = lambda text: f"{text[1:]}{text[0]}ay"
             >>> CliStrings.default().get_affirmation_prompt(format_response=pig_latin)
             'If so, type "esyay" or "yay"'
+
             ```
 
         Args:

@@ -8,6 +8,11 @@
   color: var(--md-code-hl-name-color);
 }
 
+/* Hide the `doctest.SKIP` directive comment in the example. */
+.admonition.example > .highlight code .c1 {
+  display: none;
+}
+
 /* Hide the function docstrings - the page manually adds color preview text. */
 .doc-function > [id^="botstrap.colors.Color."] + .doc-contents {
   display: none;

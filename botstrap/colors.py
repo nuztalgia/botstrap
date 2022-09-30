@@ -27,7 +27,7 @@ class Color:
         >>> print(
         ...     f"{Color.pink('P')}{Color.red('R')}{Color.yellow('I')}"
         ...     f"{Color.green('D')}{Color.cyan('E')}{Color.blue('!')}"
-        ... )
+        ... ) # doctest: +SKIP
         ```
     """
 

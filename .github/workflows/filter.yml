@@ -1,4 +1,4 @@
-name: Filter Files/Inputs
+name: Filter
 
 on:
   workflow_call:
