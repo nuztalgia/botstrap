@@ -60,8 +60,7 @@ Once your PR passes **all pre-commit checks**, a project maintainer will review 
 
 This project is licensed under [Apache-2.0](http://www.apache.org/licenses/LICENSE-2.0).
 All contributions to this project's codebase **must** adhere to that license, as
-stipulated by the [`LICENSE`](/LICENSE) and [`NOTICE`](/NOTICE.md) files in this
-repository.
+stipulated by the [`LICENSE`](/LICENSE) file in this repository.
 
 Furthermore, by submitting a pull request to this repo, you certify that you authored or
 otherwise have the necessary rights to submit **all** of the code included in that PR to

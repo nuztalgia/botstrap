@@ -1,0 +1,10 @@
+extraction:
+  python:
+    after_prepare:
+      - cd $LGTM_WORKSPACE
+      - wget https://www.python.org/ftp/python/3.10.5/Python-3.10.5.tgz
+      - tar -zxf Python-3.10.5.tgz
+      - cd Python-3.10.5 && ./configure && make && mv python python3
+      - PATH="$LGTM_WORKSPACE/Python-3.10.5:$PATH"
+    python_setup:
+      version: 3

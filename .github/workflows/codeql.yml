@@ -1,10 +1,4 @@
 name: CodeQL
-run_name: >
-  CODEQL: ${{
-    (github.event_name == 'push' && github.event.head_commit.message) ||
-    (github.event_name == 'pull_request' && github.event.pull_request.title) ||
-    (github.event_name == 'workflow_dispatch' && toJSON(inputs)) ||
-    format('{{Triggered via {0} by {1}.}}', github.event_name, github.actor) }}
 
 on:
   push:
