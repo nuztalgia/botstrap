@@ -30,7 +30,7 @@ jobs:
         uses: actions/checkout@v3
 
       - if: github.event_name == 'push' || github.event_name == 'pull_request'
-        uses: dorny/paths-filter@v2
+        uses: dorny/paths-filter@v2.10.2
         id: filter
         with:
           filters: ${{ inputs.filters }}
