@@ -1,10 +1,14 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["config:base"],
+  "extends": ["config:base", "group:allNonMajor"],
+  "dependencyDashboardApproval": true,
   "dependencyDashboardAutoclose": true,
-  "enabledManagers": ["pip_setup", "pip_requirements"],
+  "enabledManagers": ["github-actions", "pip_requirements", "pip_setup"],
   "pip_requirements": {
     "fileMatch": ["(^|/)requirements\\.in$"],
     "ignorePaths": ["docs/requirements.txt"]
-  }
+  },
+  "rollbackPrs": true,
+  "schedule": ["before 8am"],
+  "timezone": "America/Los_Angeles"
 }

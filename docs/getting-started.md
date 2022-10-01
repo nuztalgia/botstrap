@@ -34,9 +34,9 @@ separately.
     ```
 
     For reference, Botstrap supports Python versions
-    [![](https://img.shields.io/pypi/pyversions/botstrap?color=22a1ea&label="")][1]
+    [![](https://img.shields.io/pypi/pyversions/botstrap?color=7e56c2&label="")][1]
     and the latest `pip` version is
-    [![](https://img.shields.io/pypi/v/pip?color=22a1ea&label="")][6].
+    [![](https://img.shields.io/pypi/v/pip?color=7e56c2&label="")][6].
 
 ??? note "Note - Installing from source"
 

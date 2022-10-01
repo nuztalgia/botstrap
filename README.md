@@ -4,14 +4,17 @@
 
 # Botstrap
 
-[![License](https://img.shields.io/github/license/nuztalgia/botstrap)](https://github.com/nuztalgia/botstrap/blob/main/LICENSE)
-[![Python Version](https://img.shields.io/pypi/pyversions/botstrap)](https://pypi.org/project/botstrap/)
-[![PyPI Release](https://img.shields.io/pypi/v/botstrap)](https://pypi.org/project/botstrap/)
-[![Read the Docs](https://img.shields.io/readthedocs/botstrap)](https://botstrap.readthedocs.io)
+[![PyPI](https://img.shields.io/pypi/v/botstrap?color=blue)](https://pypi.org/project/botstrap/)
+[![Python](https://img.shields.io/pypi/pyversions/botstrap)](https://pypi.org/project/botstrap/)
+[![License](https://img.shields.io/github/license/nuztalgia/botstrap?color=blue)](https://github.com/nuztalgia/botstrap/blob/main/LICENSE)
 <br>
-[![LGTM Lines of Code](https://badgen.net/lgtm/lines/g/nuztalgia/botstrap/python?label=lines%20of%20code&color=33aadd)](https://lgtm.com/projects/g/nuztalgia/botstrap/latest/files/botstrap/)
-[![LGTM Code Quality](https://img.shields.io/lgtm/grade/python/github/nuztalgia/botstrap?label=code%20quality)](https://lgtm.com/projects/g/nuztalgia/botstrap/context:python)
-[![Black Code Style](https://img.shields.io/badge/code%20style-black-000000)](https://github.com/psf/black)
+[![Tests](https://github.com/nuztalgia/botstrap/actions/workflows/tests.yml/badge.svg)](https://github.com/nuztalgia/botstrap/actions/workflows/tests.yml)
+[![Docs](https://img.shields.io/readthedocs/botstrap?logo=read-the-docs&logoColor=9fa6ae&label=Docs&labelColor=313a43)](https://botstrap.readthedocs.io)
+[![CodeQL](https://github.com/nuztalgia/botstrap/actions/workflows/codeql.yml/badge.svg)](https://github.com/nuztalgia/botstrap/actions/workflows/codeql.yml)
+<br>
+[![Codacy](https://img.shields.io/codacy/grade/6864639715f04899b62d3a4460eba83e)](https://app.codacy.com/gh/nuztalgia/botstrap)
+[![Codecov](https://img.shields.io/codecov/c/github/nuztalgia/botstrap)](https://app.codecov.io/github/nuztalgia/botstrap)
+[![Libraries.io](https://img.shields.io/librariesio/github/nuztalgia/botstrap)](https://libraries.io/github/nuztalgia/botstrap)
 
 An easy-to-use utility toolbelt for Discord bots written in Python.<br>
 [**Read the docs »**](https://botstrap.readthedocs.io)
@@ -45,3 +48,8 @@ pip install -U botstrap
 
 For additional/alternative installation instructions, see the
 [documentation](https://botstrap.readthedocs.io/en/latest/getting-started/).
+
+## Quickstart
+
+Coming soon! In the meantime, check out the very detailed
+[API Reference](https://botstrap.readthedocs.io/en/latest/api/).

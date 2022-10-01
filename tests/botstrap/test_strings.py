@@ -37,13 +37,13 @@ _COMPACT_STRINGS: Final[CliStrings] = CliStrings.compact()
     ],
 )
 def test_compact_strings(name: str, expected: str | tuple[str, ...]) -> None:
-    match (value := getattr(_COMPACT_STRINGS, name)):
-        case str() | tuple():
-            assert value == expected
-        case Template():
-            assert value.template == expected
-        case _:
-            pytest.fail(f"Invalid attribute type for '{name}': {type(value)}")
+    value = getattr(_COMPACT_STRINGS, name)
+    if isinstance(value, (str, tuple)):
+        assert value == expected
+    elif isinstance(value, Template):
+        assert value.template == expected
+    else:
+        pytest.fail(f"Invalid attribute type for '{name}': {type(value)}")
 
 
 @pytest.mark.parametrize(
