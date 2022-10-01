@@ -1,4 +1,4 @@
-# <a href="https://botstrap.rtfd.io"><img src="/docs/images/logo-48.png" width=24></a> Image Sources
+# Image Sources
 
 ## `robot-happy*`
 

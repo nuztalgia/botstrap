@@ -1,7 +1,3 @@
-<!-- NOTE: Lines of text inside brackets like these are comments. 💬
-     They're just to help you properly fill out this template, and won't
-     be visible in the final result. (Check out the "Preview" tab!) -->
-
 ### Relevant Issues
 <!-- If this PR affects an issue, please note which one(s) and how so. You can
      use this example (e.g. "Fixes #1234"), or add/remove lines as needed. -->

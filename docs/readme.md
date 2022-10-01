@@ -17,7 +17,7 @@ from the source files in this directory.
 <tr><td><p>
 
 1. [Configuration & Requirements](#configuration--requirements)
-   - [Setting up a virtual environment](#setting-up-a-virtual-environment)&nbsp;&ensp;
+   - [Setting up a virtual environment](#setting-up-a-virtual-environment)&emsp;
 2. [Installing/Updating Dependencies](#installingupdating-dependencies)
    - [Installing all requirements](#installing-all-requirements)
    - [Updating `requirements.txt`](#updating-requirementstxt)
@@ -50,8 +50,8 @@ are pinned and listed in <a href="requirements.in"><code>requirements.in</code><
 | `mkdocs-material`    | [![PyPI](https://img.shields.io/pypi/v/mkdocs-material)](https://pypi.org/project/mkdocs-material/)                               | [![GitHub](https://img.shields.io/github/last-commit/squidfunk/mkdocs-material)](https://github.com/squidfunk/mkdocs-material)                           |
 | `mkdocstrings`       | [![PyPI](https://img.shields.io/pypi/v/mkdocstrings)](https://pypi.org/project/mkdocstrings/)                                     | [![GitHub](https://img.shields.io/github/last-commit/mkdocstrings/mkdocstrings)](https://github.com/mkdocstrings/mkdocstrings)                           |
 | `pymdown-extensions` | [![PyPI](https://img.shields.io/pypi/v/pymdown-extensions)](https://pypi.org/project/pymdown-extensions/)                         | [![GitHub](https://img.shields.io/github/last-commit/facelessuser/pymdown-extensions)](https://github.com/facelessuser/pymdown-extensions)               |
-| `pygments`           | [![PyPI](https://img.shields.io/pypi/v/pygments)](https://pypi.org/project/pygments/)                                             | [![GitHub](https://img.shields.io/github/last-commit/pygments/pygments)](https://github.com/pygments/pygments)                                           |
 | `include-markdown`   | [![PyPI](https://img.shields.io/pypi/v/mkdocs-include-markdown-plugin)](https://pypi.org/project/mkdocs-include-markdown-plugin/) | [![GitHub](https://img.shields.io/github/last-commit/mondeja/mkdocs-include-markdown-plugin)](https://github.com/mondeja/mkdocs-include-markdown-plugin) |
+| `pygments`           | [![PyPI](https://img.shields.io/pypi/v/pygments)](https://pypi.org/project/pygments/)                                             | [![GitHub](https://img.shields.io/github/last-commit/pygments/pygments)](https://github.com/pygments/pygments)                                           |
 | `mkdocs-exclude`     | [![PyPI](https://img.shields.io/pypi/v/mkdocs-exclude)](https://pypi.org/project/mkdocs-exclude/)                                 | [![GitHub](https://img.shields.io/github/last-commit/apenwarr/mkdocs-exclude)](https://github.com/apenwarr/mkdocs-exclude)                               |
 
 </details>
@@ -119,7 +119,9 @@ pip-sync docs/requirements.txt
 Note that this command behaves similarly to `pip install -r docs/requirements.txt`, but
 will stop with an error if it's run from outside a virtual environment. This acts as a
 convenient fail-safe to help you avoid accidentally cluttering or overwriting your
-system-wide package installs.
+system-wide package installs. It will also uninstall any packages that **aren't** listed
+in the specified file, to ensure that the official set of requirements is both complete
+and minimal.
 
 ### Updating `requirements.txt`
 

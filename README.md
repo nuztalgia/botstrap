@@ -4,17 +4,17 @@
 
 # Botstrap
 
-[![PyPI](https://img.shields.io/pypi/v/botstrap?color=blue)](https://pypi.org/project/botstrap/)
-[![Python](https://img.shields.io/pypi/pyversions/botstrap)](https://pypi.org/project/botstrap/)
-[![License](https://img.shields.io/github/license/nuztalgia/botstrap?color=blue)](https://github.com/nuztalgia/botstrap/blob/main/LICENSE)
+[![Development Status](https://img.shields.io/pypi/status/botstrap)](https://pypi.org/project/botstrap/)
+[![Latest Version](https://img.shields.io/pypi/v/botstrap?label=latest%20version)](https://pypi.org/project/botstrap/)
+[![Supported Python Versions](https://img.shields.io/pypi/pyversions/botstrap)](https://pypi.org/project/botstrap/)
 <br>
 [![Tests](https://github.com/nuztalgia/botstrap/actions/workflows/tests.yml/badge.svg)](https://github.com/nuztalgia/botstrap/actions/workflows/tests.yml)
-[![Docs](https://img.shields.io/readthedocs/botstrap?logo=read-the-docs&logoColor=9fa6ae&label=Docs&labelColor=313a43)](https://botstrap.readthedocs.io)
+[![Docs](https://img.shields.io/readthedocs/botstrap?logo=read-the-docs&logoColor=9fa6ae&label=Docs&labelColor=313a43)](https://readthedocs.org/projects/botstrap)
 [![CodeQL](https://github.com/nuztalgia/botstrap/actions/workflows/codeql.yml/badge.svg)](https://github.com/nuztalgia/botstrap/actions/workflows/codeql.yml)
 <br>
-[![Codacy](https://img.shields.io/codacy/grade/6864639715f04899b62d3a4460eba83e)](https://app.codacy.com/gh/nuztalgia/botstrap)
-[![Codecov](https://img.shields.io/codecov/c/github/nuztalgia/botstrap)](https://app.codecov.io/github/nuztalgia/botstrap)
-[![Libraries.io](https://img.shields.io/librariesio/github/nuztalgia/botstrap)](https://libraries.io/github/nuztalgia/botstrap)
+[![Codacy](https://img.shields.io/codacy/grade/6864639715f04899b62d3a4460eba83e?logo=codacy)](https://app.codacy.com/gh/nuztalgia/botstrap)
+[![Codecov](https://img.shields.io/codecov/c/github/nuztalgia/botstrap?logo=codecov&logoColor=fff)](https://app.codecov.io/github/nuztalgia/botstrap)
+[![Libraries.io](https://img.shields.io/librariesio/github/nuztalgia/botstrap?logo=librariesdotio&logoColor=ddd&logoWidth=12&label=deps)](https://libraries.io/github/nuztalgia/botstrap)
 
 An easy-to-use utility toolbelt for Discord bots written in Python.<br>
 [**Read the docs »**](https://botstrap.readthedocs.io)

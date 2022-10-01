@@ -15,7 +15,7 @@ An easy-to-use utility toolbelt for Discord bots written in Python.
 
 ---
 
-{% include-markdown "../README.md" start="## Overview" end="## " %}
+{% include-markdown "../README.md" start="## Overview" end="## Installation" %}
 
 <div align="center" markdown>
 

@@ -6,9 +6,7 @@
   "enabledManagers": ["github-actions", "pip_requirements", "pip_setup"],
   "pip_requirements": {
     "fileMatch": ["(^|/)requirements\\.in$"],
-    "ignorePaths": ["docs/requirements.txt"]
-  },
-  "rollbackPrs": true,
-  "schedule": ["before 8am"],
-  "timezone": "America/Los_Angeles"
+    "ignorePaths": ["docs/requirements.txt"],
+    "rollbackPrs": true
+  }
 }
