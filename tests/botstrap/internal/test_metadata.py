@@ -2,8 +2,10 @@
 from __future__ import annotations
 
 import sys
+from functools import partial
 from importlib.metadata import PackageNotFoundError
 from pathlib import Path
+from types import ModuleType
 from typing import Any, Final
 
 import pytest
@@ -13,7 +15,19 @@ from botstrap.internal import Metadata
 _SCRIPT_EXEC_DIR: Final[Path] = Path(".")
 _FILE_PARENT_DIR: Final[Path] = Path(__file__) / ".."
 
+_FILE_NAME: Final[str] = Path(__file__).name
+_PARENT_DIR_NAME: Final[str] = _FILE_PARENT_DIR.resolve().name
+
 _EXISTING_PACKAGE_NAME: Final[str] = "existing_package"
+_EXISTING_PACKAGE_INFO: Final[dict[str, str]] = {"name": _EXISTING_PACKAGE_NAME}
+
+
+class MockEntryPoints:
+    def __init__(self, console_scripts: list[str], *, group: str = "") -> None:
+        if group == "console_scripts":
+            self.names = console_scripts
+        else:
+            raise ValueError
 
 
 class MockMetadata:
@@ -23,16 +37,21 @@ class MockMetadata:
     @property
     def json(self) -> dict[str, str]:
         if self.name == _EXISTING_PACKAGE_NAME:
-            return {"name": self.name}
+            return _EXISTING_PACKAGE_INFO
         else:
             raise PackageNotFoundError
 
 
-def mock_main_module(monkeypatch, **kwargs: Any) -> None:
-    for name, value in kwargs.items():
-        monkeypatch.setattr(
-            sys.modules["__main__"], f"__{name}__", value, raising=(name != "requires")
-        )
+@pytest.fixture
+def mock_import_module(
+    monkeypatch, module_name: str, class_name: str, attr_value: Any
+) -> None:
+    def mock_import(_: Any) -> ModuleType:
+        mock_module = ModuleType(module_name)
+        monkeypatch.setattr(mock_module, class_name, attr_value, raising=False)
+        return mock_module
+
+    monkeypatch.setattr("botstrap.internal.metadata.import_module", mock_import)
 
 
 @pytest.fixture
@@ -106,21 +125,21 @@ def test_get_bot_class_info_success(
 def test_get_default_keys_dir(
     monkeypatch, main_module_file: Any, sys_argv: list[str], expected_parent_dir: Path
 ) -> None:
-    mock_main_module(monkeypatch, file=main_module_file)
+    monkeypatch.setattr(sys.modules["__main__"], "__file__", main_module_file)
     monkeypatch.setattr(sys, "argv", sys_argv)
     expected_keys_dir = (expected_parent_dir / ".botstrap_keys").resolve()
     assert Metadata.get_default_keys_dir() == expected_keys_dir
 
 
 @pytest.mark.parametrize(
-    "package_name, main_module_package, main_module_requires, expect_result",
+    "package_name, main_module_package, main_module_requires, expected",
     [
-        ("", "", "", False),
-        (_EXISTING_PACKAGE_NAME, "irrelevant_package", "irrelevant_requires", True),
-        ("", _EXISTING_PACKAGE_NAME, "", True),
-        ("", "", _EXISTING_PACKAGE_NAME, True),
-        ("bad_package", _EXISTING_PACKAGE_NAME, _EXISTING_PACKAGE_NAME, False),
-        ("", "another_bad_package", _EXISTING_PACKAGE_NAME, False),
+        ("", "", "", {}),
+        (_EXISTING_PACKAGE_NAME, "any_pkg", "any_reqs", _EXISTING_PACKAGE_INFO),
+        ("", _EXISTING_PACKAGE_NAME, "", _EXISTING_PACKAGE_INFO),
+        ("", "", _EXISTING_PACKAGE_NAME, _EXISTING_PACKAGE_INFO),
+        ("bad_package", _EXISTING_PACKAGE_NAME, _EXISTING_PACKAGE_NAME, {}),
+        ("", "another_bad_package", _EXISTING_PACKAGE_NAME, {}),
     ],
 )
 def test_get_package_info(
@@ -128,11 +147,92 @@ def test_get_package_info(
     package_name: str,
     main_module_package: str,
     main_module_requires: str,
-    expect_result: bool,
+    expected: dict[str, str | list[str]],
 ) -> None:
-    mock_main_module(
-        monkeypatch, package=main_module_package, requires=main_module_requires
-    )
     monkeypatch.setattr("botstrap.internal.metadata.metadata", MockMetadata)
-    package_info = Metadata.get_package_info(package_name)
-    assert package_info == ({"name": _EXISTING_PACKAGE_NAME} if expect_result else {})
+    monkeypatch.setattr(sys.modules["__main__"], "__package__", main_module_package)
+    monkeypatch.setattr(
+        sys.modules["__main__"], "__requires__", main_module_requires, raising=False
+    )
+    assert Metadata.get_package_info(package_name) == expected
+
+
+@pytest.mark.parametrize(
+    "program_name, sys_executable, sys_argv, console_scripts, expected",
+    [
+        ("", "", [], [], [""]),
+        ("", "python4", [], [], ["python4"]),
+        ("", "python", ["bot.py"], [], ["python", "bot.py"]),
+        ("bot", "any-python", [], ["bot"], ["bot"]),
+        ("bot1", "py", ["-m", "bot2"], ["bot", "bot1"], ["bot1"]),
+        ("bot2", "py", ["-m", "bot2"], ["bot", "bot1"], ["py", "-m", "bot2"]),
+        ("", "py", [__file__], [], ["py", _FILE_NAME]),
+        ("", "py", [__file__, "-h", "--more-options"], [], ["py", _FILE_NAME]),
+        ("", "py", ["-m", __file__, "-h"], ["bot", "bot1"], ["py", "-m", _FILE_NAME]),
+        ("", "py", ["non-option", "-m", __file__, "-h"], [], ["py", "non-option"]),
+    ],
+)
+def test_get_program_command(
+    monkeypatch,
+    program_name: str,
+    sys_executable: str,
+    sys_argv: list[str],
+    console_scripts: list[str],
+    expected: list[str],
+) -> None:
+    mock_entry_points = partial(MockEntryPoints, console_scripts)
+    monkeypatch.setattr("botstrap.internal.metadata.entry_points", mock_entry_points)
+    monkeypatch.setattr(sys, "executable", sys_executable)
+    monkeypatch.setattr(sys, "orig_argv", [sys_executable, *sys_argv])
+    assert Metadata.get_program_command(program_name) == expected
+
+
+@pytest.mark.parametrize(
+    "main_file_path, package_info, expected",
+    [
+        (None, _EXISTING_PACKAGE_INFO, _EXISTING_PACKAGE_NAME),
+        (Path(__file__), _EXISTING_PACKAGE_INFO, _EXISTING_PACKAGE_NAME),
+        (Path(__file__), {}, _FILE_NAME),
+        (_FILE_PARENT_DIR, {}, _PARENT_DIR_NAME),
+        (_FILE_PARENT_DIR / "src" / "main.py", {}, _PARENT_DIR_NAME),
+        (_FILE_PARENT_DIR / "foo" / "src" / "main.py", {}, "foo"),
+        (Path("foo/src/bar/main.py"), {}, "bar"),
+        (Path("foo/bar/baz/SRC/mAiN.py"), {}, "baz"),
+        (Path("foo/bar/baz/src/main/main.py"), {}, None),
+    ],
+)
+def test_guess_program_name(
+    monkeypatch,
+    main_file_path: Path | None,
+    package_info: dict[str, str | list[str]],
+    expected: str | None,
+) -> None:
+    for target, mock in {
+        "get_main_file_path": lambda: main_file_path,
+        "get_package_info": lambda: package_info,
+    }.items():
+        monkeypatch.setattr(f"botstrap.internal.metadata.Metadata.{target}", mock)
+    monkeypatch.setattr("pathlib.Path.exists", lambda _: True)
+    assert Metadata.guess_program_name() == expected
+
+
+@pytest.mark.parametrize(
+    "module_name, class_name, attr_value",
+    [("mdl", "cls", None), ("pkg.mdl", "cls", 0), ("a.b.c", "mdl.cls", MockMetadata)],
+)
+def test_import_class_fail(
+    mock_import_module, module_name: str, class_name: str, attr_value: Any
+) -> None:
+    qualified_class_name = f"{module_name}.{class_name}"
+    with pytest.raises(ImportError, match=qualified_class_name.replace(".", r"\.")):
+        Metadata.import_class(qualified_class_name)
+
+
+@pytest.mark.parametrize(
+    "module_name, class_name, attr_value",
+    [("mdl", "cls", str), ("pkg.mdl", "cls", int), ("a.b.c.mdl", "cls", MockMetadata)],
+)
+def test_import_class_success(
+    mock_import_module, module_name: str, class_name: str, attr_value: type
+) -> None:
+    assert Metadata.import_class(f"{module_name}.{class_name}") == attr_value

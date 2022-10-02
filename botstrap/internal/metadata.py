@@ -268,7 +268,7 @@ class Metadata:
 
         for path in [relevant_path, *relevant_path.parents[:dirs_to_climb]]:
             if path.exists() and is_relevant_name(path.name):
-                return path.name
+                return path.resolve().name
 
         return None
 
