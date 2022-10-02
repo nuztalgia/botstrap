@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 from dataclasses import asdict
-from typing import Any, Callable, Final, cast
+from typing import Callable, Final, cast
 
 import pytest
 
@@ -11,27 +11,17 @@ from botstrap.internal import CliSession
 
 _CLI_DEFAULT: Final[CliSession] = CliSession("default")
 _CLI_NO_COLOR: Final[CliSession] = CliSession("no-color", CliColors.off())
+
 _CLI_PRESETS: Final[tuple[CliSession, CliSession]] = (_CLI_DEFAULT, _CLI_NO_COLOR)
 
 
 @pytest.fixture
-def mock_input(monkeypatch, response: str) -> Callable[[], str]:
+def mock_input(monkeypatch, response: str) -> None:
     def print_and_return_response() -> str:
         print(response)
         return response
 
     monkeypatch.setattr("builtins.input", print_and_return_response)
-    return print_and_return_response
-
-
-@pytest.fixture
-def mock_getpass(monkeypatch, response: str) -> Callable[[], str]:
-    def silently_return_response(*_: Any) -> str:
-        return response
-
-    monkeypatch.setattr("getpass.getpass", silently_return_response)
-    monkeypatch.setattr("getpass.fallback_getpass", silently_return_response)
-    return silently_return_response
 
 
 @pytest.mark.parametrize(
@@ -106,12 +96,14 @@ def test_exit_process(capsys, reason: str, is_error: bool, expected_color: str) 
 )
 def test_get_hidden_input(
     capsys,
-    mock_getpass,
+    monkeypatch,
     prompt: str,
     response: str,
     format_input: Callable[[str], str] | None,
     expected: str,
 ) -> None:
+    monkeypatch.setattr("getpass.getpass", lambda: response)
+    monkeypatch.setattr("getpass.fallback_getpass", lambda *_: response)
     for cli in _CLI_PRESETS:
         cli.get_hidden_input(prompt, format_input)
         prompt = cli.colors.highlight(f"{prompt}:")
