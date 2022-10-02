@@ -70,28 +70,29 @@ def test_confirm_or_exit_exited(capsys, mock_input, response: str) -> None:
     assert system_exit.value.code == 0
 
 
-@pytest.mark.parametrize("reason", ["", "Failed to log in.", "Everything is on fire."])
-def test_exit_process_with_error(capsys, reason: str) -> None:
+@pytest.mark.parametrize(
+    "reason, is_error, expected_color",
+    [
+        ("", True, "N/A"),
+        ("", False, "N/A"),
+        ("Everything is on fire.", True, "error"),
+        ("Received a keyboard interrupt.", False, "lowlight"),
+    ],
+)
+def test_exit_process(capsys, reason: str, is_error: bool, expected_color: str) -> None:
     for cli in _CLI_PRESETS:
         with pytest.raises(SystemExit) as system_exit:
-            cli.exit_process(reason)
-        exiting_message = cli.colors.lowlight(cli.strings.m_exiting)
-        assert capsys.readouterr().out == (
-            f"{cli.colors.error(reason)} {exiting_message}\n" if reason else ""
-        )
-        assert system_exit.value.code == 1
-
-
-@pytest.mark.parametrize("reason", ["", "Received a keyboard interrupt.", "User exit."])
-def test_exit_process_without_error(capsys, reason: str) -> None:
-    for cli in _CLI_PRESETS:
-        with pytest.raises(SystemExit) as system_exit:
-            cli.exit_process(reason, is_error=False)
-        exiting_message = cli.colors.lowlight(cli.strings.m_exiting)
-        assert capsys.readouterr().out == (
-            f"{cli.colors.lowlight(reason)} {exiting_message}\n" if reason else ""
-        )
-        assert system_exit.value.code == 0
+            if is_error:
+                cli.exit_process(reason)  # Default value of `is_error` should be True.
+            else:
+                cli.exit_process(reason, is_error)
+        if reason:
+            colored_reason = getattr(cli.colors, expected_color)(reason)
+            exiting_message = cli.colors.lowlight(cli.strings.m_exiting)
+            assert capsys.readouterr().out == f"{colored_reason} {exiting_message}\n"
+        else:
+            assert capsys.readouterr().out == ""
+        assert system_exit.value.code == (1 if is_error else 0)
 
 
 @pytest.mark.parametrize(
