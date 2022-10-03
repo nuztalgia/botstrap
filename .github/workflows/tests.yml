@@ -66,7 +66,7 @@ jobs:
         if: |
           matrix.os == 'ubuntu-latest' &&
           matrix.python-version == '3.10' &&
-          (github.event_name == 'push' || inputs.coverage)
+          (github.event_name != 'workflow_dispatch' || inputs.coverage)
         uses: codecov/codecov-action@v3
         with:
           fail_ci_if_error: true

@@ -2,6 +2,11 @@ default_language_version:
   python: python3.10
 
 repos:
+  - repo: https://github.com/nuztalgia/botstrap
+    rev: 0.2.0
+    hooks:
+      - id: detect-discord-bot-tokens
+
   - repo: https://github.com/asottile/pyupgrade
     rev: v2.38.2
     hooks:
@@ -92,3 +97,14 @@ repos:
     hooks:
       - id: pretty-format-toml
         args: ["--autofix"]
+
+  - repo: local
+    hooks:
+      - id: pytest
+        name: pytest
+        entry: pytest
+        language: python
+        pass_filenames: false
+        always_run: true
+        args: ["--no-cov", "--skip-slow"]
+        additional_dependencies: ["botstrap[tests]"]

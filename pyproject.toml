@@ -68,7 +68,8 @@ local_scheme = "no-local-version"
 [tool.tox]
 legacy_tox_ini = """
 [testenv]
-commands = {envpython} -m pytest {posargs}
+commands = {envpython} -m pytest --count=10 {posargs}
+deps = pytest-repeat
 extras = tests
 
 [testenv:docs]
