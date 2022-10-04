@@ -20,18 +20,10 @@ def mock_storage_directory(
     storage_directory: str | Path | None,
     setup_path_method: str | None,
 ) -> str | Path | None:
-    return_adjusted_path = isinstance(storage_directory, Path)
+    storage_path = tmp_path / (storage_directory or ".botstrap_keys")
 
-    if not storage_directory:
-        storage_path = tmp_path / ".botstrap_keys"
-        monkeypatch.setattr(
-            "botstrap.internal.metadata.Metadata.get_default_keys_dir",
-            lambda: storage_path,
-        )
-    else:
-        if isinstance(storage_directory, str):
-            monkeypatch.setattr(Path, "__new__", lambda _, name: tmp_path / name)
-        storage_path = tmp_path / storage_directory
+    if isinstance(storage_directory, str):
+        monkeypatch.setattr(Path, "__new__", lambda _, name: tmp_path / name)
 
     if setup_path_method and (setup := getattr(storage_path, setup_path_method)):
         setup_kwargs = {"exist_ok": False}
@@ -39,7 +31,7 @@ def mock_storage_directory(
             setup_kwargs["parents"] = True
         setup(**setup_kwargs)
 
-    return storage_path if return_adjusted_path else storage_directory
+    return storage_path if isinstance(storage_directory, Path) else storage_directory
 
 
 @pytest.fixture(autouse=True)
@@ -187,7 +179,7 @@ def test_file_ops_fail(
     [
         ("_", False, None, "", None),
         ("abc", True, "\\w+", "abc123", "hunter22"),
-        ("x1", True, re.compile(".*", re.S), string.printable, string.punctuation),
+        ("x1", True, re.compile(".*", re.DOTALL), string.printable, string.punctuation),
     ],
 )
 def test_file_ops_success(
