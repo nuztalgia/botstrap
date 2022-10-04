@@ -110,7 +110,7 @@ class Secret:
                     f'Expected a directory, but found a file: "{storage_directory}"'
                 )
 
-            storage_directory.mkdir(exist_ok=True)
+            storage_directory.mkdir(exist_ok=True, parents=True)
             return storage_directory
 
         def get_validator() -> Callable[[str], bool]:
@@ -125,7 +125,7 @@ class Secret:
             def validate_pattern(text: str) -> bool:
                 """Returns `True` if the given text fits the pattern for this secret."""
                 if isinstance(valid_pattern, re.Pattern):
-                    return valid_pattern.match(text) is not None
+                    return valid_pattern.fullmatch(text) is not None
                 else:
                     return bool(cast(Callable, valid_pattern)(text))
 
@@ -232,13 +232,9 @@ class Secret:
 
     def _get_key_file(self, qualifier: _KeyQualifier) -> Path:
         """Returns the `Path` to the qualified (content/fernet) file for this secret."""
-        if qualifier not in get_args(_KeyQualifier):
-            raise ValueError(f'Invalid key file qualifier: "{qualifier}"')
-
         if (file := self.storage_directory / f".{self.uid}.{qualifier}.key").is_dir():
             dir_path = file.resolve()
             raise ValueError(f'Expected a file, but found a directory: "{dir_path}"')
-
         return file
 
     def _get_fernet(self, password: str | None) -> Fernet:
@@ -247,9 +243,11 @@ class Secret:
             if not password:
                 raise ValueError(f'Password is required to read/write "{self.uid}".')
             elif not isinstance(password, str):
-                raise TypeError(f'Password type must be "str", not "{type(password)}".')
+                raise TypeError(f"Password type must be {str}, not {type(password)}.")
             elif len(password) < (length := self.min_pw_length):
                 raise ValueError(f"Password must be at least {length} characters long.")
+        elif password:
+            raise ValueError(f'Unexpectedly received a password for "{self.uid}".')
 
         def get_extra_bytes(get_initial_bytes: Callable[[], bytes]) -> bytes:
             if not (fernet_file := self._get_key_file("fernet")).is_file():

@@ -63,7 +63,7 @@ class Token(Secret):
             requires_password=requires_password,
             display_name=display_name,
             storage_directory=storage_directory,
-            valid_pattern=_PATTERN.fullmatch,
+            valid_pattern=_PATTERN,
         )
         self.cli: Final[CliSession] = cli
 
