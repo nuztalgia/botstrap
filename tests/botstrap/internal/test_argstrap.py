@@ -1,7 +1,7 @@
 """Tests for the `botstrap.internal.argstrap` module."""
 from __future__ import annotations
 
-from typing import Final
+from typing import Any, Final
 
 import pytest
 
@@ -18,7 +18,7 @@ def mock_metadata(monkeypatch, meta_prog: list[str], meta_desc: str | None) -> N
 
 
 @pytest.mark.parametrize(
-    "tokens, description, version, custom_options, meta_prog, meta_desc, "
+    "token_args, description, version, custom_options, meta_prog, meta_desc, "
     "expected_prog, expected_usage, expected_desc",
     [
         (
@@ -33,7 +33,7 @@ def mock_metadata(monkeypatch, meta_prog: list[str], meta_desc: str | None) -> N
             '  Run "python bot0.py" with no parameters to start the bot.',
         ),
         (
-            [Token.get_default(_CLI_SESSION)],
+            [("default",)],
             None,
             "v1.0.0",
             {"beta": Option(flag=True)},
@@ -44,7 +44,7 @@ def mock_metadata(monkeypatch, meta_prog: list[str], meta_desc: str | None) -> N
             '  A bot.\n  Run "python -m bot1.py" with no parameters to start the bot.',
         ),
         (
-            [Token(_CLI_SESSION, "dev"), Token(_CLI_SESSION, "prod", True)],
+            [("dev",), ("prod", True)],
             "A bot.",
             "",
             {"a": Option(flag=True, help=Option.HIDE_HELP), "b": Option(flag=True)},
@@ -55,7 +55,7 @@ def mock_metadata(monkeypatch, meta_prog: list[str], meta_desc: str | None) -> N
             '  A bot.\n  Run "bot2" with no parameters to start the bot in dev mode.',
         ),
         (
-            [Token(_CLI_SESSION, "bot")],
+            [("bot",)],
             None,
             None,
             {
@@ -70,7 +70,7 @@ def mock_metadata(monkeypatch, meta_prog: list[str], meta_desc: str | None) -> N
             '  Run "python3 -m bot3" with no parameters to start the bot.',
         ),
         (
-            [Token.get_default(_CLI_SESSION), Token(_CLI_SESSION, "admin", True)],
+            [("default",), ("admin", True), ("super_duper_secret_admin", True)],
             None,
             "4.0",
             {
@@ -88,7 +88,7 @@ def mock_metadata(monkeypatch, meta_prog: list[str], meta_desc: str | None) -> N
     ],
 )
 def test_init_success(
-    tokens: list[Token],
+    token_args: list[tuple[Any, ...]],
     description: str | None,
     version: str | None,
     custom_options: dict[str, Option],
@@ -98,6 +98,7 @@ def test_init_success(
     expected_usage: str,
     expected_desc: str,
 ) -> None:
+    tokens = [Token(_CLI_SESSION, *args) for args in token_args]
     argstrap = Argstrap(_CLI_SESSION, tokens, description, version, **custom_options)
     assert argstrap.cli == _CLI_SESSION
     assert argstrap.prog == expected_prog
