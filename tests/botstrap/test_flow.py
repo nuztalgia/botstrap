@@ -3,11 +3,45 @@ from __future__ import annotations
 
 import re
 from argparse import Namespace
-from typing import Any, cast
+from string import ascii_uppercase
+from typing import Any, Callable, Final, cast
 
 import pytest
 
 from botstrap import Botstrap, CliColors, Option
+from botstrap.internal import Token
+
+_DUMMY_TOKEN_VALUE: Final[str] = f"abcdefghijklmnopqrstuvwx.123456.{ascii_uppercase}-"
+
+
+@pytest.fixture
+def retrieve_active_token(
+    monkeypatch,
+    created_token_uids: list[str],
+    registered_token_uids: list[str],
+    allow_token_creation: bool,
+    allow_token_registration: bool,
+) -> Callable[[], str | None]:
+    botstrap = Botstrap()
+
+    for token_uid in created_token_uids:
+        Token(botstrap, token_uid).write(_DUMMY_TOKEN_VALUE)
+
+    for token_uid in registered_token_uids:
+        botstrap.register_token(token_uid)
+
+    def _parse_args(_: Any) -> Namespace:
+        args = {"token": registered_token_uids[0]} if registered_token_uids else {}
+        return Namespace(**args)
+
+    def _retrieve_active_token() -> str | None:
+        return botstrap.retrieve_active_token(
+            allow_token_creation=allow_token_creation,
+            allow_token_registration=allow_token_registration,
+        )
+
+    monkeypatch.setattr("argparse.ArgumentParser.parse_args", _parse_args)
+    return _retrieve_active_token
 
 
 def test_register_token() -> None:
@@ -89,11 +123,22 @@ def test_parse_args(
 
 
 @pytest.mark.parametrize(
+    "created_token_uids, registered_token_uids, "
     "allow_token_creation, allow_token_registration, expected",
-    [(False, False, RuntimeError), (False, True, None), (True, True, 0)],
+    [
+        ([], [], False, False, RuntimeError),
+        (["default"], [], False, False, RuntimeError),
+        (["prod"], ["dev", "prod"], False, False, None),
+        ([], [], False, True, None),
+        (["dev", "prod"], ["default"], False, True, None),
+        ([], [], True, True, 0),
+    ],
 )
 def test_retrieve_active_token_fail(
     monkeypatch,
+    retrieve_active_token,
+    created_token_uids: list[str],
+    registered_token_uids: list[str],
     allow_token_creation: bool,
     allow_token_registration: bool,
     expected: Any,
@@ -102,13 +147,6 @@ def test_retrieve_active_token_fail(
         raise KeyboardInterrupt
 
     monkeypatch.setattr("builtins.input", interrupt)
-    monkeypatch.setattr("argparse.ArgumentParser.parse_args", lambda _: Namespace())
-
-    def retrieve_active_token() -> str | None:
-        return Botstrap().retrieve_active_token(
-            allow_token_creation=allow_token_creation,
-            allow_token_registration=allow_token_registration,
-        )
 
     if isinstance(expected, int):
         with pytest.raises(SystemExit) as system_exit:
@@ -119,3 +157,32 @@ def test_retrieve_active_token_fail(
     else:
         with pytest.raises(expected):
             retrieve_active_token()
+
+
+@pytest.mark.parametrize(
+    "created_token_uids, registered_token_uids, "
+    "allow_token_creation, allow_token_registration",
+    [
+        ([], [], True, True),
+        ([], ["dev"], True, False),
+        (["prod"], ["dev"], True, False),
+        (["dev"], ["dev", "prod"], False, False),
+    ],
+)
+def test_retrieve_active_token_success(
+    monkeypatch,
+    retrieve_active_token,
+    created_token_uids: list[str],
+    registered_token_uids: list[str],
+    allow_token_creation: bool,
+    allow_token_registration: bool,
+) -> None:
+    def mock_resolve(token: Token, resolve_allow_token_creation: bool) -> str | None:
+        print(token.uid)
+        assert resolve_allow_token_creation == allow_token_creation
+        if allow_token_creation or (token.uid in created_token_uids):
+            return _DUMMY_TOKEN_VALUE
+        return None
+
+    monkeypatch.setattr("botstrap.internal.tokens.Token.resolve", mock_resolve)
+    assert retrieve_active_token() == _DUMMY_TOKEN_VALUE
