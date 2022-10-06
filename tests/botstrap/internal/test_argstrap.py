@@ -8,17 +8,11 @@ from typing import Any, Final, cast
 import pytest
 
 from botstrap import CliColors, Option
-from botstrap.internal import Argstrap, CliSession, Metadata, Token
+from botstrap.internal import Argstrap, CliSession, Token
 from tests.conftest import CliAction
 
 _CLI_SESSION: Final[CliSession] = CliSession("CLI", CliColors.off())
 _DUMMY_TOKEN_VALUE: Final[str] = f"abcdefghijklmnopqrstuvwx.123456.{ascii_uppercase}-"
-
-
-@pytest.fixture
-def mock_metadata(monkeypatch, meta_prog: list[str], meta_desc: str | None) -> None:
-    monkeypatch.setattr(Metadata, "get_program_command", lambda _: meta_prog)
-    monkeypatch.setattr(Metadata, "get_package_info", lambda _: {"summary": meta_desc})
 
 
 @pytest.mark.parametrize(
@@ -110,7 +104,7 @@ def test_init_fail(
     ],
 )
 def test_init_success(
-    mock_metadata,
+    mock_get_metadata,
     token_uids: list[str],
     description: str | None,
     version: str | None,

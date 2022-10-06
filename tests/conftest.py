@@ -77,3 +77,19 @@ def mock_get_default_keys_dir(
             "botstrap.internal.metadata.Metadata.get_default_keys_dir",
             lambda: tmp_path / ".botstrap_keys",
         )
+
+
+@pytest.fixture
+def mock_get_metadata(monkeypatch, meta_prog: list[str], meta_desc: str | None) -> None:
+    monkeypatch.setattr(
+        "botstrap.internal.metadata.Metadata.get_program_command", lambda _: meta_prog
+    )
+    monkeypatch.setattr(
+        "botstrap.internal.metadata.Metadata.get_package_info",
+        lambda *_: {"summary": meta_desc},
+    )
+
+
+@pytest.fixture
+def meta_prog() -> list[str]:
+    return ["python", "bot.py"]
