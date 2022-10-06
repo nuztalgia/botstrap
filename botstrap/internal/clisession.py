@@ -8,6 +8,7 @@ from botstrap.colors import CliColors
 from botstrap.strings import CliStrings
 
 
+# noinspection PyUnresolvedReferences
 class CliSession:
     """Defines UX state for a program, to ensure a consistent look and feel for its CLI.
 
@@ -70,7 +71,6 @@ class CliSession:
         return self._strings
 
     def confirm_or_exit(self, question: str) -> None:
-        # noinspection PyUnresolvedReferences
         """Exits the program if the user responds non-affirmatively to a prompt.
 
         If the user responds affirmatively, this function will return without raising
@@ -95,7 +95,6 @@ class CliSession:
             self.exit_process(self.strings.m_exit_by_choice, is_error=False)
 
     def exit_process(self, reason: str = "", is_error: bool = True) -> None:
-        # noinspection PyUnresolvedReferences
         """Exits the program in a user-friendly manner.
 
         By default, the provided `reason` will be colored either `red`{.red} or
@@ -138,7 +137,6 @@ class CliSession:
         raise SystemExit(1 if is_error else 0)
 
     def get_bool_input(self, question: str) -> bool:
-        # noinspection PyUnresolvedReferences
         """Returns a boolean value corresponding to the user's response to a prompt.
 
         ??? example "Example - Printing output based on user input"
@@ -173,7 +171,6 @@ class CliSession:
         prompt: str,
         format_input: Callable[[str], str] | None = None,
     ) -> str:
-        # noinspection PyUnresolvedReferences
         """Returns the user's input without echoing. Prints a safe representation of it.
 
         This function tries to provide a user-friendly experience without leaking the
@@ -213,7 +210,6 @@ class CliSession:
 
     # noinspection PyMethodMayBeStatic
     def get_input(self, prompt: str, *, echo_input: bool = True) -> str:
-        # noinspection PyUnresolvedReferences
         """Returns the user's input, with the option to turn off echoing.
 
         In this context, "echoing" is displaying the user's input on the screen as they
@@ -253,7 +249,6 @@ class CliSession:
         is_error: bool = False,
         suppress_newline: bool = False,
     ) -> None:
-        # noinspection PyUnresolvedReferences
         """Prints a message prefixed by the program name, and optionally an error label.
 
         ??? example "Example - Printing program prefix labels"

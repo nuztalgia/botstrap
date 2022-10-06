@@ -34,7 +34,7 @@ def mock_input(monkeypatch, response: str) -> None:
     ],
 )
 def test_properties(name: str, kwargs: dict[str, CliColors | CliStrings]) -> None:
-    cli = CliSession(name, **kwargs)  # type:ignore[arg-type]
+    cli = CliSession(name, **kwargs)  # type: ignore[arg-type]
     assert cli.name == name
     assert asdict(cli.colors) == asdict(kwargs.get("colors", CliColors.default()))
     assert cli.strings == kwargs.get("strings", CliStrings.default())

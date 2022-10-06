@@ -2,7 +2,8 @@
 from __future__ import annotations
 
 import re
-from typing import cast
+from argparse import Namespace
+from typing import Any, cast
 
 import pytest
 
@@ -75,7 +76,7 @@ def test_parse_args(
     sys_argv: list[str],
     expected: str | dict[str, str | int | float],
 ) -> None:
-    botstrap = Botstrap("botstrap", desc=desc, version=version, colors=CliColors.off())
+    botstrap = Botstrap(desc=desc, version=version, colors=CliColors.off())
     monkeypatch.setattr("sys.argv", ["bot.py", *sys_argv])
 
     if isinstance(expected, str):
@@ -85,3 +86,36 @@ def test_parse_args(
         assert system_exit.value.code == 0
     else:
         assert vars(botstrap.parse_args(**custom_options)) == expected
+
+
+@pytest.mark.parametrize(
+    "allow_token_creation, allow_token_registration, expected",
+    [(False, False, RuntimeError), (False, True, None), (True, True, 0)],
+)
+def test_retrieve_active_token_fail(
+    monkeypatch,
+    allow_token_creation: bool,
+    allow_token_registration: bool,
+    expected: Any,
+) -> None:
+    def interrupt() -> None:
+        raise KeyboardInterrupt
+
+    monkeypatch.setattr("builtins.input", interrupt)
+    monkeypatch.setattr("argparse.ArgumentParser.parse_args", lambda _: Namespace())
+
+    def retrieve_active_token() -> str | None:
+        return Botstrap().retrieve_active_token(
+            allow_token_creation=allow_token_creation,
+            allow_token_registration=allow_token_registration,
+        )
+
+    if isinstance(expected, int):
+        with pytest.raises(SystemExit) as system_exit:
+            retrieve_active_token()
+        assert system_exit.value.code == expected
+    elif not expected:
+        assert retrieve_active_token() is None
+    else:
+        with pytest.raises(expected):
+            retrieve_active_token()

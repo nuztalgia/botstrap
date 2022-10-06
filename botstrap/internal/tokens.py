@@ -175,8 +175,8 @@ class Token(Secret):
         self.cli.confirm_or_exit(self.cli.strings.t_create.substitute(token=self))
 
         self.write(
-            data=(token := _get_new_token(self)),
-            password=_get_new_password(self) if self.requires_password else None,
+            data=(token := self.get_new_token_value()),
+            password=self.get_new_password() if self.requires_password else None,
         )
 
         print(self.cli.colors.success(self.cli.strings.t_create_success))
@@ -184,41 +184,40 @@ class Token(Secret):
 
         return token
 
+    def get_new_token_value(self) -> str:
+        """Prompts the user to provide a valid bot token string, and then returns it."""
+        placeholder = ".".join("*" * i for i in _LENGTHS)
+        placeholder_prompt = f"{self.cli.strings.t_prompt}: {placeholder}"
 
-def _get_new_token(token: Token) -> str:
-    """Prompts the user to provide a valid bot token string, and then returns it."""
-    placeholder = ".".join("*" * i for i in _LENGTHS)
+        def format_input(user_input: str) -> str:
+            # Let the default formatter handle the string if it isn't a valid token.
+            return placeholder if self.validate(user_input) else ""
 
-    def format_input(user_input: str) -> str:
-        # Let the default formatter handle the string if it doesn't look like a token.
-        return placeholder if token.validate(user_input) else ""
+        print(self.cli.strings.t_create_cue)
+        token_value = self.cli.get_hidden_input(self.cli.strings.t_prompt, format_input)
 
-    print(token.cli.strings.t_create_cue)
-    token_input = token.cli.get_hidden_input(token.cli.strings.t_prompt, format_input)
+        if not self.validate(token_value):
+            print(self.cli.strings.t_create_hint)
+            print(self.cli.colors.lowlight(placeholder_prompt))
+            self.cli.exit_process(self.cli.strings.t_create_mismatch)
 
-    if not token.validate(token_input):
-        print(token.cli.strings.t_create_hint)
-        print(token.cli.colors.lowlight(f"{token.cli.strings.t_prompt}: {placeholder}"))
-        token.cli.exit_process(token.cli.strings.t_create_mismatch)
+        return token_value
 
-    return token_input
+    def get_new_password(self) -> str:
+        """Prompts the user to provide a valid password string, and then returns it."""
+        print(self.cli.strings.p_create_info.substitute(token=self))
+        print(self.cli.strings.p_create_cue.substitute(token=self))
 
+        prompt, min_length = self.cli.strings.p_prompt, self.min_pw_length
 
-def _get_new_password(token: Token) -> str:
-    """Prompts the user to provide a valid password string, and then returns it."""
-    print(token.cli.strings.p_create_info.substitute(token=token))
-    print(token.cli.strings.p_create_cue.substitute(token=token))
+        while len(password_input := self.cli.get_hidden_input(prompt)) < min_length:
+            hint = self.cli.strings.p_create_hint.substitute(min_length=min_length)
+            print(self.cli.colors.warning(hint))
+            self.cli.confirm_or_exit(self.cli.strings.p_create_retry)
 
-    prompt, min_length = token.cli.strings.p_prompt, token.min_pw_length
+        print(self.cli.strings.p_confirm_cue)
+        while self.cli.get_hidden_input(self.cli.strings.p_prompt) != password_input:
+            print(self.cli.colors.warning(self.cli.strings.p_confirm_hint))
+            self.cli.confirm_or_exit(self.cli.strings.p_confirm_retry)
 
-    while len(password_input := token.cli.get_hidden_input(prompt)) < min_length:
-        hint = token.cli.strings.p_create_hint.substitute(min_length=min_length)
-        print(token.cli.colors.warning(hint))
-        token.cli.confirm_or_exit(token.cli.strings.p_create_retry)
-
-    print(token.cli.strings.p_confirm_cue)
-    while token.cli.get_hidden_input(token.cli.strings.p_prompt) != password_input:
-        print(token.cli.colors.warning(token.cli.strings.p_confirm_hint))
-        token.cli.confirm_or_exit(token.cli.strings.p_confirm_retry)
-
-    return password_input
+        return password_input

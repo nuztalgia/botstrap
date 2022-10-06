@@ -262,7 +262,7 @@ class Botstrap(CliSession):
         self._active_token, results = argstrap.parse_bot_args()
         return results
 
-    def retrieve_active_token(
+    def retrieve_active_token(  # type: ignore[return]
         self,
         *,
         allow_token_creation: bool = True,
@@ -341,7 +341,6 @@ class Botstrap(CliSession):
             return cast(Token, self._active_token).resolve(allow_token_creation)
         except KeyboardInterrupt:
             self.exit_process(self.strings.m_exit_by_interrupt, is_error=False)
-            return None  # Appease mypy, even though this is technically unreachable.
 
     def run_bot(
         self,
