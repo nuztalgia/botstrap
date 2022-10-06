@@ -132,6 +132,12 @@ class Argstrap(argparse.ArgumentParser):
 
         # First, add any/all custom-defined (a.k.a. probably the most relevant) options.
         for i, option in enumerate(custom_options.values()):
+            option_key = self._custom_keys[i]  # Use the sanitized key.
+            if not isinstance(option, Option):
+                raise TypeError(
+                    f"Invalid type for custom option '{option_key}'. "
+                    f"Expected {Option}, but found {type(option)}."
+                )
             option_dict: dict[str, Any] = {
                 "action": "store_true" if option.flag else "store",
                 "help": _HELP_PATTERN.sub(_HELP_REPLACEMENT, option.help or ""),
@@ -144,7 +150,7 @@ class Argstrap(argparse.ArgumentParser):
                     option_dict["choices"] = (  # Make sure default value is included.
                         choices if (default in choices) else [default, *choices]
                     )
-            add_arg(self._custom_keys[i], **option_dict)  # Use the sanitized key.
+            add_arg(option_key, **option_dict)
 
         # Then add the default options, in order of their usefulness when viewing "-h".
         add_arg(_TOKENS_KEY, action="store_true", help=self.cli.strings.h_tokens)
