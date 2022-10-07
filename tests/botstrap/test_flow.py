@@ -1,17 +1,39 @@
 """Tests for the `botstrap.flow` module (`Botstrap` class)."""
 from __future__ import annotations
 
+import asyncio
+import functools
 import re
-from argparse import Namespace
+from argparse import ArgumentParser, Namespace
 from string import ascii_uppercase
-from typing import Any, Callable, Final, cast
+from typing import Any, Callable, Coroutine, Final, TypeVar, cast
 
 import pytest
 
 from botstrap import Botstrap, CliColors, Option
-from botstrap.internal import Token
+from botstrap.internal import Metadata, Token
+
+Coro = TypeVar("Coro", bound=Callable[..., Coroutine[Any, Any, Any]])
 
 _DUMMY_TOKEN_VALUE: Final[str] = f"abcdefghijklmnopqrstuvwx.123456.{ascii_uppercase}-"
+
+
+class MockBot:
+    def __init__(self, **options: Any) -> None:
+        for option_name, option_value in options.items():
+            setattr(self, option_name, option_value)
+        if self.__module__ == "discord.client":
+            assert isinstance(getattr(self, "intents"), MockIntents)
+
+    def event(self, coroutine: Coro) -> Coro:
+        setattr(self, coroutine.__name__, coroutine)
+        return coroutine
+
+
+class MockIntents:
+    @classmethod
+    def default(cls) -> MockIntents:
+        return cls()
 
 
 @pytest.fixture
@@ -40,7 +62,7 @@ def retrieve_active_token(
             allow_token_registration=allow_token_registration,
         )
 
-    monkeypatch.setattr("argparse.ArgumentParser.parse_args", _parse_args)
+    monkeypatch.setattr(ArgumentParser, "parse_args", _parse_args)
     return _retrieve_active_token
 
 
@@ -178,7 +200,6 @@ def test_retrieve_active_token_success(
     allow_token_registration: bool,
 ) -> None:
     def mock_resolve(token: Token, resolve_allow_token_creation: bool) -> str | None:
-        print(token.uid)
         assert resolve_allow_token_creation == allow_token_creation
         if allow_token_creation or (token.uid in created_token_uids):
             return _DUMMY_TOKEN_VALUE
@@ -186,3 +207,119 @@ def test_retrieve_active_token_success(
 
     monkeypatch.setattr("botstrap.internal.tokens.Token.resolve", mock_resolve)
     assert retrieve_active_token() == _DUMMY_TOKEN_VALUE
+
+
+@pytest.mark.parametrize(
+    "bot_class, options, active_token_value, meta_bot_class_info, expected_error",
+    [
+        ("", {}, None, None, AssertionError),
+        ("", {}, _DUMMY_TOKEN_VALUE, None, RuntimeError),
+        ("", {}, _DUMMY_TOKEN_VALUE, ("an.imaginary.Class", "run", False), ImportError),
+        (123, {}, _DUMMY_TOKEN_VALUE, None, TypeError),
+    ],
+)
+def test_run_bot_fail(
+    monkeypatch,
+    bot_class: str | type,
+    options: dict[str, Any],
+    active_token_value: str | None,
+    meta_bot_class_info: tuple[str, str, bool] | None,
+    expected_error: Any,
+) -> None:
+    def mock_get_bot_class_info() -> tuple[str, str, bool]:
+        if meta_bot_class_info:
+            return meta_bot_class_info
+        raise RuntimeError
+
+    def mock_import_class(_: str) -> None:
+        raise ImportError
+
+    monkeypatch.setattr(Metadata, "get_bot_class_info", mock_get_bot_class_info)
+    monkeypatch.setattr(Metadata, "import_class", mock_import_class)
+    monkeypatch.setattr(Token, "resolve", lambda *_: active_token_value)
+    monkeypatch.setattr(ArgumentParser, "parse_args", lambda _: Namespace())
+
+    with pytest.raises(expected_error):
+        assert Botstrap().run_bot(
+            bot_class, **options
+        )  # type: ignore[func-returns-value]
+
+
+@pytest.mark.parametrize(
+    "override_bot_class_name, options, expected_output",
+    [
+        (None, {}, r'^\nbot: default: Attempting to log in.*\n\n.*as "MockBot"\.\n\n$'),
+        (("discord.client", "Client"), {}, r'Successfully logged in as "Client"\.\n+$'),
+        (
+            ("discord", "Bot"),
+            {"run_method_name": "start", "init_with_token": True},
+            normal_output := r"^\nbot: default: Attempting to log in to Discord\.\.\.\n"
+            r'\nbot: default: Successfully logged in as "([A-Za-z]*Bot|Client)"\.\n\n+',
+        ),
+        (
+            None,
+            {"run_method_name": "walk", "exception_on_run": KeyboardInterrupt},
+            normal_output + r"Received a keyboard interrupt\. Exiting process\.\n\n$",
+        ),
+        (
+            ("hikari", "GatewayBot"),
+            {"exception_on_run": type("UnauthorizedError", (Exception,), {})},
+            normal_output + r"bot: error: Failed to log in\. .* Exiting process\.\n+$",
+        ),
+        (
+            ("discord.client", "Client"),
+            {"exception_on_run": type("LoginFailure", (Exception,), {})},
+            normal_output + r".* sure your bot token is configured properly\..*\.\n\n$",
+        ),
+        (None, {"init_with_token": True, "exception_on_run": Exception}, normal_output),
+    ],
+)
+def test_run_bot_success(
+    capsys,
+    monkeypatch,
+    override_bot_class_name: tuple[str, str] | None,
+    options: dict[str, Any],
+    expected_output: str,
+) -> None:
+    if override_bot_class_name:
+        module_name, class_name = override_bot_class_name
+        MockBot.__module__ = module_name
+        MockBot.__name__ = class_name
+
+    run_method_name = options.get("run_method_name", "run")
+    init_with_token = options.get("init_with_token", False)
+
+    exception_on_run = options.get("exception_on_run")
+    handled_exceptions = ("KeyboardInterrupt", "LoginFailure", "UnauthorizedError")
+
+    def mock_run_bot(bot: MockBot, token: str | None = None) -> None:
+        assert getattr(bot, "token") if init_with_token else token
+        if on_connect := getattr(bot, "on_connect", None):
+            asyncio.run(on_connect())
+        if exception := getattr(bot, "exception_on_run", None):
+            raise exception
+
+    monkeypatch.setattr(MockBot, run_method_name, mock_run_bot, raising=False)
+    monkeypatch.setattr(Metadata, "import_class", lambda *_: MockIntents)
+    monkeypatch.setattr(Token, "resolve", lambda *_: _DUMMY_TOKEN_VALUE)
+    monkeypatch.setattr(ArgumentParser, "parse_args", lambda _: Namespace())
+
+    botstrap = Botstrap("bot", colors=CliColors.off())
+    run_bot = functools.partial(botstrap.run_bot, MockBot, **options)
+
+    if not exception_on_run:
+        run_bot()
+    elif exception_on_run.__name__ in handled_exceptions:
+        with pytest.raises(SystemExit) as system_exit:
+            run_bot()
+        expected_exit_code = 0 if (exception_on_run == KeyboardInterrupt) else 1
+        assert system_exit.value.code == expected_exit_code
+    else:
+        with pytest.raises(exception_on_run):
+            run_bot()
+
+    assert re.search(expected_output, capsys.readouterr().out, re.DOTALL)
+
+    if override_bot_class_name:  # Restore original names.
+        MockBot.__module__ = __name__
+        MockBot.__name__ = "MockBot"

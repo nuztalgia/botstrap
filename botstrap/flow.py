@@ -480,8 +480,8 @@ class Botstrap(CliSession):
         if not isinstance(bot_class, type):
             raise TypeError(f'Unable to instantiate bot class: "{original_bot_class}"')
 
-        qualified_bot_class_name = ".".join((bot_class.__module__, bot_class.__name__))
-        if (not options) and (qualified_bot_class_name == "discord.client.Client"):
+        qualified_bot_name = ".".join((bot_class.__module__, bot_class.__name__))
+        if (qualified_bot_name == "discord.client.Client") and "intents" not in options:
             # The constructor of discord.py's `Client` requires the `intents` parameter.
             intents = Metadata.import_class("discord.Intents")
             options["intents"] = intents.default()  # type: ignore[attr-defined]
