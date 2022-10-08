@@ -15,6 +15,7 @@ setup(
         "tests": [
             "pytest >=7.1.0",
             "pytest-cov >=4.0.0",
+            "pytest-repeat >=0.9.0",
         ],
     },
 )

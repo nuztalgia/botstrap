@@ -28,6 +28,7 @@ def init_repo_files(tmp_path) -> None:
 
 
 @pytest.mark.slow
+@pytest.mark.repeat(1)
 def test_detect_bot_tokens_fail(capsys) -> None:
     assert scan.detect_bot_tokens() == 1
     assert "Git command failed." in capsys.readouterr().out
@@ -37,6 +38,7 @@ def test_detect_bot_tokens_fail(capsys) -> None:
 
 
 @pytest.mark.slow
+@pytest.mark.repeat(1)
 def test_detect_bot_tokens_success(capsys, tmp_path, init_repo_files) -> None:
     assert scan.detect_bot_tokens() == 0  # No tokens initially present.
     expected = "\nScanning 3 files...\n\nNo plaintext bot tokens detected.\n\n"
@@ -86,6 +88,7 @@ def test_git_unavailable(monkeypatch, tmp_path) -> None:
 
 
 @pytest.mark.slow
+@pytest.mark.repeat(1)
 def test_run_git(tmp_path) -> None:
     (tmp_path / "dir1" / "dir2").mkdir(parents=True)
 
@@ -102,6 +105,7 @@ def test_run_git(tmp_path) -> None:
 
 
 @pytest.mark.slow
+@pytest.mark.repeat(1)
 def test_list_files(init_repo_files) -> None:
     assert scan.list_files() == []
     assert scan.list_files("-o") == ["dir1/file1", "dir1/file2", "dir2/file1"]
@@ -113,6 +117,7 @@ def test_list_files(init_repo_files) -> None:
 
 
 @pytest.mark.slow
+@pytest.mark.repeat(1)
 @pytest.mark.parametrize(
     "paths, cwd, expected",
     [

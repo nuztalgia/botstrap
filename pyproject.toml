@@ -57,6 +57,7 @@ addopts = [
     "--strict-markers",
 ]
 filterwarnings = ["error"]
+required_plugins = ["pytest-cov", "pytest-repeat"]
 testpaths = ["botstrap", "tests"]
 
 [tool.setuptools]
@@ -69,7 +70,6 @@ local_scheme = "no-local-version"
 legacy_tox_ini = """
 [testenv]
 commands = {envpython} -m pytest --count=5 {posargs}
-deps = pytest-repeat
 extras = tests
 
 [testenv:docs]

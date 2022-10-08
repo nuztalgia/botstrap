@@ -108,3 +108,6 @@ repos:
         always_run: true
         args: ["--no-cov", "--skip-slow"]
         additional_dependencies: ["botstrap[tests]"]
+
+ci:
+  skip: [pytest]

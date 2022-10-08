@@ -56,6 +56,7 @@ def test_validate(text_to_validate: str, expected: bool) -> None:
 
 
 @pytest.mark.slow
+@pytest.mark.repeat(1)
 @pytest.mark.parametrize(
     "resolve_token, cli_actions, expected",
     [
@@ -133,6 +134,7 @@ def test_resolve_new_token(
 
 
 @pytest.mark.slow
+@pytest.mark.repeat(1)
 @pytest.mark.parametrize(
     "resolve_token, cli_actions, expected",
     [

@@ -174,6 +174,7 @@ def test_file_ops_fail(
 
 
 @pytest.mark.slow
+@pytest.mark.repeat(1)
 @pytest.mark.parametrize(
     "uid, requires_password, valid_pattern, data, password",
     [

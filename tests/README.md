@@ -67,6 +67,35 @@ Then, use the following command to run the tests and produce a coverage summary:
 pytest
 ```
 
-And that's it! Hopefully all the tests pass. :innocent: For more information about
-running **pytest**, check out its
-[usage guide](https://docs.pytest.org/en/latest/how-to/usage.html).
+And that's it! Hopefully all the tests pass. :innocent:
+
+## Useful `pytest` Options
+
+Use `-S` to skip slow tests. This is a custom option defined in
+[`conftest.py`](conftest.py). It causes pytest to ignore tests that are explicitly
+marked as slow.
+
+```
+pytest -S
+```
+
+Use `-k` to only run tests whose names (or module names) match a given pattern. This can
+greatly speed up the workflow of writing, running, and fixing tests for a specific
+module or feature. Combine it with `--no-cov` to avoid printing an incomplete coverage
+report.
+
+```
+pytest -k test_modulename --no-cov
+```
+
+Use `--durations=N` to see the slowest `N` tests. (**Note:** Any tests that take longer
+than `0.01s` to run should be marked with `@pytest.mark.slow` so that they can be
+conveniently skipped with the `-S` option.)
+
+```
+pytest --durations=50
+```
+
+For more information about **pytest** and its available options, check out the
+[usage guide](https://docs.pytest.org/en/latest/how-to/usage.html) (and, of course,
+`pytest -h`).
