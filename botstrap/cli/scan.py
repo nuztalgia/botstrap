@@ -6,7 +6,8 @@ import re
 import shutil
 import string
 import subprocess
-from typing import Callable, Final, Sequence
+from collections.abc import Callable, Sequence
+from typing import Final
 
 from botstrap import CliColors
 
@@ -128,7 +129,7 @@ def scan_file_for_token(
             )
 
     if is_text_file(filename):
-        with open(filename, "r", encoding="utf-8") as file:
+        with open(filename, encoding="utf-8") as file:
             if _TOKEN_PATTERN.search(file.read()):
                 show_filename(colors.warning, "WARNING: Contains plaintext token.")
                 return True

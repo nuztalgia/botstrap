@@ -1,8 +1,9 @@
 """This module contains the `CliSession` class, which facilitates command-line I/O."""
 from __future__ import annotations
 
+from collections.abc import Callable
 from getpass import getpass
-from typing import Callable, Final
+from typing import Final
 
 from botstrap.colors import CliColors
 from botstrap.strings import CliStrings

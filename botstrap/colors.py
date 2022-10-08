@@ -1,8 +1,8 @@
 """This module contains `Color` & `CliColors`, both of which add color to CLI output."""
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import KW_ONLY, asdict, dataclass
-from typing import Callable
 
 from colorama import Fore, Style, init
 

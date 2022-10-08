@@ -5,8 +5,9 @@ import asyncio
 import functools
 import re
 from argparse import ArgumentParser, Namespace
+from collections.abc import Callable, Coroutine
 from string import ascii_uppercase
-from typing import Any, Callable, Coroutine, Final, TypeVar, cast
+from typing import Any, Final, TypeVar, cast
 
 import pytest
 

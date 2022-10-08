@@ -2,8 +2,9 @@
 from __future__ import annotations
 
 import argparse
+from collections.abc import Iterable
 from dataclasses import dataclass
-from typing import Any, ClassVar, Iterable
+from typing import Any, ClassVar
 
 
 @dataclass(eq=False, frozen=True, kw_only=True)

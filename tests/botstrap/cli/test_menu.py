@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import re
-from typing import Sequence
+from collections.abc import Sequence
 
 import pytest
 
@@ -45,6 +45,7 @@ def setup(monkeypatch, tmp_path, sys_argv: list[str]) -> None:
         (["site"], r"^webbrowser: https://botstrap.readthedocs.io(/en/latest)?/?\n$"),
         (["site", "-h", "-n"], help_text),
         (["scan"], "detect_bot_tokens succeeded!"),
+        (["scan", "-h"], r"e:.+botstrap.+scan.+\[paths\] \[-q\] \[-v\].+\[-h\] \[-n\]"),
     ],
 )
 def test_main(capsys, sys_argv: list[str], expected: str) -> None:

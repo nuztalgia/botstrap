@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import sys
+from collections.abc import Iterator
 from email.errors import MessageError
 from importlib import import_module
 from importlib.metadata import (
@@ -12,7 +13,7 @@ from importlib.metadata import (
 )
 from pathlib import Path
 from types import ModuleType
-from typing import Final, Iterator, NamedTuple
+from typing import Final, NamedTuple
 
 _CURRENT_DIR: Final[Path] = Path(".").resolve()
 _MAIN_MODULE: Final[ModuleType] = sys.modules["__main__"]

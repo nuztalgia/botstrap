@@ -1,9 +1,10 @@
 """This module contains the `CliStrings` class, which defines text shown in the CLI."""
 from __future__ import annotations
 
+from collections.abc import Callable, Iterable
 from dataclasses import asdict, dataclass
 from string import Template
-from typing import Any, Callable, Iterable, overload
+from typing import Any, overload
 
 
 @dataclass(frozen=True, kw_only=True)

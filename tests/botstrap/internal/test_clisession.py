@@ -1,8 +1,9 @@
 """Tests for the `botstrap.internal.clisession` module."""
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import asdict
-from typing import Callable, Final, cast
+from typing import Final, cast
 
 import pytest
 

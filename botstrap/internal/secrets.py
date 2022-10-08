@@ -4,9 +4,10 @@ from __future__ import annotations
 import os
 import re
 from base64 import urlsafe_b64encode
+from collections.abc import Callable
 from functools import partial
 from pathlib import Path
-from typing import Any, Callable, Final, Literal, TypeAlias, cast, get_args
+from typing import Any, Final, Literal, TypeAlias, cast, get_args
 
 from cryptography.fernet import Fernet
 from cryptography.hazmat.primitives import hashes

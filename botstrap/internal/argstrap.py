@@ -4,7 +4,8 @@ from __future__ import annotations
 import argparse
 import operator
 import re
-from typing import Any, Final, Iterator
+from collections.abc import Iterator
+from typing import Any, Final
 
 from botstrap.internal.clisession import CliSession
 from botstrap.internal.metadata import Metadata

@@ -6,7 +6,9 @@ import re
 import sys
 import webbrowser
 from argparse import ArgumentParser
-from typing import Any, Callable, Final, Match, cast
+from collections.abc import Callable
+from re import Match
+from typing import Any, Final, cast
 
 from botstrap import CliColors, Color
 from botstrap.cli.scan import detect_bot_tokens

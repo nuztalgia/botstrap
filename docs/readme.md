@@ -80,7 +80,7 @@ documentation, without conflicting with any other projects or apps.
 3. Verify that `(venv)` appears somewhere in your shell's prompt, then run
    `pip install pip-tools`.
 
-The rest of this file assumes that you’ve activated your `docs/venv` virtual environment
+The rest of this file assumes that you've activated your `docs/venv` virtual environment
 and that `pip-tools` is installed correctly. To exit the virtual environment when you're
 done building/previewing the site, simply run `deactivate`.
 

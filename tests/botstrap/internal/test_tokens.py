@@ -3,8 +3,9 @@ from __future__ import annotations
 
 import re
 import string
+from collections.abc import Callable
 from secrets import choice
-from typing import Callable, Final
+from typing import Final
 
 import pytest
 

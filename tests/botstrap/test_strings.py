@@ -1,8 +1,9 @@
 """Tests for the `botstrap.strings` module (`CliStrings` class)."""
 from __future__ import annotations
 
+from collections.abc import Callable
 from string import Template
-from typing import Any, Callable, Final
+from typing import Any, Final
 
 import pytest
 
