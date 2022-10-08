@@ -28,38 +28,27 @@ def detect_bot_tokens(
     colors: CliColors = CliColors.off(),
 ) -> int:
     """Returns 1 if any plaintext tokens are found in the current repo, or 0 if not."""
-    all_files: Final[set] = set()
-    files_with_tokens: Final[list] = []
-    line_spacing: Final[str] = "" if quiet else "\n"
+    line_spacing = "" if quiet else "\n"
 
     if (cdup_proc := run_git("rev-parse", "--show-cdup")).returncode:
         hint = "Is it installed, and are you in a Git repository directory?"
-        print_error("Git command failed", hint, cdup_proc.stderr, colors, line_spacing)
+        print_error(line_spacing, "Git command failed", hint, cdup_proc.stderr, colors)
         return 1
-
-    repo_root = cdup_proc.stdout.decode().strip()
-    repo_paths = [os.path.relpath(path).replace("\\", "/") for path in (paths or [])]
 
     try:
-        all_files.update(list_files(repo_root, *repo_paths))
-        all_files.update(list_files(repo_root, *repo_paths, "-o", *_IGNORED_DIR_ARGS))
-        for path in repo_paths:
-            if path not in all_files:  # Double-check specified paths are valid/present.
-                all_files.update(list_files(repo_root, "--error-unmatch", path))
+        repo_root_dir = cdup_proc.stdout.decode().strip()
+        all_files = get_repo_files(paths or [], cwd=repo_root_dir)
     except subprocess.CalledProcessError as process_error:
         hint = "Specified path(s) must point to files/folders in the active repo."
-        print_error("Invalid path", hint, process_error.stderr, colors, line_spacing)
+        print_error(line_spacing, "Invalid path", hint, process_error.stderr, colors)
         return 1
 
-    if not quiet:
-        file_count = f"{len(all_files)} file{'' if len(all_files) == 1 else 's'}"
-        get_scan_summary = string.Template("\nScanning ${file_count}...").substitute
-        if verbose:
-            print(colors.highlight(get_scan_summary(file_count=file_count)))
-        else:
-            print(get_scan_summary(file_count=colors.highlight(file_count)))
+    files_with_tokens = []
+    file_count = len(all_files)
+    label_display_width = (len(str(file_count)) + 2) if (verbose and not quiet) else 0
 
-    label_display_width = (len(str(len(all_files))) + 2) if verbose and not quiet else 0
+    if not quiet:
+        print_scan_header(file_count, verbose, colors)
 
     for file_number, filename in enumerate(sorted(all_files), start=1):
         if scan_file_for_token(file_number, filename, colors, label_display_width):
@@ -86,12 +75,33 @@ def run_git(*args: str, cwd: str | None = None) -> subprocess.CompletedProcess:
         return subprocess.CompletedProcess(git_path, returncode=1, stderr=stderr)
 
 
-def list_files(repo_root_dir: str, *args: str) -> list[str]:
+def list_files(*args: str, cwd: str = "") -> list[str]:
     """Returns filenames obtained by running `git ls-files` with the specified args."""
-    process = run_git("ls-files", "-z", *args, cwd=repo_root_dir or None)
+    process = run_git("ls-files", "-z", *args, cwd=cwd or None)
     process.check_returncode()  # Raise a CalledProcessError if return code is non-zero.
     ls_files = process.stdout.decode().strip("\0").split("\0")
     return [ls_filename for ls_filename in ls_files if ls_filename]
+
+
+def get_repo_files(paths: Sequence[str], cwd: str = "") -> list[str]:
+    """Returns an alphabetical list of filenames matched by `paths` in the current repo.
+
+    If `paths` is `None` or empty, the list will include all files in non-ignored dirs.
+    """
+    repo_paths = [os.path.relpath(path).replace("\\", "/") for path in paths]
+    repo_files = set(
+        list_files(*repo_paths, cwd=cwd)
+        + list_files(*repo_paths, "-o", *_IGNORED_DIR_ARGS, cwd=cwd)
+    )
+
+    def no_prefixed_files(prefix: str) -> bool:
+        return not any([repo_file.startswith(prefix) for repo_file in repo_files])
+
+    for repo_path in repo_paths:  # Make sure the specified paths are present and valid.
+        if (repo_path not in repo_files) and no_prefixed_files(repo_path.rstrip("*")):
+            repo_files.update(list_files("--error-unmatch", repo_path, cwd=cwd))
+
+    return sorted(repo_files)
 
 
 def is_text_file(filename: str) -> bool:
@@ -130,8 +140,18 @@ def scan_file_for_token(
     return False
 
 
+def print_scan_header(file_count: int, verbose: bool, colors: CliColors) -> None:
+    """Prints a header containing a summary (i.e. number of files) for the scan task."""
+    file_count_text = f"{file_count} file{'' if (file_count == 1) else 's'}"
+    get_summary_text = string.Template("\nScanning ${file_count_text}...").substitute
+    if verbose:
+        print(colors.highlight(get_summary_text(file_count_text=file_count_text)))
+    else:
+        print(get_summary_text(file_count_text=colors.highlight(file_count_text)))
+
+
 def print_error(
-    summary: str, hint_text: str, stderr: bytes, colors: CliColors, line_spacing: str
+    line_spacing: str, summary: str, hint_text: str, stderr: bytes, colors: CliColors
 ) -> None:
     """Prints the `stderr` from a subprocess in a prettier format with hint text."""
     print(f"{line_spacing}{colors.error(f'ERROR: {summary}.')} {hint_text}", end="")
