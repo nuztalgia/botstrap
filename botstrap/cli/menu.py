@@ -80,16 +80,19 @@ class BotstrapCli(CliSession):
         self._add_subcommand(
             "docs",
             "Open the Botstrap API documentation in your web browser.",
+            webbrowser.open,
             url=get_project_url("Documentation"),
         )
         self._add_subcommand(
             "repo",
             "Open the Botstrap repository on GitHub in your web browser.",
+            webbrowser.open,
             url=get_project_url("Source Code"),
         )
         self._add_subcommand(
             "site",
             "Open the Botstrap website in your browser.",
+            webbrowser.open,
             url=metadata["home_page"],
         )
         self._add_subcommand("help", "Display this help message.", self._print_help)
@@ -141,7 +144,7 @@ class BotstrapCli(CliSession):
         self,
         name: str,
         description: str,
-        callback: Callable[..., Any] = webbrowser.open,
+        callback: Callable[..., Any],
         *callback_args: dict[str, Any],
         **callback_kwargs: Any,
     ) -> None:
@@ -203,9 +206,9 @@ def main() -> None:
         return any(arg in sys.argv for arg in args_to_check)
 
     args = BotstrapCli(enable_colors=not has_args(*_NO_COLORS_ARGS)).parser.parse_args()
-
-    raise SystemExit(
+    result = (
         args.callback(**{k: v for k, v in vars(args).items() if k in expected_keys})
         if (expected_keys := args.callback_keys) and (not has_args(*_HELP_ARGS))
         else args.callback()
     )
+    raise SystemExit(result or 0)
