@@ -30,7 +30,7 @@ repos:
       - id: debug-statements
       - id: end-of-file-fixer
       - id: file-contents-sorter
-        files: ".gitignore"
+        files: \.gitignore
       - id: fix-byte-order-marker
       - id: fix-encoding-pragma
         args: ["--remove"]
@@ -125,3 +125,6 @@ repos:
         always_run: true
         args: ["--no-cov", "--skip-slow"]
         additional_dependencies: ["botstrap[tests]"]
+
+ci:
+  skip: [pytest]
