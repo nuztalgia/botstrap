@@ -51,21 +51,13 @@ class Metadata:
 
         The return value of this function is a subclass of `NamedTuple` that will
         contain information about a bot class from **one** of the Python Discord
-        libraries for which Botstrap includes built-in support: [discord.py][1],&nbsp;
-        [disnake][2],&nbsp; [hikari][3],&nbsp; [interactions.py][4],&nbsp;
-        [NAFF][5],&nbsp; [Nextcord][6], or&thinsp;&thinsp;[Pycord][7].
+        libraries for which Botstrap includes built-in support.
+        See [`get_discord_libs()`][botstrap.internal.Metadata.get_discord_libs]
+        for a list of supported libraries.
 
         If multiple supported libraries are installed, then one of them will be chosen
         arbitrarily. If **none** of the supported libraries are installed, this function
         will raise a `RuntimeError`.
-
-        [1]: https://github.com/Rapptz/discord.py
-        [2]: https://github.com/DisnakeDev/disnake
-        [3]: https://github.com/hikari-py/hikari
-        [4]: https://github.com/interactions-py/library
-        [5]: https://github.com/NAFTeam/NAFF
-        [6]: https://github.com/nextcord/nextcord
-        [7]: https://github.com/Pycord-Development/pycord
 
         ??? info "Info - Contents of the resulting tuple"
             This function's return type, `BotClassInfo`, is fundamentally just a `tuple`
@@ -87,14 +79,6 @@ class Metadata:
             RuntimeError: If none of the Python Discord libraries with built-in support
                 are installed and/or recognized.
         """
-        discord_libs = [
-            lib_name
-            for p, package_library_names in packages_distributions().items()
-            if p in ("discord", "disnake", "hikari", "interactions", "naff", "nextcord")
-            # Pycord is supported too - it's included under the "discord" namespace.
-            for lib_name in package_library_names
-            if not ((p == "discord") and (lib_name == "nextcord"))  # False positive.
-        ]
         try:
             return cls.BotClassInfo(
                 *{  # type: ignore[arg-type]
@@ -105,7 +89,7 @@ class Metadata:
                     "discord-py-interactions": ("interactions.Client", "start", True),
                     "naff": ("naff.Client", "start"),
                     "nextcord": ("nextcord.ext.commands.Bot",),
-                }[discord_libs[0]]
+                }[cls.get_discord_libs()[0]]
             )
         except (IndexError, KeyError):
             raise RuntimeError(
@@ -131,8 +115,59 @@ class Metadata:
         Returns:
             The `Path` of the default key storage directory for the current script.
         """
-        parent_dir = main.parent if (main := cls.get_main_file_path()) else _CURRENT_DIR
-        return parent_dir / ".botstrap_keys"
+        main_file_path = cls.get_main_file_path()
+        parent_dir_path = main_file_path.parent if main_file_path else _CURRENT_DIR
+        return parent_dir_path / ".botstrap_keys"
+
+    @classmethod
+    def get_discord_libs(cls) -> list[str]:
+        """Returns a list of package names of all installed and supported Discord libs.
+
+        Currently, Botstrap provides built-in support for [discord.py][1],&nbsp;
+        [disnake][2],&nbsp; [hikari][3],&nbsp; [interactions.py][4],&nbsp;
+        [NAFF][5],&nbsp; [Nextcord][6], and&thinsp;&thinsp;[Pycord][7]. Adding support
+        for more libraries is fairly straightforward, and [contributions][8] that do so
+        are always welcome.
+
+        [1]: https://github.com/Rapptz/discord.py
+        [2]: https://github.com/DisnakeDev/disnake
+        [3]: https://github.com/hikari-py/hikari
+        [4]: https://github.com/interactions-py/library
+        [5]: https://github.com/NAFTeam/NAFF
+        [6]: https://github.com/nextcord/nextcord
+        [7]: https://github.com/Pycord-Development/pycord
+        [8]: https://github.com/nuztalgia/botstrap/blob/main/.github/CONTRIBUTING.md
+
+        ??? info "Info - Contents of the resulting list"
+            The `list` returned by this function may contain the following `str` values:
+
+            ```{.py title="" .line-numbers-off}
+            [
+                "discord.py",
+                "disnake",
+                "hikari",
+                "discord-py-interactions",
+                "naff",
+                "nextcord",
+                "py-cord",
+            ]
+            ```
+
+            Hopefully you don't have *all* of those libraries installed simultaneously,
+            so your resulting `list` should be much smaller (and possibly empty,
+            although this is obviously not ideal) in practice.
+
+        Returns:
+            A list of strings corresponding to the names of installed Discord libraries.
+        """
+        return [
+            lib_name
+            for p, package_library_names in packages_distributions().items()
+            if p in ("discord", "disnake", "hikari", "interactions", "naff", "nextcord")
+            # Pycord is supported too - it's included under the "discord" namespace.
+            for lib_name in package_library_names
+            if not ((p == "discord") and (lib_name == "nextcord"))  # False positive.
+        ]
 
     @classmethod
     def get_main_file_path(cls) -> Path | None:
@@ -257,7 +292,8 @@ class Metadata:
         Returns:
             A name for the program if a reasonable guess can be made, otherwise `None`.
         """
-        if isinstance(package_name := cls.get_package_info().get("name"), str):
+        package_name = cls.get_package_info().get("name")
+        if isinstance(package_name, str):
             return package_name
 
         def is_relevant_name(path_name: str) -> bool:
