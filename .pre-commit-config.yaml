@@ -65,7 +65,7 @@ repos:
         args: ["--ignore-missing-imports", "--show-error-codes"]
 
   - repo: https://github.com/PyCQA/autoflake
-    rev: v1.7.0
+    rev: v1.7.1
     hooks:
       - id: autoflake
         args: ["--in-place", "--remove-all-unused-imports", "--remove-unused-variables"]
@@ -93,7 +93,7 @@ repos:
         args: ["--ignore=E203,W503", "--max-line-length=88"]
 
   - repo: https://github.com/pre-commit/mirrors-prettier
-    rev: v3.0.0-alpha.0
+    rev: v3.0.0-alpha.1
     hooks:
       - id: prettier
         args: ["--config=.github/prettier.json", "--no-error-on-unmatched-pattern"]
