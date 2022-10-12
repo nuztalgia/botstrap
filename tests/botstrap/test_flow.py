@@ -6,8 +6,7 @@ import functools
 import re
 from argparse import ArgumentParser, Namespace
 from collections.abc import Callable, Coroutine
-from string import ascii_uppercase
-from typing import Any, Final, TypeVar, cast
+from typing import Any, TypeVar, cast
 
 import pytest
 
@@ -15,8 +14,6 @@ from botstrap import Botstrap, CliColors, Option
 from botstrap.internal import Metadata, Token
 
 Coro = TypeVar("Coro", bound=Callable[..., Coroutine[Any, Any, Any]])
-
-_DUMMY_TOKEN_VALUE: Final[str] = f"abcdefghijklmnopqrstuvwx.123456.{ascii_uppercase}-"
 
 
 class MockBot:
@@ -40,6 +37,7 @@ class MockIntents:
 @pytest.fixture
 def retrieve_active_token(
     monkeypatch,
+    random_token_value,
     created_token_uids: list[str],
     registered_token_uids: list[str],
     allow_token_creation: bool,
@@ -48,7 +46,7 @@ def retrieve_active_token(
     botstrap = Botstrap()
 
     for token_uid in created_token_uids:
-        Token(botstrap, token_uid).write(_DUMMY_TOKEN_VALUE)
+        Token(botstrap, token_uid).write(random_token_value)
 
     for token_uid in registered_token_uids:
         botstrap.register_token(token_uid)
@@ -194,6 +192,7 @@ def test_retrieve_active_token_fail(
 )
 def test_retrieve_active_token_success(
     monkeypatch,
+    random_token_value,
     retrieve_active_token,
     created_token_uids: list[str],
     registered_token_uids: list[str],
@@ -203,27 +202,28 @@ def test_retrieve_active_token_success(
     def mock_resolve(token: Token, resolve_allow_token_creation: bool) -> str | None:
         assert resolve_allow_token_creation == allow_token_creation
         if allow_token_creation or (token.uid in created_token_uids):
-            return _DUMMY_TOKEN_VALUE
+            return random_token_value
         return None
 
     monkeypatch.setattr("botstrap.internal.tokens.Token.resolve", mock_resolve)
-    assert retrieve_active_token() == _DUMMY_TOKEN_VALUE
+    assert retrieve_active_token() == random_token_value
 
 
 @pytest.mark.parametrize(
-    "bot_class, options, active_token_value, meta_bot_class_info, expected_error",
+    "bot_class, options, is_active_token_set, meta_bot_class_info, expected_error",
     [
-        ("", {}, None, None, AssertionError),
-        ("", {}, _DUMMY_TOKEN_VALUE, None, RuntimeError),
-        ("", {}, _DUMMY_TOKEN_VALUE, ("an.imaginary.Class", "run", False), ImportError),
-        (123, {}, _DUMMY_TOKEN_VALUE, None, TypeError),
+        ("", {}, False, None, AssertionError),
+        ("", {}, True, None, RuntimeError),
+        ("", {}, True, ("an.imaginary.Class", "run", False), ImportError),
+        (123, {}, True, None, TypeError),
     ],
 )
 def test_run_bot_fail(
     monkeypatch,
+    random_token_value,
     bot_class: str | type,
     options: dict[str, Any],
-    active_token_value: str | None,
+    is_active_token_set: bool,
     meta_bot_class_info: tuple[str, str, bool] | None,
     expected_error: Any,
 ) -> None:
@@ -237,8 +237,10 @@ def test_run_bot_fail(
 
     monkeypatch.setattr(Metadata, "get_bot_class_info", mock_get_bot_class_info)
     monkeypatch.setattr(Metadata, "import_class", mock_import_class)
-    monkeypatch.setattr(Token, "resolve", lambda *_: active_token_value)
     monkeypatch.setattr(ArgumentParser, "parse_args", lambda _: Namespace())
+    monkeypatch.setattr(
+        Token, "resolve", lambda *_: random_token_value if is_active_token_set else None
+    )
 
     with pytest.raises(expected_error):
         assert Botstrap().run_bot(
@@ -278,6 +280,7 @@ def test_run_bot_fail(
 def test_run_bot_success(
     capsys,
     monkeypatch,
+    random_token_value,
     override_bot_class_name: tuple[str, str] | None,
     options: dict[str, Any],
     expected_output: str,
@@ -302,7 +305,7 @@ def test_run_bot_success(
 
     monkeypatch.setattr(MockBot, run_method_name, mock_run_bot, raising=False)
     monkeypatch.setattr(Metadata, "import_class", lambda *_: MockIntents)
-    monkeypatch.setattr(Token, "resolve", lambda *_: _DUMMY_TOKEN_VALUE)
+    monkeypatch.setattr(Token, "resolve", lambda *_: random_token_value)
     monkeypatch.setattr(ArgumentParser, "parse_args", lambda _: Namespace())
 
     botstrap = Botstrap("bot", colors=CliColors.off())

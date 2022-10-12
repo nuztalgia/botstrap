@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 import re
-from string import ascii_uppercase
 from typing import Any, Final, cast
 
 import pytest
@@ -12,7 +11,6 @@ from botstrap.internal import Argstrap, CliSession, Token
 from tests.conftest import CliAction
 
 _CLI_SESSION: Final[CliSession] = CliSession("CLI", CliColors.off())
-_DUMMY_TOKEN_VALUE: Final[str] = f"abcdefghijklmnopqrstuvwx.123456.{ascii_uppercase}-"
 
 
 @pytest.mark.parametrize(
@@ -256,6 +254,7 @@ def test_parse_bot_args(
 def test_manage_tokens(
     capsys,
     mock_get_input,
+    random_token_value,
     saved_token_names: list[str | tuple[str, str]],
     cli_actions: list[CliAction],
     expected: str,
@@ -267,7 +266,7 @@ def test_manage_tokens(
             token = Token(_CLI_SESSION, token_name)
         else:
             token = Token(_CLI_SESSION, token_name[0], False, token_name[1])
-        token.write(_DUMMY_TOKEN_VALUE)
+        token.write(random_token_value)
         tokens.append(token)
 
     with pytest.raises(SystemExit) as system_exit:

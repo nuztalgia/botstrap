@@ -4,24 +4,16 @@ from __future__ import annotations
 import re
 import string
 from collections.abc import Callable
-from secrets import choice
 from typing import Final
 
 import pytest
 
 from botstrap import CliColors
 from botstrap.internal import CliSession, Token
-from tests.conftest import CliAction
+from tests.conftest import CliAction, generate_random_token_value
 
 _CLI_SESSION: Final[CliSession] = CliSession("CLI", CliColors.off())
 _VALID_TOKEN_CHARS: Final[str] = string.ascii_letters + string.digits + "_-"
-
-
-def generate_random_token_value() -> str:
-    token = []
-    for length in (24, 6, 27):
-        token.append("".join(choice(_VALID_TOKEN_CHARS) for _ in range(length)))
-    return ".".join(token)
 
 
 def setup_resolve_token(

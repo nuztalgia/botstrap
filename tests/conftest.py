@@ -1,8 +1,10 @@
 from __future__ import annotations
 
 import re
+import string
 from collections.abc import Iterable
 from pathlib import Path
+from secrets import choice
 from typing import Final, NamedTuple
 
 import pytest
@@ -94,3 +96,17 @@ def mock_get_metadata(monkeypatch, meta_prog: list[str], meta_desc: str | None) 
 @pytest.fixture
 def meta_prog() -> list[str]:
     return ["python", "bot.py"]
+
+
+@pytest.fixture
+def random_token_value() -> str:
+    return generate_random_token_value()
+
+
+def generate_random_token_value() -> str:
+    token = []
+    valid_chars = string.ascii_letters + string.digits + "_-"
+    for length_range in (range(24, 28), [6], range(27, 40)):
+        substring_range = range(choice(length_range))
+        token.append("".join(choice(valid_chars) for _ in substring_range))
+    return ".".join(token)

@@ -10,8 +10,7 @@ from cryptography.fernet import InvalidToken
 from botstrap.internal.clisession import CliSession
 from botstrap.internal.secrets import Secret
 
-_LENGTHS: Final[tuple[int, ...]] = (24, 6, 27)
-_PATTERN: Final[re.Pattern] = re.compile(r"\.".join(r"[\w-]{%i}" % i for i in _LENGTHS))
+PATTERN: Final[re.Pattern] = re.compile(r"[\w-]{24,28}\.[\w-]{6}\.[\w-]{27,40}", re.A)
 
 
 class Token(Secret):
@@ -63,7 +62,7 @@ class Token(Secret):
             requires_password=requires_password,
             display_name=display_name,
             storage_directory=storage_directory,
-            valid_pattern=_PATTERN,
+            valid_pattern=PATTERN,
         )
         self.cli: Final[CliSession] = cli
 
@@ -186,7 +185,7 @@ class Token(Secret):
 
     def get_new_token_value(self) -> str:
         """Prompts the user to provide a valid bot token string, and then returns it."""
-        placeholder = ".".join("*" * i for i in _LENGTHS)
+        placeholder = ".".join("*" * n for n in (26, 6, 38))
         placeholder_prompt = f"{self.cli.strings.t_prompt}: {placeholder}"
 
         def format_input(user_input: str) -> str:

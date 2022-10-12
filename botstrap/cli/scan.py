@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 import os
-import re
 import shutil
 import string
 import subprocess
@@ -10,6 +9,7 @@ from collections.abc import Callable, Sequence
 from typing import Final
 
 from botstrap import CliColors
+from botstrap.internal.tokens import PATTERN as TOKEN_PATTERN
 
 _IGNORED_DIR_ARGS: Final[tuple[str, ...]] = tuple(
     f":!:*{dir_name}/*" for dir_name in (".*_cache", ".tox", "__pycache__", "venv")
@@ -19,7 +19,6 @@ _TEXT_CHARS: Final[bytearray] = (
     + bytearray(range(0x20, 0x7F))
     + bytearray(range(0x80, 0x100))
 )
-_TOKEN_PATTERN: Final[re.Pattern] = re.compile(r"[\w-]{24}\.[\w-]{6}\.[\w-]{27}")
 
 
 def detect_bot_tokens(
@@ -130,7 +129,7 @@ def scan_file_for_token(
 
     if is_text_file(filename):
         with open(filename, encoding="utf-8") as file:
-            if _TOKEN_PATTERN.search(file.read()):
+            if TOKEN_PATTERN.search(file.read()):
                 show_filename(colors.warning, "WARNING: Contains plaintext token.")
                 return True
             else:
