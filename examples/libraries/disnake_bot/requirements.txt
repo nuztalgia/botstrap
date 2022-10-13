@@ -1,0 +1,2 @@
+botstrap==0.2.3
+disnake==2.6.0
