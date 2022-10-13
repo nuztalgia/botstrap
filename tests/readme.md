@@ -21,7 +21,7 @@ follows:
 Default <a href="https://docs.pytest.org/en/7.1.x/reference/reference.html#ini-options-ref"><b>pytest
 options</b></a> are specified in <a href="/pyproject.toml"><code>pyproject.toml</code></a>.</summary>
 
-https://github.com/nuztalgia/botstrap/blob/b18a9f23630fb3967d39710dfbe3639dba00b058/pyproject.toml#L50-L60
+https://github.com/nuztalgia/botstrap/blob/04f2bdbc5a18dc88a0c864833828cc6273d24eb3/pyproject.toml#L50-L61
 
 </details></li>
 <li><details><summary>
@@ -29,7 +29,7 @@ The <a href="https://pytest-cov.readthedocs.io/en/latest/config.html"><b>pytest-
 config</b></a> lives in <a href=".coverage.ini"><code>tests/.coverage.ini</code></a>.
 </summary>
 
-https://github.com/nuztalgia/botstrap/blob/b18a9f23630fb3967d39710dfbe3639dba00b058/tests/.coverage.ini#L1-L13
+https://github.com/nuztalgia/botstrap/blob/04f2bdbc5a18dc88a0c864833828cc6273d24eb3/tests/.coverage.ini#L1-L12
 
 More details about the contents of this config file can be found in the
 [documentation](https://coverage.readthedocs.io/en/latest/config.html) for
@@ -80,12 +80,19 @@ pytest -S
 ```
 
 Use `-k` to only run tests whose names (or module names) match a given pattern. This can
-greatly speed up the workflow of writing, running, and fixing tests for a specific
-module or feature. Combine it with `--no-cov` to avoid printing an incomplete coverage
-report.
+greatly speed up the workflow of writing, running, and/or fixing tests for a specific
+module or feature.
 
 ```
-pytest -k test_modulename --no-cov
+pytest -k test_modulename
+```
+
+Use `--cov` to see a coverage summary for the tests currently being run. (**Note:**
+Combining this option with options that skip tests, such as `-S`, will result in an
+incomplete coverage report and is usually not recommended.)
+
+```
+pytest --cov
 ```
 
 Use `--durations=N` to see the slowest `N` tests. (**Note:** Any tests that take longer
