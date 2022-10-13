@@ -48,8 +48,8 @@ match = "botstrap/.*\\.py"
 
 [tool.pytest.ini_options]
 addopts = [
-    "--cov",
     "--cov-config=tests/.coverage.ini",
+    "--cov-fail-under=100",
     "--doctest-modules",
     "--ignore=botstrap/colors.py",
     "--ignore=botstrap/internal/clisession.py",
@@ -69,7 +69,7 @@ local_scheme = "no-local-version"
 [tool.tox]
 legacy_tox_ini = """
 [testenv]
-commands = {envpython} -m pytest --count=5 {posargs}
+commands = {envpython} -m pytest --count=5 --cov {posargs}
 extras = tests
 
 [testenv:docs]

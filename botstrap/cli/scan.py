@@ -2,22 +2,17 @@
 from __future__ import annotations
 
 import os
-import shutil
-import string
-import subprocess
 from collections.abc import Callable, Sequence
+from string import Template
+from subprocess import CalledProcessError
 from typing import Final
 
 from botstrap import CliColors
+from botstrap.cli.utils import is_text_file, print_error, run_git
 from botstrap.internal.tokens import PATTERN as TOKEN_PATTERN
 
 _IGNORED_DIR_ARGS: Final[tuple[str, ...]] = tuple(
     f":!:*{dir_name}/*" for dir_name in (".*_cache", ".tox", "__pycache__", "venv")
-)
-_TEXT_CHARS: Final[bytearray] = (
-    bytearray([7, 8, 9, 10, 11, 12, 13, 27])
-    + bytearray(range(0x20, 0x7F))
-    + bytearray(range(0x80, 0x100))
 )
 
 
@@ -29,8 +24,9 @@ def detect_bot_tokens(
 ) -> int:
     """Returns 1 if any plaintext tokens are found in the current repo, or 0 if not."""
     line_spacing = "" if quiet else "\n"
+    cdup_proc = run_git("rev-parse", "--show-cdup")
 
-    if (cdup_proc := run_git("rev-parse", "--show-cdup")).returncode:
+    if cdup_proc.returncode:
         hint = "Is it installed, and are you in a Git repository directory?"
         print_error(line_spacing, "Git command failed", hint, cdup_proc.stderr, colors)
         return 1
@@ -38,9 +34,9 @@ def detect_bot_tokens(
     try:
         repo_root_dir = cdup_proc.stdout.decode().strip()
         all_files = get_repo_files(paths or [], cwd=repo_root_dir)
-    except subprocess.CalledProcessError as process_error:
+    except CalledProcessError as subprocess_error:
         hint = "Specified path(s) must point to files/folders in the active repo."
-        print_error(line_spacing, "Invalid path", hint, process_error.stderr, colors)
+        print_error(line_spacing, "Invalid path", hint, subprocess_error.stderr, colors)
         return 1
 
     files_with_tokens = []
@@ -63,16 +59,6 @@ def detect_bot_tokens(
         print(colors.success("\nNo plaintext bot tokens detected.\n"))
 
     return 0
-
-
-def run_git(*args: str, cwd: str | None = None) -> subprocess.CompletedProcess:
-    """Returns the result of running `git` with the given arguments in a subprocess."""
-    git_path = shutil.which("git") or "/usr/bin/git"  # Hazard a guess, no big if wrong.
-    try:
-        return subprocess.run([git_path, *args], cwd=cwd, capture_output=True)
-    except FileNotFoundError as file_error:
-        stderr = f"fatal: {file_error.strerror.lower()}: git (executable)".encode()
-        return subprocess.CompletedProcess(git_path, returncode=1, stderr=stderr)
 
 
 def list_files(*args: str, cwd: str = "") -> list[str]:
@@ -104,14 +90,14 @@ def get_repo_files(paths: Sequence[str], cwd: str = "") -> list[str]:
     return sorted(repo_files)
 
 
-def is_text_file(filename: str) -> bool:
-    """Returns whether the file appears to be text, based on its first KB of content.
-
-    This is roughly based on the binary/text detection in pre-commit/identify:
-    https://github.com/pre-commit/identify/blob/main/identify/identify.py
-    """
-    with open(filename, "rb") as file:
-        return not bool(file.read(1024).translate(None, _TEXT_CHARS))
+def print_scan_header(file_count: int, verbose: bool, colors: CliColors) -> None:
+    """Prints a header containing a summary (i.e. number of files) for the scan task."""
+    file_count_text = f"{file_count} file{'' if (file_count == 1) else 's'}"
+    template = Template("\nScanning ${file_count_text}...")
+    if verbose:
+        print(colors.highlight(template.substitute(file_count_text=file_count_text)))
+    else:
+        print(template.substitute(file_count_text=colors.highlight(file_count_text)))
 
 
 def scan_file_for_token(
@@ -138,23 +124,3 @@ def scan_file_for_token(
         show_filename(colors.lowlight, "SKIPPED: Not a text file.")
 
     return False
-
-
-def print_scan_header(file_count: int, verbose: bool, colors: CliColors) -> None:
-    """Prints a header containing a summary (i.e. number of files) for the scan task."""
-    file_count_text = f"{file_count} file{'' if (file_count == 1) else 's'}"
-    get_summary_text = string.Template("\nScanning ${file_count_text}...").substitute
-    if verbose:
-        print(colors.highlight(get_summary_text(file_count_text=file_count_text)))
-    else:
-        print(get_summary_text(file_count_text=colors.highlight(file_count_text)))
-
-
-def print_error(
-    line_spacing: str, summary: str, hint_text: str, stderr: bytes, colors: CliColors
-) -> None:
-    """Prints the `stderr` from a subprocess in a prettier format with hint text."""
-    print(f"{line_spacing}{colors.error(f'ERROR: {summary}.')} {hint_text}", end="")
-    if error_lines := stderr.decode().strip().split("\n"):
-        print(f"\n  {colors.error('└─')} {colors.lowlight(error_lines[0])}", end="")
-    print(line_spacing)
