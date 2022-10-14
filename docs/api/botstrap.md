@@ -142,7 +142,7 @@ foundation for the subsequent example, which includes code snippets and demonstr
     === "CLI #1: Basics"
         ```console title="1A) Viewing the bot's help menu."
         $ python -m examplebot -h
-        {% include "../../examples/README.md" start="```text\n" end="```" %}
+        {% include "../../examples/readme.md" start="```text\n" end="```" %}
         ```
 
         ```console title="1B) Running the bot using the command from the help menu."

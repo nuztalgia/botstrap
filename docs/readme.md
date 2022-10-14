@@ -64,21 +64,32 @@ documentation, without conflicting with any other projects or apps.
 
 ### Setting up a virtual environment
 
-1. From this project's [root directory](/../../), run `python -m venv docs/venv` to
-   create a new virtual env just for docs.
+1. From this project's [root directory](/../../), run the following command to create a
+   new virtual env just for the documentation:
 
-2. Activate the virtual environment. The command for this step differs depending on your
-   OS:
+   ```
+   python -m venv docs/venv
+   ```
 
-   - On Unix or MacOS, run `source docs/venv/bin/activate`.
+2. Activate the virtual environment. The command for this step depends on your OS:
+
+   - If you're on Unix or MacOS, run:
+
+     ```
+     source docs/venv/bin/activate
+     ```
+
    - <details><summary>On Windows, run <code>docs\venv\Scripts\activate</code>.
      </summary>If you're in PowerShell and encounter a security error, run
      <a href="https://go.microsoft.com/fwlink/?LinkID=135170"><code>
      Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser</code></a>
      and confirm your choice, then try the activation command again.</details>
 
-3. Verify that `(venv)` appears somewhere in your shell's prompt, then run
-   `pip install pip-tools`.
+3. Verify that `(venv)` appears somewhere in your shell's prompt, then run:
+
+   ```
+   pip install pip-tools
+   ```
 
 The rest of this file assumes that you've activated your `docs/venv` virtual environment
 and that `pip-tools` is installed correctly. To exit the virtual environment when you're
@@ -145,7 +156,7 @@ things to double-check and adjust if necessary:
   This should be caught and automatically fixed by the
   [`mixed-line-ending`](https://github.com/pre-commit/pre-commit-hooks#mixed-line-ending)
   [pre-commit](https://pre-commit.com/) hook. Alternatively, you may install
-  jazzband/pip-tools#1584, which implements `--force-lf-newlines`.
+  jazzband/pip-tools#1652, which adds an option for `--newline=LF`.
 
 ## Building & Previewing the Site
 
@@ -174,8 +185,8 @@ you may opt to use
 [`--dirtyreload`](https://www.mkdocs.org/about/release-notes/#support-for-dirty-builds-990)
 mode to speed things up by limiting the scope of the rebuild to only the pages (i.e.
 source markdown files) that have been changed since the previous build. However, to
-avoid inconsistent behavior in the site navigation and other links, this flag should
-only be used while developing content on a specific page.
+avoid inconsistent behavior in the site navigation and other links, this should only be
+used while developing content isolated to a single page.
 
 ### For one-off builds
 
