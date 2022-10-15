@@ -4,12 +4,55 @@ from __future__ import annotations
 import re
 import secrets
 import string
+from pathlib import Path
 from subprocess import CalledProcessError
 
 import pytest
 
 from botstrap.cli import utils
+from botstrap.internal import Metadata
 from tests.conftest import generate_random_text
+
+
+@pytest.mark.parametrize(
+    "installed_libs, expected",
+    [
+        ([], (None, r"\nERROR: You don't have any.+, then re-run this command\.\n\n$")),
+        (["lib1", "lib2"], (None, r"\nERROR: You have multiple.+ this command\.\n\n$")),
+        (["lib3"], ("lib3", r"^$")),
+    ],
+)
+def test_get_discord_lib(
+    capsys, monkeypatch, installed_libs: list[str], expected: tuple[str | None, str]
+) -> None:
+    monkeypatch.setattr(Metadata, "get_discord_libs", lambda: installed_libs)
+    expected_result, expected_output_pattern = expected
+    assert utils.get_discord_lib() == expected_result
+    assert re.match(expected_output_pattern, capsys.readouterr().out, re.DOTALL)
+
+
+@pytest.mark.slow
+@pytest.mark.repeat(1)
+def test_initialize_git(capsys, monkeypatch, tmp_path) -> None:
+    monkeypatch.chdir(tmp_path)
+    (dir1 := tmp_path / "dir1").mkdir()
+    (dir2 := tmp_path / "dir2").mkdir()
+
+    def assert_init_success(input_path: Path, expected_output_prefix: str) -> None:
+        assert utils.initialize_git(input_path) is True
+        assert capsys.readouterr().out.startswith(expected_output_prefix)
+
+    assert_init_success(dir1, "Initializing new Git repository.")
+    assert_init_success(dir1, "Using existing Git repository.")
+    assert_init_success(tmp_path, "Initializing new Git repository.")
+    assert_init_success(dir2, "Using existing Git repository.")
+
+    monkeypatch.setattr("shutil.which", lambda cmd: str(tmp_path / cmd))
+    assert utils.initialize_git(tmp_path) is False
+    assert re.match(
+        r"^Initializing new Git repository\. \(.+\.git\)\n\nERROR: 'git init' failed\.",
+        capsys.readouterr().out,
+    )
 
 
 @pytest.mark.parametrize(
@@ -82,3 +125,18 @@ def test_run_git(monkeypatch, tmp_path) -> None:
     post_init_process = utils.run_git("rev-parse", "--show-cdup", cwd="dir1/dir2")
     post_init_process.check_returncode()
     assert post_init_process.stdout.decode().strip() == "../../"
+
+
+@pytest.mark.parametrize(
+    "text, expected",
+    [
+        ("Boring Example Name", "boring-example-name"),
+        ("name_with_numbers123_456", "name-with-numbers123-456"),
+        ("ALLCAPSName is confusing", "allcapsname-is-confusing"),
+        ("---CamelCaseName-----AndDashes---", "camel-case-name-and-dashes"),
+        ("a name with -more spaces- n -dashes-", "a-name-with-more-spaces-n-dashes"),
+        ("-misc.punctuation,'chars:;and&stuff?!!", "misc-punctuation-chars-and-stuff"),
+    ],
+)
+def test_slugify(text: str, expected: str) -> None:
+    assert utils.slugify(text) == expected

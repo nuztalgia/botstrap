@@ -1,4 +1,4 @@
-"""This module contains most of the implementation of Botstrap's standalone CLI."""
+"""This module contains the entry point and main menu for Botstrap's standalone CLI."""
 from __future__ import annotations
 
 import functools
@@ -29,20 +29,38 @@ _HELP_ARGS: Final[tuple[str, str]] = ("-h", "--help")
 _NO_COLORS_ARGS: Final[tuple[str, str]] = ("-n", "--no-colors")
 
 
-class BotstrapCli(CliSession):
-    """Encapsulates Botstrap's standalone command-line interface."""
+def main() -> None:
+    """Acts as the primary entry point for (and executes) Botstrap's standalone CLI."""
+
+    def has_args(*args_to_check: str) -> bool:
+        """Returns True if any of the given args were specified on the command line."""
+        return any(arg in sys.argv for arg in args_to_check)
+
+    enable_colors = not has_args(*_NO_COLORS_ARGS)
+    args = BotstrapMenu(enable_colors=enable_colors).parser.parse_args()
+    result = (
+        args.callback(**{k: v for k, v in vars(args).items() if k in expected_keys})
+        if (expected_keys := args.callback_keys) and (not has_args(*_HELP_ARGS))
+        else args.callback()
+    )
+    raise SystemExit(result or 0)
+
+
+class BotstrapMenu(CliSession):
+    """Encapsulates the main menu for Botstrap's standalone command-line interface."""
 
     def __init__(self, enable_colors: bool) -> None:
-        """Initializes a new `BotstrapCli` instance.
+        """Initializes a new `BotstrapMenu` instance.
 
         Args:
             enable_colors:
                 Whether the console output text should be colored.
         """
         super().__init__(
-            name=cast(str, (metadata := Metadata.get_package_info("botstrap"))["name"]),
+            name="botstrap",
             colors=CliColors(primary=Color.pink) if enable_colors else CliColors.off(),
         )
+        metadata = Metadata.get_package_info(self.name)
 
         self.parser: Final[ArgumentParser] = ArgumentParser(self.name, add_help=False)
         self._command_parsers: Final[Any] = self.parser.add_subparsers()
@@ -161,7 +179,10 @@ class BotstrapCli(CliSession):
             )
             for arg_params in callback_args:
                 usage_keys.append((name_or_flags := arg_params.pop(_ARG_NAMES))[0])
-                callback_keys.append(name_or_flags[-1].strip("-"))
+                callback_keys.append(
+                    arg_params.get("dest")
+                    or name_or_flags[-1].strip("-").replace("-", "_")
+                )
                 self._add_argument(subparser, custom_help, *name_or_flags, **arg_params)
             custom_help.insert(0, f"{self._build_usage(name, *usage_keys)}\n")
 
@@ -198,19 +219,3 @@ class BotstrapCli(CliSession):
     def _print_help(self, custom_help: list[str] | None = None) -> None:
         """Prints nicely-formatted help text for (a command in) the standalone CLI."""
         print("\n".join(custom_help or self._help), end="\n\n")
-
-
-def main() -> None:
-    """Acts as the primary entry point for (and executes) Botstrap's standalone CLI."""
-
-    def has_args(*args_to_check: str) -> bool:
-        """Returns True if any of the given args were specified on the command line."""
-        return any(arg in sys.argv for arg in args_to_check)
-
-    args = BotstrapCli(enable_colors=not has_args(*_NO_COLORS_ARGS)).parser.parse_args()
-    result = (
-        args.callback(**{k: v for k, v in vars(args).items() if k in expected_keys})
-        if (expected_keys := args.callback_keys) and (not has_args(*_HELP_ARGS))
-        else args.callback()
-    )
-    raise SystemExit(result or 0)
