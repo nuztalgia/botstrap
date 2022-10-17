@@ -20,7 +20,6 @@ repos:
       - id: check-builtin-literals
       - id: check-case-conflict
       - id: check-docstring-first
-      - id: check-json
       - id: check-merge-conflict
         args: ["--assume-in-merge"]
       - id: check-toml
@@ -30,7 +29,7 @@ repos:
       - id: debug-statements
       - id: end-of-file-fixer
       - id: file-contents-sorter
-        files: (\.gitignore|examples\/.*\.txt)
+        files: (\.gitignore|docs\/.*\.in|examples\/.*\.txt)
       - id: fix-byte-order-marker
       - id: fix-encoding-pragma
         args: ["--remove"]
@@ -96,7 +95,8 @@ repos:
     rev: v3.0.0-alpha.2
     hooks:
       - id: prettier
-        args: ["--config=.github/prettier.json", "--no-error-on-unmatched-pattern"]
+        args:
+          ["--no-error-on-unmatched-pattern", "--print-width=88", "--prose-wrap=always"]
         exclude: ^(\.github\/.*_TEMPLATE.*|docs\/internal\/[a-z\-]*)\.md$
 
   - repo: https://github.com/macisamuele/language-formatters-pre-commit-hooks
@@ -114,6 +114,8 @@ repos:
     rev: 0.18.3
     hooks:
       - id: check-github-workflows
+      - id: check-renovate
+        additional_dependencies: ["json5"]
 
   - repo: local
     hooks:
@@ -124,4 +126,7 @@ repos:
         pass_filenames: false
         always_run: true
         args: ["--skip-slow"]
-        additional_dependencies: ["botstrap", "pytest", "pytest-cov", "pytest-repeat"]
+        additional_dependencies: ["botstrap[tests]"]
+
+ci:
+  skip: ["pytest"]

@@ -4,7 +4,7 @@ from botstrap import Botstrap, CliColors, Color
 def main() -> int:
     Botstrap(
         name="hikari-bot",
-        desc="A basic bot powered by Hikari and Botstrap.",
+        desc="A basic bot powered by hikari and Botstrap.",
         colors=CliColors(Color.pink),
     ).register_token(
         uid="dev",

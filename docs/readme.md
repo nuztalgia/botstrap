@@ -6,7 +6,7 @@ raw source files contained here.
 
 If you have a question that isn't answered in the docs and you think it should be,
 please start a [discussion](https://github.com/nuztalgia/botstrap/discussions) on what
-could be clarified and/or improved! Our goal is to make this library as easy-to-use as
+could be clarified and/or improved! The goal is to make this library as easy-to-use as
 possible, so all feedback is welcome and appreciated. :sparkling_heart:
 
 The rest of this file contains information about building the **documentation site**
@@ -34,17 +34,17 @@ from the source files in this directory.
 Botstrap's documentation is built using [MkDocs](https://www.mkdocs.org/), a
 super-extensible static site generator that turns Markdown files into HTML pages. MkDocs
 uses a YAML configuration file in the root project directory named
-[`mkdocs.yml`](../mkdocs.yml). This file contains the config for the entire
-documentation site, including its **theme** (the amazing
+[`mkdocs.yml`](/mkdocs.yml). This file contains the config for the entire documentation
+site, including its **theme** (the amazing
 [Material for MkDocs](https://squidfunk.github.io/mkdocs-material/)), **plugins** (most
 notably [mkdocstrings](https://mkdocstrings.github.io/)), and **extensions** (almost all
 [PyMdown Extensions](https://facelessuser.github.io/pymdown-extensions/)).
 
 <details>
 <summary>All of these major dependencies, as well as some more minor (but still direct) dependencies,
-are pinned and listed in <a href="requirements.in"><code>requirements.in</code></a>.</summary><br>
+are pinned and listed in <a href="./requirements.in"><code>requirements.in</code></a>.</summary><br>
 
-| Dependency           | PyPI Version                                                                                                                      | GitHub Activity                                                                                                                                          |
+| Dependency           | Latest Version                                                                                                                    | GitHub Activity                                                                                                                                          |
 | -------------------- | --------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `mkdocs`             | [![PyPI](https://img.shields.io/pypi/v/mkdocs)](https://pypi.org/project/mkdocs/)                                                 | [![GitHub](https://img.shields.io/github/last-commit/mkdocs/mkdocs)](https://github.com/mkdocs/mkdocs)                                                   |
 | `mkdocs-material`    | [![PyPI](https://img.shields.io/pypi/v/mkdocs-material)](https://pypi.org/project/mkdocs-material/)                               | [![GitHub](https://img.shields.io/github/last-commit/squidfunk/mkdocs-material)](https://github.com/squidfunk/mkdocs-material)                           |
@@ -73,13 +73,18 @@ documentation, without conflicting with any other projects or apps.
 
 2. Activate the virtual environment. The command for this step depends on your OS:
 
-   - If you're on Unix or MacOS, run:
+   - On Unix or MacOS, run:
 
      ```
      source docs/venv/bin/activate
      ```
 
-   - <details><summary>On Windows, run <code>docs\venv\Scripts\activate</code>.
+   - <details><summary>On Windows, run:<p>
+
+     ```
+     docs\venv\Scripts\activate
+     ```
+
      </summary>If you're in PowerShell and encounter a security error, run
      <a href="https://go.microsoft.com/fwlink/?LinkID=135170"><code>
      Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser</code></a>
@@ -98,7 +103,7 @@ done building/previewing the site, simply run `deactivate`.
 ## Installing/Updating Dependencies
 
 As mentioned above, the documentation site's direct dependencies can be found in
-[`requirements.in`](requirements.in). Each one is pinned to a specific version, which
+[`requirements.in`](./requirements.in). Each one is pinned to a specific version, which
 will (most of the time) be its latest stable release, thanks to
 [Renovate](https://github.com/renovatebot/renovate). However, this setup is not quite
 immune to problems:
@@ -110,16 +115,17 @@ immune to problems:
 
 To mitigate these potential issues, we use
 [`pip-compile`](https://pip-tools.readthedocs.io/en/latest/#example-usage-for-pip-compile)
-to generate the [`requirements.txt`](requirements.txt) file with a complete list of all
-direct **and** transitive dependencies, along with their respective pinned versions and
-[hashes](https://pip.pypa.io/en/stable/topics/secure-installs/#hash-checking-mode) in
-order to ensure correctness. This file is therefore the "canonical" set of requirements
-for properly building the documentation - both locally for development and on
-[Read the Docs](https://readthedocs.org/), which hosts the
+to generate the [`requirements.txt`](./requirements.txt) file with a complete list of
+all direct **and** transitive dependencies, along with their respective pinned versions
+and [hashes](https://pip.pypa.io/en/stable/topics/secure-installs/#hash-checking-mode)
+in order to ensure correctness. This file is therefore the "canonical" set of
+requirements for properly building the documentation - both locally for development and
+on [Read the Docs](https://readthedocs.org/), which hosts the
 [official site](https://botstrap.readthedocs.io/).
 
-All of the following commands assume that you're in the root project directory and that
-you've set up your virtual env [as described above](#setting-up-a-virtual-environment).
+All of the following commands assume that you're in the **root project directory** and
+that you've set up your virtual env
+[as described above](#setting-up-a-virtual-environment).
 
 ### Installing all requirements
 
@@ -149,7 +155,7 @@ things to double-check and adjust if necessary:
 
 - When any dependency releases a significant update, it's often a good idea to re-build
   and preview the site to see if any breaking changes were introduced. If so, the
-  corresponding update to `requirements.txt` should be deferred until a fix or
+  corresponding update to the site's requirements should be deferred until a fix or
   workaround is implemented.
 
 - If you're on Windows, the line endings produced by `pip-compile` may be incorrect.
@@ -199,7 +205,7 @@ Most of the time, this command will only be used by the automated build system o
 and serve the official documentation site. In certain cases, however, it may be useful
 to invoke this command manually to produce a static local copy of the site. The result
 will be saved in the `site` directory, which can be found in the project root (alongside
-[`.gitignore`](../.gitignore), where it's already listed).
+[`.gitignore`](/.gitignore), where it's already listed).
 
 ## Miscellaneous Questions
 

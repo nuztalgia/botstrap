@@ -2,8 +2,9 @@
 
 ## Simple CLI Demo
 
-No files needed! Assuming you have Botstrap and one of the supported
-[Discord libraries](./libraries) installed, just run this command in your terminal:
+No files needed! Assuming you have [Botstrap](/../../#installation) and one of the
+[supported Discord libraries](./libraries) installed, just run this command in your
+terminal:
 
 ```sh
 python -c "from botstrap import *; Botstrap().run_bot()"
@@ -38,9 +39,9 @@ Of course, there are a lot more options available - you can customize how each t
 appears in the CLI, whether it requires a password to decrypt, and where its encrypted
 files are stored. If your bot uses multiple tokens, simply
 [register](https://botstrap.readthedocs.io/en/latest/api/botstrap/#botstrap.flow.Botstrap.register_token)
-all of them and use a command-line option (automatically added) to select which one to
-use when you run the bot (e.g. `python bot.py` vs. `python bot.py prod` for the
-following example).
+all of them and use a command-line option (automatically created for you) to select
+which to use when you run the bot (e.g. `python bot.py` vs. `python bot.py prod` for
+this next snippet).
 
 ```py
 token = (
@@ -53,12 +54,12 @@ token = (
 
 ## Comprehensive Example
 
-This example uses the [Pycord](https://pypi.org/project/py-cord/) library and the
-following files from the [`examplebot`](examplebot/) directory:
+This example uses the [Pycord](https://pypi.org/project/py-cord/) library along with the
+following two files from the [`examplebot`](./examplebot) directory:
 
 <ul>
 <li><details open><summary>
-<a href="examplebot/__main__.py"><code>__main__.py</code></a> - Contains the entire
+<a href="./examplebot/__main__.py"><code>__main__.py</code></a> - Contains the entire
 Botstrap integration and exercises all the recommended methods in the
 <a href="https://botstrap.rtfd.io/en/latest/api/botstrap/#botstrap-flowchart"><code>Botstrap</code></a>
 flow, as well as a few other classes that are also part of the public
@@ -69,7 +70,7 @@ https://github.com/nuztalgia/botstrap/blob/3b94b3b93f8d13ecd530e0f7e3e258b580c81
 
 </details></li>
 <li><details><summary>
-<a href="examplebot/extras.py"><code>extras.py</code></a> - Represents a very small
+<a href="./examplebot/extras.py"><code>extras.py</code></a> - Represents a very small
 subset of the non-Botstrap-related components that a Discord bot might have. The purpose
 of this file is simply to provide more context for the example integration, so feel free
 to skip over it if you don't find it useful.</summary>

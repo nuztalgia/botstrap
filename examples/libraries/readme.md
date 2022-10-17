@@ -1,9 +1,10 @@
 # <a href="https://botstrap.rtfd.io"><img src="/docs/images/logo-48.png" width=24></a> Library Examples
 
 Botstrap is quite flexible and (in theory) can easily adapt to work alongside any
-Discord library written in Python. Nonetheless, real examples are always helpful! This
-directory contains **"beginner bot"** templates for the libraries with which Botstrap
-has been tested and confirmed to work.
+[Discord library](https://discord.com/developers/docs/topics/community-resources#libraries)
+written in Python. Nonetheless, real examples are always helpful! This directory
+contains **"beginner bot"** templates for the libraries with which Botstrap has been
+tested and confirmed to work.
 
 If you'd like to run these examples yourself, the first thing you'll want to do is clone
 this repo and navigate to this directory:
@@ -57,7 +58,7 @@ pip install -r disnake_bot/requirements.txt
 python -m disnake_bot
 ```
 
-## <a href="./hikari_bot"><img src="https://raw.githubusercontent.com/hikari-py/hikari/master/pages/logo.png" width=24></a> Hikari
+## <a href="./hikari_bot"><img src="https://raw.githubusercontent.com/hikari-py/hikari/master/pages/logo.png" width=24></a> hikari
 
 [![Botstrap Example](https://img.shields.io/badge/example-hikari__bot-7e56c2.svg?logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iI2ZmZiIgZD0iTTIyIDE0SDIxQzIxIDEwLjEzIDE3Ljg3IDcgMTQgN0gxM1Y1LjczQzEzLjYgNS4zOSAxNCA0Ljc0IDE0IDRDMTQgMi45IDEzLjExIDIgMTIgMlMxMCAyLjkgMTAgNEMxMCA0Ljc0IDEwLjQgNS4zOSAxMSA1LjczVjdIMTBDNi4xMyA3IDMgMTAuMTMgMyAxNEgyQzEuNDUgMTQgMSAxNC40NSAxIDE1VjE4QzEgMTguNTUgMS40NSAxOSAyIDE5SDNWMjBDMyAyMS4xMSAzLjkgMjIgNSAyMkgxOUMyMC4xMSAyMiAyMSAyMS4xMSAyMSAyMFYxOUgyMkMyMi41NSAxOSAyMyAxOC41NSAyMyAxOFYxNUMyMyAxNC40NSAyMi41NSAxNCAyMiAxNE05Ljc5IDE2LjVDOS40IDE1LjYyIDguNTMgMTUgNy41IDE1UzUuNiAxNS42MiA1LjIxIDE2LjVDNS4wOCAxNi4xOSA1IDE1Ljg2IDUgMTUuNUM1IDE0LjEyIDYuMTIgMTMgNy41IDEzUzEwIDE0LjEyIDEwIDE1LjVDMTAgMTUuODYgOS45MiAxNi4xOSA5Ljc5IDE2LjVNMTguNzkgMTYuNUMxOC40IDE1LjYyIDE3LjUgMTUgMTYuNSAxNVMxNC42IDE1LjYyIDE0LjIxIDE2LjVDMTQuMDggMTYuMTkgMTQgMTUuODYgMTQgMTUuNUMxNCAxNC4xMiAxNS4xMiAxMyAxNi41IDEzUzE5IDE0LjEyIDE5IDE1LjVDMTkgMTUuODYgMTguOTIgMTYuMTkgMTguNzkgMTYuNVoiIC8+PC9zdmc+DQo=)](./hikari_bot/__main__.py)
 [![PyPI: Latest Version](https://img.shields.io/pypi/v/hikari?logo=pypi&logoColor=fff&label=latest%20version&color=blue)](https://pypi.org/project/hikari/)
@@ -69,7 +70,7 @@ pip install -r hikari_bot/requirements.txt
 python -m hikari_bot
 ```
 
-## <a href="./interactions_bot"><img src="https://cdn.discordapp.com/icons/789032594456576001/719eedf706beb3fd201de80499edd278.png" width=24></a> interactions.py
+## <a href="./interactions_bot"><img src="https://avatars.githubusercontent.com/u/98242689" width=24></a> interactions.py
 
 [![Botstrap Example](https://img.shields.io/badge/example-interactions__bot-7e56c2.svg?logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iI2ZmZiIgZD0iTTIyIDE0SDIxQzIxIDEwLjEzIDE3Ljg3IDcgMTQgN0gxM1Y1LjczQzEzLjYgNS4zOSAxNCA0Ljc0IDE0IDRDMTQgMi45IDEzLjExIDIgMTIgMlMxMCAyLjkgMTAgNEMxMCA0Ljc0IDEwLjQgNS4zOSAxMSA1LjczVjdIMTBDNi4xMyA3IDMgMTAuMTMgMyAxNEgyQzEuNDUgMTQgMSAxNC40NSAxIDE1VjE4QzEgMTguNTUgMS40NSAxOSAyIDE5SDNWMjBDMyAyMS4xMSAzLjkgMjIgNSAyMkgxOUMyMC4xMSAyMiAyMSAyMS4xMSAyMSAyMFYxOUgyMkMyMi41NSAxOSAyMyAxOC41NSAyMyAxOFYxNUMyMyAxNC40NSAyMi41NSAxNCAyMiAxNE05Ljc5IDE2LjVDOS40IDE1LjYyIDguNTMgMTUgNy41IDE1UzUuNiAxNS42MiA1LjIxIDE2LjVDNS4wOCAxNi4xOSA1IDE1Ljg2IDUgMTUuNUM1IDE0LjEyIDYuMTIgMTMgNy41IDEzUzEwIDE0LjEyIDEwIDE1LjVDMTAgMTUuODYgOS45MiAxNi4xOSA5Ljc5IDE2LjVNMTguNzkgMTYuNUMxOC40IDE1LjYyIDE3LjUgMTUgMTYuNSAxNVMxNC42IDE1LjYyIDE0LjIxIDE2LjVDMTQuMDggMTYuMTkgMTQgMTUuODYgMTQgMTUuNUMxNCAxNC4xMiAxNS4xMiAxMyAxNi41IDEzUzE5IDE0LjEyIDE5IDE1LjVDMTkgMTUuODYgMTguOTIgMTYuMTkgMTguNzkgMTYuNVoiIC8+PC9zdmc+DQo=)](./interactions_bot/__main__.py)
 [![PyPI: Latest Version](https://img.shields.io/pypi/v/discord-py-interactions?logo=pypi&logoColor=fff&label=latest%20version)](https://pypi.org/project/discord-py-interactions/)
@@ -81,7 +82,7 @@ pip install -r interactions_bot/requirements.txt
 python -m interactions_bot
 ```
 
-## <a href="./naff_bot"><img src="https://cdn.discordapp.com/icons/870046872864165888/a_a16be6a610816324a9a8518c9ce78490.png" width=24></a> NAFF
+## <a href="./naff_bot"><img src="https://avatars.githubusercontent.com/u/91958504" width=24></a> NAFF
 
 [![Botstrap Example](https://img.shields.io/badge/example-naff__bot-7e56c2.svg?logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iI2ZmZiIgZD0iTTIyIDE0SDIxQzIxIDEwLjEzIDE3Ljg3IDcgMTQgN0gxM1Y1LjczQzEzLjYgNS4zOSAxNCA0Ljc0IDE0IDRDMTQgMi45IDEzLjExIDIgMTIgMlMxMCAyLjkgMTAgNEMxMCA0Ljc0IDEwLjQgNS4zOSAxMSA1LjczVjdIMTBDNi4xMyA3IDMgMTAuMTMgMyAxNEgyQzEuNDUgMTQgMSAxNC40NSAxIDE1VjE4QzEgMTguNTUgMS40NSAxOSAyIDE5SDNWMjBDMyAyMS4xMSAzLjkgMjIgNSAyMkgxOUMyMC4xMSAyMiAyMSAyMS4xMSAyMSAyMFYxOUgyMkMyMi41NSAxOSAyMyAxOC41NSAyMyAxOFYxNUMyMyAxNC40NSAyMi41NSAxNCAyMiAxNE05Ljc5IDE2LjVDOS40IDE1LjYyIDguNTMgMTUgNy41IDE1UzUuNiAxNS42MiA1LjIxIDE2LjVDNS4wOCAxNi4xOSA1IDE1Ljg2IDUgMTUuNUM1IDE0LjEyIDYuMTIgMTMgNy41IDEzUzEwIDE0LjEyIDEwIDE1LjVDMTAgMTUuODYgOS45MiAxNi4xOSA5Ljc5IDE2LjVNMTguNzkgMTYuNUMxOC40IDE1LjYyIDE3LjUgMTUgMTYuNSAxNVMxNC42IDE1LjYyIDE0LjIxIDE2LjVDMTQuMDggMTYuMTkgMTQgMTUuODYgMTQgMTUuNUMxNCAxNC4xMiAxNS4xMiAxMyAxNi41IDEzUzE5IDE0LjEyIDE5IDE1LjVDMTkgMTUuODYgMTguOTIgMTYuMTkgMTguNzkgMTYuNVoiIC8+PC9zdmc+DQo=)](./naff_bot/__main__.py)
 [![PyPI: Latest Version](https://img.shields.io/pypi/v/naff?logo=pypi&logoColor=fff&label=latest%20version)](https://pypi.org/project/naff/)
@@ -105,7 +106,7 @@ pip install -r nextcord_bot/requirements.txt
 python -m nextcord_bot
 ```
 
-## <a href="./pycord_bot"><img src="https://raw.githubusercontent.com/Pycord-Development/pycord/master/docs/images/pycord.ico" width=24></a> Pycord
+## <a href="./pycord_bot"><img src="https://github.com/Pycord-Development/pycord/blob/master/docs/images/pycord_logo.png" width=24></a> Pycord
 
 [![Botstrap Example](https://img.shields.io/badge/example-pycord__bot-7e56c2.svg?logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iI2ZmZiIgZD0iTTIyIDE0SDIxQzIxIDEwLjEzIDE3Ljg3IDcgMTQgN0gxM1Y1LjczQzEzLjYgNS4zOSAxNCA0Ljc0IDE0IDRDMTQgMi45IDEzLjExIDIgMTIgMlMxMCAyLjkgMTAgNEMxMCA0Ljc0IDEwLjQgNS4zOSAxMSA1LjczVjdIMTBDNi4xMyA3IDMgMTAuMTMgMyAxNEgyQzEuNDUgMTQgMSAxNC40NSAxIDE1VjE4QzEgMTguNTUgMS40NSAxOSAyIDE5SDNWMjBDMyAyMS4xMSAzLjkgMjIgNSAyMkgxOUMyMC4xMSAyMiAyMSAyMS4xMSAyMSAyMFYxOUgyMkMyMi41NSAxOSAyMyAxOC41NSAyMyAxOFYxNUMyMyAxNC40NSAyMi41NSAxNCAyMiAxNE05Ljc5IDE2LjVDOS40IDE1LjYyIDguNTMgMTUgNy41IDE1UzUuNiAxNS42MiA1LjIxIDE2LjVDNS4wOCAxNi4xOSA1IDE1Ljg2IDUgMTUuNUM1IDE0LjEyIDYuMTIgMTMgNy41IDEzUzEwIDE0LjEyIDEwIDE1LjVDMTAgMTUuODYgOS45MiAxNi4xOSA5Ljc5IDE2LjVNMTguNzkgMTYuNUMxOC40IDE1LjYyIDE3LjUgMTUgMTYuNSAxNVMxNC42IDE1LjYyIDE0LjIxIDE2LjVDMTQuMDggMTYuMTkgMTQgMTUuODYgMTQgMTUuNUMxNCAxNC4xMiAxNS4xMiAxMyAxNi41IDEzUzE5IDE0LjEyIDE5IDE1LjVDMTkgMTUuODYgMTguOTIgMTYuMTkgMTguNzkgMTYuNVoiIC8+PC9zdmc+DQo=)](./pycord_bot/__main__.py)
 [![PyPI: Latest Version](https://img.shields.io/pypi/v/py-cord?logo=pypi&logoColor=fff&label=latest%20version)](https://pypi.org/project/py-cord/)

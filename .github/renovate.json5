@@ -1,0 +1,23 @@
+{
+  $schema: "https://docs.renovatebot.com/renovate-schema.json",
+  extends: ["config:base", "group:allNonMajor", "schedule:weekly"],
+  dependencyDashboardApproval: true,
+  dependencyDashboardAutoclose: true,
+  dependencyDashboardHeader: "\
+This issue lists Renovate updates and detected dependencies. See the Renovate \
+[docs](https://docs.renovatebot.com/key-concepts/dashboard/) and/or the \
+[job log](https://app.renovatebot.com/dashboard#github/nuztalgia/botstrap) for \
+more information.",
+  enabledManagers: ["github-actions", "pip_requirements", "pip_setup"],
+  pip_requirements: {
+    fileMatch: ["(^|/)requirements\\.in$"],
+    ignorePaths: ["docs/requirements.txt"],
+  },
+  packageRules: [
+    {
+      matchPackageNames: ["mkdocs-material"],
+      allowedVersions: "!/^v?8\\.5\\.[0-6]$/", // Undesired annotation behavior.
+    },
+  ],
+  rollbackPrs: true,
+}

@@ -26,7 +26,7 @@ https://github.com/nuztalgia/botstrap/blob/04f2bdbc5a18dc88a0c864833828cc6273d24
 </details></li>
 <li><details><summary>
 The <a href="https://pytest-cov.readthedocs.io/en/latest/config.html"><b>pytest-cov
-config</b></a> lives in <a href=".coverage.ini"><code>tests/.coverage.ini</code></a>.
+config</b></a> lives in <a href="./.coverage.ini"><code>tests/.coverage.ini</code></a>.
 </summary>
 
 https://github.com/nuztalgia/botstrap/blob/04f2bdbc5a18dc88a0c864833828cc6273d24eb3/tests/.coverage.ini#L1-L12
@@ -61,7 +61,7 @@ Make sure you've installed/updated the required packages for testing this projec
 pip install -U botstrap[tests]
 ```
 
-Then, use the following command to run the tests and produce a coverage summary:
+Then, use the following command to run the tests:
 
 ```
 pytest
@@ -72,7 +72,7 @@ And that's it! Hopefully all the tests pass. :innocent:
 ## Useful `pytest` Options
 
 Use `-S` to skip slow tests. This is a custom option defined in
-[`conftest.py`](conftest.py). It causes pytest to ignore tests that are explicitly
+[`conftest.py`](./conftest.py). It causes `pytest` to ignore tests that are explicitly
 marked as slow.
 
 ```
@@ -103,6 +103,6 @@ conveniently skipped with the `-S` option.)
 pytest --durations=50
 ```
 
-For more information about **pytest** and its available options, check out the
+For more information about `pytest` and its available options, check out the
 [usage guide](https://docs.pytest.org/en/latest/how-to/usage.html) (and, of course,
 `pytest -h`).
