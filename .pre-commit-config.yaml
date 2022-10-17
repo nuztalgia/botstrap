@@ -30,7 +30,7 @@ repos:
       - id: debug-statements
       - id: end-of-file-fixer
       - id: file-contents-sorter
-        files: \.gitignore
+        files: (\.gitignore|examples\/.*\.txt)
       - id: fix-byte-order-marker
       - id: fix-encoding-pragma
         args: ["--remove"]
