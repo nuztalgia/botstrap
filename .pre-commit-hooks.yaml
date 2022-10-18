@@ -1,10 +1,23 @@
 - id: detect-discord-bot-tokens
   name: detect discord bot tokens
-  description: Scans the repository for unencrypted Discord bot tokens.
+  description: Thoroughly scans for plaintext tokens & blocks pushing if any are found.
   language: python
   entry: botstrap scan
   args: ["--quiet"]
   pass_filenames: false
-  require_serial: true
   always_run: true
-  minimum_pre_commit_version: 2.0.0
+  fail_fast: true
+  stages: ["push"]
+
+- id: forbid-discord-bot-tokens
+  name: forbid discord bot tokens
+  description: Prevents unencrypted/plaintext Discord bot tokens from being committed.
+  language: pygrep
+  entry: '(?a)[\w-]{24,28}\.[\w-]{6}\.[\w-]{27,40}'
+
+- id: forbid-encrypted-tokens
+  name: forbid encrypted tokens
+  description: Prevents files containing Botstrap-encrypted tokens from being committed.
+  language: fail
+  entry: "*.key files contain encrypted token data and should be gitignored."
+  files: '.*\.(?:content|fernet)\.key$'

@@ -3,9 +3,11 @@ default_language_version:
 
 repos:
   - repo: https://github.com/nuztalgia/botstrap
-    rev: 0.2.3
+    rev: 0.2.4
     hooks:
       - id: detect-discord-bot-tokens
+      - id: forbid-discord-bot-tokens
+      - id: forbid-encrypted-tokens
 
   - repo: https://github.com/asottile/pyupgrade
     rev: v3.1.0
@@ -127,6 +129,4 @@ repos:
         always_run: true
         args: ["--skip-slow"]
         additional_dependencies: ["botstrap[tests]"]
-
-ci:
-  skip: ["pytest"]
+        stages: ["push"]
