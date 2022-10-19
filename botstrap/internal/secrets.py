@@ -97,46 +97,45 @@ class Secret:
         if (not uid) or (not str(uid).isidentifier()):
             raise ValueError("Unique ID (uid) must be a valid non-empty identifier.")
 
-        def get_storage_directory() -> Path:
-            """Turns storage_directory into a valid Path, creating the dir if needed."""
-            nonlocal storage_directory
-
-            if not storage_directory:
-                storage_directory = Metadata.get_default_keys_dir()
-            elif isinstance(storage_directory, str):
-                storage_directory = Path(storage_directory)
-
-            if (storage_directory := storage_directory.resolve()).is_file():
-                raise ValueError(
-                    f'Expected a directory, but found a file: "{storage_directory}"'
-                )
-
-            storage_directory.mkdir(exist_ok=True, parents=True)
-            return storage_directory
-
-        def get_validator() -> Callable[[str], bool]:
-            """Turns valid_pattern into a function that takes a str & returns a bool."""
-            nonlocal valid_pattern
-
-            if not valid_pattern:
-                valid_pattern = re.compile(".*", re.DOTALL)
-            elif isinstance(valid_pattern, str):
-                valid_pattern = re.compile(valid_pattern)
-
-            def validate_pattern(text: str) -> bool:
-                """Returns `True` if the given text fits the pattern for this secret."""
-                if isinstance(valid_pattern, re.Pattern):
-                    return valid_pattern.fullmatch(text) is not None
-                else:
-                    return bool(cast(Callable, valid_pattern)(text))
-
-            return validate_pattern
-
         self.uid: Final[str] = str(uid)
         self.requires_password: Final[bool] = requires_password
         self.display_name: Final[str] = display_name or uid
-        self.storage_directory: Final[Path] = get_storage_directory()
-        self.validate: Final[Callable[[str], bool]] = get_validator()
+        self.storage_directory: Final[Path] = self._get_storage_dir(storage_directory)
+        self.validate: Final[Callable[[str], bool]] = self._get_validator(valid_pattern)
+
+    @staticmethod
+    def _get_storage_dir(storage_directory: str | Path | None) -> Path:
+        """Turns `storage_directory` into a valid `Path`, creating the dir if needed."""
+        if not storage_directory:
+            storage_directory = Metadata.get_default_keys_dir()
+        elif isinstance(storage_directory, str):
+            storage_directory = Path(storage_directory)
+
+        if (storage_directory := storage_directory.resolve()).is_file():
+            raise ValueError(
+                f'Expected a directory, but found a file: "{storage_directory}"'
+            )
+        storage_directory.mkdir(exist_ok=True, parents=True)
+        return storage_directory
+
+    @staticmethod
+    def _get_validator(
+        valid_pattern: str | re.Pattern | Callable[[str], Any] | None
+    ) -> Callable[[str], bool]:
+        """Turns `valid_pattern` into a function that takes a str and returns a bool."""
+        if not valid_pattern:
+            valid_pattern = re.compile(".*", re.DOTALL)
+        elif isinstance(valid_pattern, str):
+            valid_pattern = re.compile(valid_pattern)
+
+        def validate_pattern(text: str) -> bool:
+            """Returns `True` if the given text matches the pattern for this secret."""
+            if isinstance(valid_pattern, re.Pattern):
+                return valid_pattern.fullmatch(text) is not None
+            else:
+                return bool(cast(Callable, valid_pattern)(text))
+
+        return validate_pattern
 
     def __str__(self) -> str:
         """Returns a nicely-printable string representation of this secret."""
