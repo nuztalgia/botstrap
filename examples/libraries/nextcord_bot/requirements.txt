@@ -1,2 +1,2 @@
-botstrap==0.2.4
+botstrap==0.2.5
 nextcord==2.2.0
