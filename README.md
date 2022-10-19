@@ -34,7 +34,7 @@ Discord bot. It offers:
 - 🤹 A straightforward way to **manage multiple tokens** and/or bot configurations
 - 🌈 An intuitive, colorful, and customizable **command-line interface** for your bot
 - 🤝 Out-of-the-box **compatibility** with all of the most popular Python
-  [Discord libraries](https://discord.com/developers/docs/topics/community-resources#libraries)
+  [Discord libraries](/examples/libraries)
 - ... and more to come!
 
 ## Installation
@@ -53,3 +53,50 @@ For additional/alternative installation instructions, see the
 
 Coming soon! In the meantime, check out the very detailed
 [API Reference](https://botstrap.readthedocs.io/en/latest/api/).
+
+## Git Hooks
+
+Adding one or more of Botstrap's [pre-commit](https://github.com/pre-commit/pre-commit)
+hooks to your `git` workflow is an easy and seamless way to improve the security of your
+codebase. (If you're unfamiliar with pre-commit, here's its
+[quickstart](https://pre-commit.com/index.html#quick-start) guide. Highly recommend!)
+
+See below for descriptions of the available hooks, and add the one(s) you like to your
+`.pre-commit-config.yaml`:
+
+```yaml
+- repo: https://github.com/nuztalgia/botstrap
+  rev: 0.2.4
+  hooks:
+    - id: detect-discord-bot-tokens
+    - id: forbid-discord-bot-tokens
+    - id: forbid-encrypted-tokens
+```
+
+### 🕵️ `detect-discord-bot-tokens`
+
+This hook is essentially a wrapper for the `botstrap scan` CLI command. It performs a
+thorough search of your repository and raises an error if it finds any unencrypted bot
+tokens - including in your uncommitted files. This enforces good security practices by
+making sure you aren't storing _any_ bot tokens in plaintext.
+
+**Note:** Because this is a relatively expensive hook, it will only run on `git push` by
+default.
+
+### 💂 `forbid-discord-bot-tokens`
+
+This is a faster and less exhaustive version of the above hook. It checks the contents
+of added/changed files every time you `git commit`, and raises an error if it finds any
+unencrypted bot tokens. It won't catch any plaintext tokens that you've `.gitignore`-d
+or already committed, but it _will_ prevent you from accidentally committing new ones.
+
+This hook is especially useful for bots whose tokens aren't secured by the main Botstrap
+library - **including bots written in languages other than Python!** ✨
+
+### 👷 `forbid-encrypted-tokens`
+
+Although it isn't _quite_ as dangerous to commit your encrypted bot tokens, doing so is
+still very much a security risk. This hook prevents that from happening by raising an
+error if you try to `git commit` a file whose name matches the pattern used by
+Botstrap's encrypted token files. (**Hint:** Keep this hook happy by adding `*.key` to
+your `.gitignore`.)
