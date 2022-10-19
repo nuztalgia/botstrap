@@ -1,2 +1,2 @@
-botstrap==0.2.4
+botstrap==0.2.5
 disnake==2.6.0
