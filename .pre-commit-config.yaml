@@ -3,10 +3,9 @@ default_language_version:
 
 repos:
   - repo: https://github.com/nuztalgia/botstrap
-    rev: 0.2.5
+    rev: 0.2.6
     hooks:
       - id: detect-discord-bot-tokens
-      - id: forbid-discord-bot-tokens
 
   - repo: https://github.com/asottile/pyupgrade
     rev: v3.1.0

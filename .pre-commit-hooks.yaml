@@ -1,20 +1,10 @@
 - id: detect-discord-bot-tokens
-  name: detect discord bot tokens
-  description: Thoroughly scans for plaintext tokens & blocks pushing if any are found.
-  language: python
-  entry: botstrap scan
-  args: ["--quiet"]
-  pass_filenames: false
-  always_run: true
-  stages: ["push"]
-
-- id: forbid-discord-bot-tokens
   name: forbid discord bot tokens
   description: Prevents unencrypted/plaintext Discord bot tokens from being committed.
   language: pygrep
   entry: '(?a)[\w-]{24,28}\.[\w-]{6}\.[\w-]{27,40}'
 
-- id: forbid-encrypted-tokens
+- id: detect-encrypted-tokens
   name: forbid encrypted tokens
   description: Prevents files containing Botstrap-encrypted tokens from being committed.
   language: fail
