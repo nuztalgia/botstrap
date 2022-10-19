@@ -6,7 +6,6 @@
   args: ["--quiet"]
   pass_filenames: false
   always_run: true
-  fail_fast: true
   stages: ["push"]
 
 - id: forbid-discord-bot-tokens

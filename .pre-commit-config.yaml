@@ -3,11 +3,10 @@ default_language_version:
 
 repos:
   - repo: https://github.com/nuztalgia/botstrap
-    rev: 0.2.4
+    rev: 0.2.5
     hooks:
       - id: detect-discord-bot-tokens
       - id: forbid-discord-bot-tokens
-      - id: forbid-encrypted-tokens
 
   - repo: https://github.com/asottile/pyupgrade
     rev: v3.1.0
@@ -22,6 +21,7 @@ repos:
       - id: check-builtin-literals
       - id: check-case-conflict
       - id: check-docstring-first
+      - id: check-json
       - id: check-merge-conflict
         args: ["--assume-in-merge"]
       - id: check-toml

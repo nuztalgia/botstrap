@@ -47,12 +47,16 @@ pip install -U botstrap
 ```
 
 For additional/alternative installation instructions, see the
-[documentation](https://botstrap.readthedocs.io/en/latest/getting-started/).
+[documentation](https://botstrap.readthedocs.io/en/latest/getting-started/#installation).
 
 ## Quickstart
 
-Coming soon! In the meantime, check out the very detailed
-[API Reference](https://botstrap.readthedocs.io/en/latest/api/).
+Coming soon! In the meantime, check out:
+
+- The [`examples`](/examples) directory
+- Starter [bot templates](/examples/libraries) for various Discord libraries
+- **And most importantly:** The extremely detailed
+  [Botstrap API Reference](https://botstrap.readthedocs.io/en/latest/api/)
 
 ## Git Hooks
 
@@ -66,7 +70,7 @@ See below for descriptions of the available hooks, and add the one(s) you like t
 
 ```yaml
 - repo: https://github.com/nuztalgia/botstrap
-  rev: 0.2.4
+  rev: 0.2.5
   hooks:
     - id: detect-discord-bot-tokens
     - id: forbid-discord-bot-tokens
@@ -100,3 +104,29 @@ still very much a security risk. This hook prevents that from happening by raisi
 error if you try to `git commit` a file whose name matches the pattern used by
 Botstrap's encrypted token files. (**Hint:** Keep this hook happy by adding `*.key` to
 your `.gitignore`.)
+
+## Badges
+
+Let everyone know your Discord bot is secure by adding a badge to your repository's
+`README.md`:
+
+[![Botstrap: On](https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2Fnuztalgia%2Fbotstrap%2Fmain%2F.github%2Fbadges%2Fbotstrap-on.json)](https://github.com/nuztalgia/botstrap)
+[![Botstrap: Enabled](https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2Fnuztalgia%2Fbotstrap%2Fmain%2F.github%2Fbadges%2Fbotstrap-enabled.json)](https://github.com/nuztalgia/botstrap)
+[![Tokens: Encrypted](https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2Fnuztalgia%2Fbotstrap%2Fmain%2F.github%2Fbadges%2Ftokens-encrypted.json)](https://github.com/nuztalgia/botstrap)
+[![Tokens: Secure](https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2Fnuztalgia%2Fbotstrap%2Fmain%2F.github%2Fbadges%2Ftokens-secure.json)](https://github.com/nuztalgia/botstrap)
+[![Botstrap](https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2Fnuztalgia%2Fbotstrap%2Fmain%2F.github%2Fbadges%2Fbotstrap.json)](https://github.com/nuztalgia/botstrap)
+
+```
+[![Botstrap](https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2Fnuztalgia%2Fbotstrap%2Fmain%2F.github%2Fbadges%2Fbotstrap-on.json)](https://github.com/nuztalgia/botstrap)
+```
+
+You can replace `botstrap-on` in the above snippet with the text on one of the other
+badges (e.g. `tokens-secure`).
+
+For more granular customization options, check out the available style parameters on
+[shields.io](https://shields.io/#styles).
+
+## License
+
+Copyright © 2022 [Nuztalgia](https://github.com/nuztalgia). Released under the
+[Apache License, Version 2.0](https://github.com/nuztalgia/botstrap/blob/main/LICENSE).
