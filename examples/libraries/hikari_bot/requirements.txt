@@ -1,2 +1,2 @@
-botstrap==0.2.5
+botstrap==0.2.6
 hikari==2.0.0.dev111
