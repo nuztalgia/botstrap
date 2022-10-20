@@ -10,7 +10,8 @@ from cryptography.fernet import InvalidToken
 from botstrap.internal.clisession import CliSession
 from botstrap.internal.secrets import Secret
 
-PATTERN: Final[re.Pattern] = re.compile(r"[\w-]{24,28}\.[\w-]{6}\.[\w-]{27,40}", re.A)
+# Observed tokens have had prefixes of length 24 or 26, and suffixes of length 27 or 38.
+PATTERN: Final[re.Pattern] = re.compile(r"[\w-]{24,}\.[\w-]{6}\.[\w-]{27,}", re.ASCII)
 
 
 class Token(Secret):

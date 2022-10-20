@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import random
 import re
 import secrets
 import string
@@ -106,9 +107,8 @@ def random_token_value() -> str:
 def generate_random_token_value() -> str:
     token = []
     valid_chars = string.ascii_letters + string.digits + "_-"
-    for length_range in (range(24, 28), [6], range(27, 40)):
-        substring_range = range(secrets.choice(length_range))
-        token.append("".join(secrets.choice(valid_chars) for _ in substring_range))
+    for length in (random.randrange(24, 28), 6, random.randrange(27, 40)):
+        token.append("".join(secrets.choice(valid_chars) for _ in range(length)))
     return ".".join(token)
 
 
