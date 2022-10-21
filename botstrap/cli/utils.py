@@ -41,6 +41,18 @@ def get_discord_lib(colors: CliColors = CliColors.off()) -> str | None:
     return None
 
 
+def get_lib_example(discord_lib_id: str) -> tuple[str, str]:
+    """Returns a tuple of the source/dest filenames for the library-specific example."""
+    if discord_lib_id in ("discordpy", "disnake", "nextcord", "pycord"):
+        return "example_cog.py", "cogs/example.py"
+    elif discord_lib_id in ("interactions", "naff"):
+        return "example_extension.py", "extensions/example.py"
+    elif discord_lib_id == "hikari":
+        return "bot.py", "bot.py"
+    else:
+        raise RuntimeError(f"Unrecognized Discord library ID: '{discord_lib_id}'.")
+
+
 def initialize_git(path: Path, colors: CliColors = CliColors.off()) -> bool:
     """Returns `True` if a Git repo is available (creating one if needed/possible)."""
     git_proc = run_git("rev-parse", "--git-dir", cwd=path)

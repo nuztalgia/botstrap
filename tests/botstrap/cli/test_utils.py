@@ -31,6 +31,29 @@ def test_get_discord_lib(
     assert re.match(expected_output_pattern, capsys.readouterr().out, re.DOTALL)
 
 
+@pytest.mark.parametrize(
+    "discord_lib_id, expected",
+    [
+        ("", None),
+        ("discord.py", None),
+        ("discordpy", ("example_cog.py", "cogs/example.py")),
+        ("disnake", ("example_cog.py", "cogs/example.py")),
+        ("hikari", ("bot.py", "bot.py")),
+        ("interactions", ("example_extension.py", "extensions/example.py")),
+        ("naff", ("example_extension.py", "extensions/example.py")),
+        ("nextcord", ("example_cog.py", "cogs/example.py")),
+        ("pycord", ("example_cog.py", "cogs/example.py")),
+        ("py-cord", None),
+    ],
+)
+def test_get_lib_example(discord_lib_id: str, expected: tuple[str, str] | None) -> None:
+    if expected:
+        assert utils.get_lib_example(discord_lib_id) == expected
+    else:
+        with pytest.raises(RuntimeError):
+            utils.get_lib_example(discord_lib_id)
+
+
 @pytest.mark.slow
 @pytest.mark.repeat(1)
 def test_initialize_git(capsys, monkeypatch, tmp_path) -> None:
