@@ -19,12 +19,23 @@ def mock_detect_bot_tokens(  # Properly tested in `test_scan.py`.
     print("detect_bot_tokens succeeded!")
 
 
+def mock_initialize_bot(  # Properly tested in `test_init.py`.
+    name: str, no_slugs: bool, no_install: bool, colors: CliColors
+) -> None:
+    assert isinstance(name, str)
+    assert isinstance(no_slugs, bool)
+    assert isinstance(no_install, bool)
+    assert isinstance(colors, CliColors)
+    print("initialize_bot succeeded!")
+
+
 @pytest.fixture(autouse=True)
 def setup(monkeypatch, tmp_path, sys_argv: list[str]) -> None:
     monkeypatch.chdir(tmp_path)
     monkeypatch.setattr("sys.argv", ["botstrap", *sys_argv])
     monkeypatch.setattr("webbrowser.open", lambda url: print(f"webbrowser: {url}"))
     monkeypatch.setattr("botstrap.cli.menu.detect_bot_tokens", mock_detect_bot_tokens)
+    monkeypatch.setattr("botstrap.cli.menu.initialize_bot", mock_initialize_bot)
 
 
 @pytest.mark.parametrize(
@@ -44,6 +55,8 @@ def setup(monkeypatch, tmp_path, sys_argv: list[str]) -> None:
         (["repo", "-h", "-n"], help_text),
         (["site"], r"^webbrowser: https://botstrap.readthedocs.io(/en/latest)?/?\n$"),
         (["site", "-h", "-n"], help_text),
+        (["init"], "initialize_bot succeeded!"),
+        (["init", "-h"], r"e:.+botstrap.+init.+\[name\] \[-s\] \[-i\].+\[-h\] \[-n\]"),
         (["scan"], "detect_bot_tokens succeeded!"),
         (["scan", "-h"], r"e:.+botstrap.+scan.+\[paths\] \[-q\] \[-v\].+\[-h\] \[-n\]"),
     ],

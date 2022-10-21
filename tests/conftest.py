@@ -112,6 +112,6 @@ def generate_random_token_value() -> str:
     return ".".join(token)
 
 
-def generate_random_text(length: int) -> str:
-    valid_chars = string.ascii_letters + string.digits + string.punctuation
+def generate_random_text(length: int, chars: str = "") -> str:
+    valid_chars = chars or (string.ascii_letters + string.digits + string.punctuation)
     return "".join(secrets.choice(valid_chars) for _ in range(length))
