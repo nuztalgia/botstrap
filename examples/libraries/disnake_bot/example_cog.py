@@ -1,12 +1,10 @@
-from typing import Final
-
 from disnake import ApplicationCommandInteraction
 from disnake.ext.commands import Bot, Cog, slash_command
 
 
 class Example(Cog):
     def __init__(self, bot: Bot) -> None:
-        self.bot: Final[Bot] = bot
+        self.bot = bot
 
     @slash_command(description="Say hello.")
     async def hello(self, interaction: ApplicationCommandInteraction) -> None:

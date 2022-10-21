@@ -5,9 +5,7 @@ from nextcord.ext.commands import Bot
 
 class NextcordBot(Bot):
     def __init__(self, **options) -> None:
-        super().__init__(
-            **options, activity=Activity(type=ActivityType.listening, name="/hello")
-        )
+        super().__init__(**options)
         self.load_extension("nextcord_bot.example_cog")
 
     async def on_ready(self) -> None:
@@ -24,7 +22,8 @@ def main() -> int:
         display_name=Color.yellow("development"),
         storage_directory=f"{__file__}/../../.botstrap_keys",
     ).run_bot(
-        NextcordBot
+        NextcordBot,
+        activity=Activity(type=ActivityType.listening, name="/hello"),
     )
     return 0
 

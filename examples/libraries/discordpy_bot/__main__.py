@@ -4,14 +4,6 @@ from discord.ext.commands import Bot
 
 
 class DiscordpyBot(Bot):
-    def __init__(self, **options) -> None:
-        super().__init__(
-            **options,
-            command_prefix="/",
-            intents=Intents.default(),
-            activity=Activity(type=ActivityType.listening, name="/hello"),
-        )
-
     async def setup_hook(self) -> None:
         await self.load_extension("discordpy_bot.example_cog")
 
@@ -29,7 +21,10 @@ def main() -> int:
         display_name=Color.yellow("development"),
         storage_directory=f"{__file__}/../../.botstrap_keys",
     ).run_bot(
-        DiscordpyBot
+        DiscordpyBot,
+        command_prefix="/",
+        intents=Intents.default(),
+        activity=Activity(type=ActivityType.listening, name="/hello"),
     )
     return 0
 

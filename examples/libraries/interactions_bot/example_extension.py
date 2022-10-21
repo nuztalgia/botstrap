@@ -1,11 +1,9 @@
-from typing import Final
-
 import interactions
 
 
 class Example(interactions.Extension):
     def __init__(self, client: interactions.Client) -> None:
-        self.client: Final[interactions.Client] = client
+        self.client = client
 
     @interactions.extension_listener
     async def on_ready(self) -> None:
