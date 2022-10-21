@@ -1,0 +1,12 @@
+token = botstrap.retrieve_active_token()
+activity = PresenceActivity(type=PresenceActivityType.LISTENING, name="/hello")
+
+client = Client(token=token, presence=ClientPresence(activities=[activity]))
+
+# Create your own custom extensions in the "extensions" folder & add them here!
+extension_module_names = ["example"]
+
+for extension_module_name in extension_module_names:
+    client.load(f"${bot_package}.extensions.{extension_module_name}")
+
+client.start()

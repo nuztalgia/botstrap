@@ -1,0 +1,16 @@
+from disnake import Activity, ActivityType
+from disnake.ext.commands import InteractionBot
+
+
+class ${bot_class}(InteractionBot):
+    def __init__(self, **options) -> None:
+        super().__init__(**options)
+
+        # Create your own custom cog files in the "cogs" folder & add them to this list!
+        cog_module_names = ["example"]
+
+        for cog_module_name in cog_module_names:
+            self.load_extension(f"${bot_package}.cogs.{cog_module_name}")
+
+    async def on_ready(self) -> None:
+        print(f"${bot_class} v{${bot_package}.VERSION} is online and ready!")

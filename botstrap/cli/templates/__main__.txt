@@ -1,0 +1,38 @@
+import ${bot_package}
+from botstrap import *
+${main_header}
+
+def main() -> int:
+    botstrap = Botstrap(
+        name="${bot_name}",
+        # desc="Uncomment this line and add a description for your bot!",
+        version=${bot_package}.VERSION,
+    )
+
+    """ Uncomment and customize this section if you want to define your own bot tokens.
+    botstrap.register_token(
+        uid="dev",
+        display_name=Color.yellow("development"),
+    ).register_token(
+        uid="prod",
+        requires_password=True,
+        display_name=Color.green("production"),
+    )
+    """
+
+    """ Uncomment and customize this section to define your bot's command-line options.
+    args = botstrap.parse_args(
+        say_hello=Option(flag=True, help='Print "Hello world!" and then exit.'),
+    )
+
+    if args.say_hello:
+        print("Hello world!")
+        return 0
+    """
+
+    ${main_footer}
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

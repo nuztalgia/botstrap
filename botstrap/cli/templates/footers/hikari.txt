@@ -1,0 +1,6 @@
+botstrap.run_bot(
+    "${bot_package}.bot.HikariBot",
+    init_with_token=True,
+    # You can add keyword args here. They'll be forwarded to your bot's constructor!
+    banner=None,
+)

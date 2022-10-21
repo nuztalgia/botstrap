@@ -1,0 +1,7 @@
+botstrap.run_bot(
+    ${bot_class},
+    run_method_name="start",
+    # You can add keyword args here. They'll be forwarded to your bot's constructor!
+    activity=Activity.create(type=ActivityType.LISTENING, name="/hello"),
+    sync_interactions=True,
+)

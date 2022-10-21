@@ -1,0 +1,17 @@
+from naff import Activity, ActivityType, Client, listen
+
+
+class ${bot_class}(Client):
+    def __init__(self, **options) -> None:
+        super().__init__(**options)
+
+        # Create your own custom extensions in the "extensions" folder & add them here!
+        extension_module_names = ["example"]
+
+        for extension_module_name in extension_module_names:
+            self.load_extension(f"${bot_package}.extensions.{extension_module_name}")
+
+    @listen()
+    async def on_startup(self) -> None:
+        print(f'Successfully logged in as "{self.user}".')
+        print(f"${bot_class} v{${bot_package}.VERSION} is online and ready!")

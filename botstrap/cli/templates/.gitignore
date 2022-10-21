@@ -1,0 +1,10 @@
+*.egg-info/
+*.key
+*.py[cdo]
+*.sw[a-p]
+*venv/
+.coverage
+.idea/
+.tox/
+build/
+dist/

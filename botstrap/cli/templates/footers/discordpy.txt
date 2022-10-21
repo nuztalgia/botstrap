@@ -1,0 +1,7 @@
+botstrap.run_bot(
+    ${bot_class},
+    # You can add keyword args here. They'll be forwarded to your bot's constructor!
+    command_prefix="/",
+    intents=Intents.default(),
+    activity=Activity(type=ActivityType.listening, name="/hello"),
+)

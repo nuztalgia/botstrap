@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "${bot_name}"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "botstrap${botstrap_version}",
+    "${discord_lib}${discord_lib_version}",
+]
+dynamic = ["version"]
+
+[project.scripts]
+${bot_name} = "${bot_package}.__main__:main"
+
+[tool.setuptools.dynamic]
+version = { attr = "${bot_package}.VERSION" }
