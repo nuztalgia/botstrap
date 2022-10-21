@@ -11,6 +11,7 @@ from re import Match
 from typing import Any, Final, cast
 
 from botstrap import CliColors, Color
+from botstrap.cli.init import initialize_bot
 from botstrap.cli.scan import detect_bot_tokens
 from botstrap.internal import CliSession, Metadata
 
@@ -76,6 +77,28 @@ class BotstrapMenu(CliSession):
             """Returns the project_url (from metadata) that matches the given label."""
             return next(s.split()[-1] for s in metadata["project_url"] if label in s)
 
+        self._add_subcommand(
+            "init",
+            "Initialize a new Discord bot project using Botstrap.",
+            initialize_bot,
+            {
+                _ARG_NAMES: ("name",),
+                "nargs": "?",
+                "default": "",
+                "help": "The bot name. Will use the current directory name if omitted.",
+            },
+            {
+                _ARG_NAMES: ("-s", "--no-slugs"),
+                "action": "store_true",
+                "help": "Disable slugification (e.g. MyBot -> my-bot) of the bot name.",
+            },
+            {
+                _ARG_NAMES: ("-i", "--no-install"),
+                "action": "store_true",
+                "help": "Disable automatic installation of the bot after it's created.",
+            },
+            colors=self.colors,
+        )
         self._add_subcommand(
             "scan",
             "Scan for plaintext bot tokens in the current Git repository.",
