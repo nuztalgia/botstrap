@@ -72,7 +72,7 @@ See below for descriptions of the available hooks, and add the one(s) you like t
 
 ```yaml
 - repo: https://github.com/nuztalgia/botstrap
-  rev: 0.2.6
+  rev: 0.2.7
   hooks:
     - id: detect-discord-bot-tokens
     - id: detect-encrypted-tokens
