@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import re
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -168,10 +169,16 @@ class BotstrapInitializer(CliSession):
             f"{get_pypi_link(self.discord_lib)} and {get_pypi_link('botstrap')}.\n"
         )
 
+        def fetch_file_from_url(url: str) -> str:
+            """Opens the given url (must be https) and returns its contents as a str."""
+            if not url.startswith("https://"):
+                raise ValueError(f"File URL must start with 'https': {url}")
+            return urlopen(url, timeout=10).read().decode()
+
         def get_file_contents(source_path: str) -> str:
             """Fetches and returns the file template with all placeholders filled in."""
             template_url = f"{_RAW_REPO_URL}/botstrap/cli/templates/{source_path}"
-            return Template(urlopen(template_url).read().decode()).safe_substitute(
+            return Template(fetch_file_from_url(template_url)).safe_substitute(
                 bot_class=bot_class,
                 bot_name=bot_name,
                 bot_package=bot_package,
@@ -205,7 +212,7 @@ class BotstrapInitializer(CliSession):
                 ("pyproject.toml", get_file_contents("pyproject.txt")),
                 (f"{bot_package}/__init__.py", 'VERSION: str = "1.0.0"\n'),
                 (f"{bot_package}/__main__.py", main_file_contents),
-                (lib_example_file_name, urlopen(lib_example_file_url).read().decode()),
+                (lib_example_file_name, fetch_file_from_url(lib_example_file_url)),
             ]
         )
 
@@ -239,7 +246,7 @@ class BotstrapInitializer(CliSession):
         omission_regex = re.compile("(^Requirement already satisfied|[a-z0-9]{50,}\n)")
 
         install_proc = subprocess.Popen(
-            ["pip", "install", "-e", "."],
+            [shutil.which("pip") or f"{sys.executable} -m pip", "install", "-e", "."],
             cwd=bot_dir,
             stderr=subprocess.DEVNULL,
             stdout=subprocess.PIPE,

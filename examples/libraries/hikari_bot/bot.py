@@ -2,7 +2,7 @@ import hikari
 
 
 class HikariBot(hikari.GatewayBot):
-    def __init__(self, token: str, **options):
+    def __init__(self, token: str, **options) -> None:
         super().__init__(token, **options)
         self.subscribe(hikari.StartedEvent, self.on_started)
         self.subscribe(hikari.InteractionCreateEvent, self.on_interaction)

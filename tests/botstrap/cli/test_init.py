@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import functools
 import re
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -12,6 +13,7 @@ import pytest
 
 from botstrap import CliColors
 from botstrap.cli import init, utils
+from botstrap.internal import Metadata
 from tests.conftest import CliAction, generate_random_text
 
 _REPO_ROOT: Final[Path] = (Path(__file__) / "../../../..").resolve()
@@ -19,9 +21,10 @@ _TEMPLATE_REGEX: Final[re.Pattern] = re.compile(r"\${\w+}")
 
 
 class MockHTTPResponse:
-    def __init__(self, url: str) -> None:
+    def __init__(self, url: str, timeout: int) -> None:
         relative_file = re.sub(r"https://.*/main/", "", url)
         self.read = (_REPO_ROOT / relative_file).read_bytes
+        assert timeout in range(5, 20)
 
 
 class MockPopen:
@@ -203,6 +206,15 @@ def test_initializer_get_bot_info(
     assert bot_dir == (tmp_path / expected_relative_dir).resolve()
 
 
+def test_initializer_initialize_all_files_fail(
+    monkeypatch, tmp_path, initializer
+) -> None:
+    monkeypatch.setattr(Metadata, "get_package_info", lambda _: {"version": "1.0.0"})
+    monkeypatch.setattr(init, "_RAW_REPO_URL", "http://raw.githubusercontent.com/")
+    with pytest.raises(ValueError):
+        initializer._initialize_all_files(tmp_path, "test-bot", "testbot")
+
+
 @pytest.mark.parametrize(
     "discord_lib, package_version, bot_name, bot_package, extra_file, existing_files",
     [
@@ -215,7 +227,7 @@ def test_initializer_get_bot_info(
         ("py-cord", "2022.10.20", "test-bot-7", "testbot7", "cogs/example.py", []),
     ],
 )
-def test_initializer_initialize_all_files(
+def test_initializer_initialize_all_files_success(
     capsys,
     monkeypatch,
     tmp_path,
@@ -227,11 +239,9 @@ def test_initializer_initialize_all_files(
     extra_file: str,
     existing_files: list[str],
 ) -> None:
-    monkeypatch.setattr(
-        "botstrap.internal.metadata.Metadata.get_package_info",
-        lambda _: {"version": package_version},
-    )
-    monkeypatch.setattr(init, "urlopen", lambda url: MockHTTPResponse(url))
+    mock_package_info = {"version": package_version}
+    monkeypatch.setattr(Metadata, "get_package_info", lambda _: mock_package_info)
+    monkeypatch.setattr(init, "urlopen", MockHTTPResponse)
 
     for existing_file in existing_files:
         (tmp_path / existing_file).parent.mkdir(exist_ok=True)
@@ -305,6 +315,7 @@ def test_initializer_install_bot(capsys, monkeypatch, tmp_path, initializer) -> 
 
     monkeypatch.setattr(subprocess, "Popen", functools.partial(MockPopen, mock_stdout))
     monkeypatch.setattr(sys, "prefix", sys.base_prefix)
+    monkeypatch.setattr(shutil, "which", lambda cmd: cmd)
 
     assert initializer._install_bot(tmp_path, "test-bot")
     assert capsys.readouterr().out == (

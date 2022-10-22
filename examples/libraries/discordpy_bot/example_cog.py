@@ -8,7 +8,7 @@ class Example(Cog):
         self.bot = bot
 
     @command(description="Say hello.")
-    async def hello(self, interaction: Interaction):
+    async def hello(self, interaction: Interaction) -> None:
         await interaction.response.send_message(f"Hello {interaction.user.mention}!")
 
 
