@@ -65,7 +65,7 @@ repos:
         args: ["--ignore-missing-imports", "--show-error-codes"]
 
   - repo: https://github.com/PyCQA/autoflake
-    rev: v1.7.6
+    rev: v1.7.7
     hooks:
       - id: autoflake
         args: ["--in-place", "--remove-all-unused-imports", "--remove-unused-variables"]
@@ -112,7 +112,7 @@ repos:
       - id: fix-smartquotes
 
   - repo: https://github.com/python-jsonschema/check-jsonschema
-    rev: 0.18.3
+    rev: 0.18.4
     hooks:
       - id: check-github-workflows
       - id: check-renovate
