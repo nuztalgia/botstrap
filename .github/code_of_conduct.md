@@ -46,9 +46,11 @@ Code of Conduct, and will communicate reasons for moderation decisions when appr
 
 ## Attribution
 
-This Code of Conduct is an abridged adaptation of the
-[Contributor Covenant](https://www.contributor-covenant.org). The original text is
-available [here](https://www.contributor-covenant.org/version/2/1/code_of_conduct/) in
-English, and [here](https://www.contributor-covenant.org/translations/) in other
-languages. For answers to common questions about this code of conduct, please see the
-[FAQ](https://www.contributor-covenant.org/faq).
+This Code of Conduct is an abridged adaptation of the [Contributor Covenant][1]. The
+original text is available [here][2] in English, and [here][3] in other languages. For
+answers to common questions about this code of conduct, please see the [FAQ][4].
+
+[1]: https://www.contributor-covenant.org
+[2]: https://www.contributor-covenant.org/version/2/1/code_of_conduct/
+[3]: https://www.contributor-covenant.org/translations/
+[4]: https://www.contributor-covenant.org/faq

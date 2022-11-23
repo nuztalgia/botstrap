@@ -20,7 +20,7 @@
 ### Checklist
 <!-- All of the following statements MUST be true in order for this PR to be
      considered. Put an "x" inside each box to check it, like so: [x] -->
-- [ ] I have read this project's `CODE_OF_CONDUCT` and `CONTRIBUTING` guidelines.
+- [ ] I have read this project's code of conduct and contributing guidelines.
 - [ ] This contribution fully complies with this project's license (Apache-2.0).
 - [ ] This contribution fully complies with the Developer Certificate of Origin.
 

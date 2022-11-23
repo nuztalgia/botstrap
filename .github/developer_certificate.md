@@ -36,9 +36,13 @@ the box that affirms your compliance with the DCO.
 If you'd like to learn more about the DCO, how it protects contributors, or why we (and
 many other projects) have chosen to use it, these are some great articles to read:
 
-- [The Developer Certificate of Origin is a great alternative to a CLA](https://drewdevault.com/2021/04/12/DCO.html)
-- [Developer Certificate of Origin versus Contributor License Agreements](https://julien.ponge.org/blog/developer-certificate-of-origin-versus-contributor-license-agreements/)
-- [The most powerful contributor agreement](https://lwn.net/Articles/592503/)
+- [The Developer Certificate of Origin is a great alternative to a CLA][1]
+- [Developer Certificate of Origin versus Contributor License Agreements][2]
+- [The most powerful contributor agreement][3]
+
+[1]: https://drewdevault.com/2021/04/12/DCO.html
+[2]: https://julien.ponge.org/blog/developer-certificate-of-origin-versus-contributor-license-agreements/
+[3]: https://lwn.net/Articles/592503/
 
 ## DCO v1.1 Full Text
 

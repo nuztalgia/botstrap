@@ -3,13 +3,10 @@
 *.key
 *.py[cdo]
 *.sw[a-p]
-*__pycache__/
 *venv/
 .DS_Store
 .coverage
 .idea/
-.mypy_cache/
-.pytest_cache/
 .tox/
 .vscode/
 build/
