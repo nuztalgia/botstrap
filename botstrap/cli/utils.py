@@ -1,4 +1,4 @@
-"""This module contains general utility functions for the `botstrap` standalone CLI ."""
+"""This module contains general utility functions for the `botstrap` standalone CLI."""
 from __future__ import annotations
 
 import re

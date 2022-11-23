@@ -1,2 +1,2 @@
 botstrap==0.2.7
-naff==1.12.0
+naff==2.0.0

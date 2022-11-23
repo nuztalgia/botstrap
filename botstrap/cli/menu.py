@@ -130,12 +130,6 @@ class BotstrapMenu(CliSession):
             "repo",
             "Open the Botstrap repository on GitHub in your web browser.",
             webbrowser.open,
-            url=get_project_url("Source Code"),
-        )
-        self._add_subcommand(
-            "site",
-            "Open the Botstrap website in your browser.",
-            webbrowser.open,
             url=metadata["home_page"],
         )
         self._add_subcommand("help", "Display this help message.", self._print_help)
