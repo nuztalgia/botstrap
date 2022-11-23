@@ -1,4 +1,9 @@
-# <a href="https://botstrap.rtfd.io"><img src="/docs/images/logo-48.png" width=24></a> Testing
+<h1>
+<picture>
+<img alt="Botstrap Logo" src="/docs/images/logo-48.png" width=32>
+</picture>
+Testing
+</h1>
 
 <table>
 <tr><th colspan=2>CI Status</th></tr>
@@ -11,17 +16,18 @@
 
 ## Tools & Configuration
 
-Botstrap's unit tests are written and run using
-[`pytest`](https://pypi.org/project/pytest/), with coverage reports produced by
-[`pytest-cov`](https://pypi.org/project/pytest-cov/). These tools are configured as
-follows:
+Botstrap's unit tests are written and run using [`pytest`], with coverage reports
+produced by [`pytest-cov`]. These tools are configured as follows:
+
+[`pytest`]: https://pypi.org/project/pytest/
+[`pytest-cov`]: https://pypi.org/project/pytest-cov/
 
 <ul>
 <li><details><summary>
 Default <a href="https://docs.pytest.org/en/7.1.x/reference/reference.html#ini-options-ref"><b>pytest
 options</b></a> are specified in <a href="/pyproject.toml"><code>pyproject.toml</code></a>.</summary>
 
-https://github.com/nuztalgia/botstrap/blob/04f2bdbc5a18dc88a0c864833828cc6273d24eb3/pyproject.toml#L50-L61
+https://github.com/nuztalgia/botstrap/blob/16cca0d047da9fa85565ecfaef2d7427d138ba67/pyproject.toml#L50-L61
 
 </details></li>
 <li><details><summary>
@@ -29,21 +35,24 @@ The <a href="https://pytest-cov.readthedocs.io/en/latest/config.html"><b>pytest-
 config</b></a> lives in <a href="./.coverage.ini"><code>tests/.coverage.ini</code></a>.
 </summary>
 
-https://github.com/nuztalgia/botstrap/blob/04f2bdbc5a18dc88a0c864833828cc6273d24eb3/tests/.coverage.ini#L1-L12
+https://github.com/nuztalgia/botstrap/blob/16cca0d047da9fa85565ecfaef2d7427d138ba67/tests/.coverage.ini#L1-L12
 
-More details about the contents of this config file can be found in the
-[documentation](https://coverage.readthedocs.io/en/latest/config.html) for
-[`coverage.py`](https://pypi.org/project/coverage/), which powers `pytest-cov`.
+More details about the contents of this config file can be found in the [documentation]
+for [`coverage.py`], which powers `pytest-cov`.
+
+[documentation]: https://coverage.readthedocs.io/en/latest/config.html
+[`coverage.py`]: https://pypi.org/project/coverage/
 
 </details>
 </ul>
 
 Whenever a commit that affects [`botstrap`](/botstrap) and/or [`tests`](.) is pushed to
-the `main` branch, the
-[Tests](https://github.com/nuztalgia/botstrap/actions/workflows/tests.yml) workflow will
-automatically run `pytest` on an assortment of operating systems and supported Python
-versions. If all tests pass, the resulting coverage report will be uploaded to
-[Codecov](https://app.codecov.io/github/nuztalgia/botstrap).
+the `main` branch, the [Tests] workflow will automatically run `pytest` on an assortment
+of operating systems and supported Python versions. If all tests pass, the resulting
+coverage report will be uploaded to [Codecov].
+
+[tests]: https://github.com/nuztalgia/botstrap/actions/workflows/tests.yml
+[codecov]: https://app.codecov.io/github/nuztalgia/botstrap
 
 ## Running the Tests
 
@@ -103,6 +112,7 @@ conveniently skipped with the `-S` option.)
 pytest --durations=50
 ```
 
-For more information about `pytest` and its available options, check out the
-[usage guide](https://docs.pytest.org/en/latest/how-to/usage.html) (and, of course,
-`pytest -h`).
+For more information about `pytest` and its available options, check out the [usage
+guide] (and, of course, `pytest -h`).
+
+[usage guide]: https://docs.pytest.org/en/latest/how-to/usage.html

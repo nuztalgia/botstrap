@@ -1,4 +1,9 @@
-# <a href="https://botstrap.rtfd.io"><img src="/docs/images/logo-48.png" width=24></a> Library Examples
+<h1>
+<picture>
+<img alt="Botstrap Logo" src="/docs/images/logo-48.png" width=32>
+</picture>
+Library Examples
+</h1>
 
 Botstrap is quite flexible and (in theory) can easily adapt to work alongside any
 [Discord library](https://discord.com/developers/docs/topics/community-resources#libraries)

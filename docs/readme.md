@@ -1,16 +1,23 @@
-# <a href="https://botstrap.rtfd.io"><img src="/docs/images/logo-48.png" width=24></a> Documentation
+<h1>
+<picture>
+<img alt="Botstrap Logo" src="/docs/images/logo-48.png" width=32>
+</picture>
+Documentation
+</h1>
 
-To view the Botstrap documentation, head on over to the
-[official site](https://botstrap.readthedocs.io/)! It's much more informative than the
-raw source files contained here.
+To view the Botstrap documentation, head on over to the [official site]! It's much more
+informative than the raw source files contained here.
 
 If you have a question that isn't answered in the docs and you think it should be,
-please start a [discussion](https://github.com/nuztalgia/botstrap/discussions) on what
-could be clarified and/or improved! The goal is to make this library as easy-to-use as
-possible, so all feedback is welcome and appreciated. :sparkling_heart:
+please start a [discussion] on what could be clarified and/or improved! The goal is to
+make this library as easy-to-use as possible, so all feedback is welcome and
+appreciated. :sparkling_heart:
 
 The rest of this file contains information about building the **documentation site**
 from the source files in this directory.
+
+[official site]: https://botstrap.readthedocs.io/
+[discussion]: https://github.com/nuztalgia/botstrap/discussions
 
 <table>
 <tr><th>Table of Contents</th></tr>
@@ -31,14 +38,17 @@ from the source files in this directory.
 
 ## Configuration & Requirements
 
-Botstrap's documentation is built using [MkDocs](https://www.mkdocs.org/), a
-super-extensible static site generator that turns Markdown files into HTML pages. MkDocs
-uses a YAML configuration file in the root project directory named
-[`mkdocs.yml`](/mkdocs.yml). This file contains the config for the entire documentation
-site, including its **theme** (the amazing
-[Material for MkDocs](https://squidfunk.github.io/mkdocs-material/)), **plugins** (most
-notably [mkdocstrings](https://mkdocstrings.github.io/)), and **extensions** (almost all
-[PyMdown Extensions](https://facelessuser.github.io/pymdown-extensions/)).
+Botstrap's documentation is built using [MkDocs], a super-extensible static site
+generator that turns Markdown files into HTML pages. MkDocs uses a YAML configuration
+file in the root project directory named [`mkdocs.yml`](/mkdocs.yml). This file contains
+the config for the entire documentation site, including its **theme** (the amazing
+[Material for MkDocs]), **plugins** (most notably [mkdocstrings]), and **extensions**
+(almost all [PyMdown Extensions]).
+
+[mkdocs]: https://www.mkdocs.org/
+[material for mkdocs]: https://squidfunk.github.io/mkdocs-material/
+[mkdocstrings]: https://mkdocstrings.github.io/
+[pymdown extensions]: https://facelessuser.github.io/pymdown-extensions/
 
 <details>
 <summary>All of these major dependencies, as well as some more minor (but still direct) dependencies,
@@ -57,10 +67,12 @@ are pinned and listed in <a href="./requirements.in"><code>requirements.in</code
 </details>
 
 In order to make sure the site is built consistently and deterministically, we'll use
-[`pip-tools`](https://pip-tools.readthedocs.io/) inside a
-[virtual environment](https://docs.python.org/3/tutorial/venv.html). This allows us to
-install the exact versions of all of the dependencies required to build this
-documentation, without conflicting with any other projects or apps.
+[`pip-tools`] inside a [virtual environment]. This allows us to install the exact
+versions of all of the dependencies required to build this documentation, without
+conflicting with any other projects or apps.
+
+[`pip-tools`]: https://pip-tools.readthedocs.io/
+[virtual environment]: https://docs.python.org/3/tutorial/venv.html
 
 ### Setting up a virtual environment
 
@@ -104,28 +116,28 @@ done building/previewing the site, simply run `deactivate`.
 
 As mentioned above, the documentation site's direct dependencies can be found in
 [`requirements.in`](./requirements.in). Each one is pinned to a specific version, which
-will (most of the time) be its latest stable release, thanks to
-[Renovate](https://github.com/renovatebot/renovate). However, this setup is not quite
-immune to problems:
+will (most of the time) be its latest stable release, thanks to [Renovate]. However,
+this setup is not quite immune to problems:
 
 - An automatic, unchecked update to a dependency might introduce a change that breaks
   something on the documentation site.
 - Transitive dependencies are not specified, which might result in inconsistencies when
   building the site across different environments.
 
-To mitigate these potential issues, we use
-[`pip-compile`](https://pip-tools.readthedocs.io/en/latest/#example-usage-for-pip-compile)
-to generate the [`requirements.txt`](./requirements.txt) file with a complete list of
-all direct **and** transitive dependencies, along with their respective pinned versions
-and [hashes](https://pip.pypa.io/en/stable/topics/secure-installs/#hash-checking-mode)
-in order to ensure correctness. This file is therefore the "canonical" set of
-requirements for properly building the documentation - both locally for development and
-on [Read the Docs](https://readthedocs.org/), which hosts the
-[official site](https://botstrap.readthedocs.io/).
+To mitigate these potential issues, we use [`pip-compile`] to generate the
+[`requirements.txt`](./requirements.txt) file with a complete list of all direct **and**
+transitive dependencies, along with their respective pinned versions and [hashes] in
+order to ensure correctness. This file is therefore the "canonical" set of requirements
+for properly building the documentation - both locally for development and on
+[Read the Docs](https://readthedocs.org/), which hosts the [official site].
 
 All of the following commands assume that you're in the **root project directory** and
-that you've set up your virtual env
-[as described above](#setting-up-a-virtual-environment).
+that you've set up your virtual env [as described above].
+
+[renovate]: https://github.com/renovatebot/renovate
+[`pip-compile`]: https://pip-tools.readthedocs.io/en/latest/#updating-requirements
+[hashes]: https://pip.pypa.io/en/stable/topics/secure-installs/#hash-checking-mode
+[as described above]: #setting-up-a-virtual-environment
 
 ### Installing all requirements
 
@@ -159,21 +171,25 @@ things to double-check and adjust if necessary:
   workaround is implemented.
 
 - If you're on Windows, the line endings produced by `pip-compile` may be incorrect.
-  This should be caught and automatically fixed by the
-  [`mixed-line-ending`](https://github.com/pre-commit/pre-commit-hooks#mixed-line-ending)
-  [pre-commit](https://pre-commit.com/) hook. Alternatively, you may install
-  jazzband/pip-tools#1652, which adds an option for `--newline=LF`.
+  This should be caught and automatically fixed by the [`mixed-line-ending`]
+  [pre-commit] hook. Alternatively, you may preemptively use `--newline=LF` (added in
+  version [6.10.0] of `pip-tools`).
+
+[`mixed-line-ending`]: https://github.com/pre-commit/pre-commit-hooks#mixed-line-ending
+[pre-commit]: https://pre-commit.com/
+[6.10.0]: https://github.com/jazzband/pip-tools/blob/main/CHANGELOG.md#6100-2022-11-13
 
 ## Building & Previewing the Site
 
 [MkDocs](https://www.mkdocs.org/getting-started/#creating-a-new-project) provides a
 built-in live preview server that makes the documentation site locally available in your
 web browser. In general, this server should be used to make and test any changes before
-they're [deployed](https://readthedocs.org/projects/botstrap/). Because this repository
-is automatically integrated into
-[Read the Docs](https://docs.readthedocs.io/en/stable/integrations.html), the
-redeployment process will be triggered whenever any documentation-related changes are
-pushed to the `main` branch.
+they're [deployed]. Because this repository is automatically integrated into [Read the
+Docs], the redeployment process will be triggered whenever any documentation-related
+changes are pushed to the `main` branch.
+
+[deployed]: https://readthedocs.org/projects/botstrap/
+[read the docs]: https://docs.readthedocs.io/en/stable/integrations.html
 
 ### For general development
 
@@ -187,12 +203,14 @@ site, which will be automatically rebuilt and reloaded whenever a change is made
 saved) to a relevant file.
 
 If it's taking an undesirably long time to rebuild the entire site after each change,
-you may opt to use
-[`--dirtyreload`](https://www.mkdocs.org/about/release-notes/#support-for-dirty-builds-990)
-mode to speed things up by limiting the scope of the rebuild to only the pages (i.e.
-source markdown files) that have been changed since the previous build. However, to
-avoid inconsistent behavior in the site navigation and other links, this should only be
-used while developing content isolated to a single page.
+you may opt to use [`--dirtyreload`] mode to speed things up by limiting the scope of
+the rebuild to only the pages (i.e. source markdown files) that have been changed since
+the previous build. However, to avoid inconsistent behavior in the site navigation and
+other links, this should only be used while developing content isolated to a single
+page.
+
+[`--dirtyreload`]:
+  https://www.mkdocs.org/about/release-notes/#support-for-dirty-builds-990
 
 ### For one-off builds
 
@@ -213,8 +231,7 @@ will be saved in the `site` directory, which can be found in the project root (a
 
 <b>Why isn't the name of this file (</b><code>readme.md</code><b>) capitalized?</b>
 
-MkDocs recognizes `index.md` and `README.md` as valid names for
-[index pages](https://www.mkdocs.org/user-guide/writing-your-docs/#index-pages). If both
+MkDocs recognizes `index.md` and `README.md` as valid names for [index pages]. If both
 are present, then the `index.md` file is used as the index page and the `README.md` file
 is ignored, but a warning is emitted every time the site is built. This project includes
 both files, but for different purposes - one is the actual home page of the
@@ -227,6 +244,8 @@ GitHub.
 
 Further reading: mkdocs/mkdocs#608, mkdocs/mkdocs#1580, mkdocs/mkdocs#2846,
 sindresorhus/ama#197
+
+[index pages]: https://www.mkdocs.org/user-guide/writing-your-docs/#index-pages
 
 </li><li>
 

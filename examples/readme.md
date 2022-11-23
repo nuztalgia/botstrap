@@ -1,4 +1,9 @@
-# <a href="https://botstrap.rtfd.io"><img src="/docs/images/logo-48.png" width=24></a> Examples
+<h1>
+<picture>
+<img alt="Botstrap Logo" src="/docs/images/logo-48.png" width=32>
+</picture>
+Examples
+</h1>
 
 ## Simple CLI Demo
 
@@ -66,7 +71,7 @@ flow, as well as a few other classes that are also part of the public
 <a href="https://botstrap.rtfd.io/en/latest/api/">API</a>. This file is a good reference
 for what a fully-fledged integration might look like.</summary>
 
-https://github.com/nuztalgia/botstrap/blob/3b94b3b93f8d13ecd530e0f7e3e258b580c8141c/examples/examplebot/__main__.py#L1-L46
+https://github.com/nuztalgia/botstrap/blob/16cca0d047da9fa85565ecfaef2d7427d138ba67/examples/examplebot/__main__.py#L1-L46
 
 </details></li>
 <li><details><summary>
@@ -75,7 +80,7 @@ subset of the non-Botstrap-related components that a Discord bot might have. The
 of this file is simply to provide more context for the example integration, so feel free
 to skip over it if you don't find it useful.</summary>
 
-https://github.com/nuztalgia/botstrap/blob/3b94b3b93f8d13ecd530e0f7e3e258b580c8141c/examples/examplebot/extras.py#L1-L41
+https://github.com/nuztalgia/botstrap/blob/16cca0d047da9fa85565ecfaef2d7427d138ba67/examples/examplebot/extras.py#L1-L41
 
 </details>
 </ul>
@@ -91,7 +96,7 @@ python -m examplebot -h
 
 <details>
 <summary>If everything was set up correctly, you should see a help menu that looks
-something like this... <i>(click to expand)</i></summary>
+something like this... <i>(click to expand)</i></summary><br>
 
 ```text
 usage: examplebot [-l <int>] [-s <str>] [-a <str>] [-m] [-t] [--help] [<token id>]
