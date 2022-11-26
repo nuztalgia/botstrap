@@ -85,7 +85,7 @@ class Option:
         botstrap = Botstrap()
         args = botstrap.parse_args(
             disable_auto_sync=Option(
-                flag=True, # (1)
+                flag=True, # (1)!
                 help="Disable automatic syncing of the bot's slash commands.",
             )
         )
@@ -154,7 +154,7 @@ class Option:
 
         Botstrap().parse_args(
             pizza_topping=Option(
-                default="cheese", # (1)
+                default="cheese", # (1)!
                 choices=("mushrooms", "olives", "pepperoni", "sausage"),
             ),
         )

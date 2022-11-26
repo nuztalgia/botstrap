@@ -281,7 +281,7 @@ class Botstrap(CliSession):
         [`run_bot()`][botstrap.Botstrap.run_bot] - which means that ideally, you
         won't need to call this method at all.
 
-        ??? caution "Caution - Keep your tokens safe!"
+        ??? warning "Caution - Keep your tokens safe!"
             Token values should always be kept secret and can be very damaging if
             leaked... so **make sure** you don't `print()` (or log, or output in
             any way) the return value of this method! :zipper_mouth:

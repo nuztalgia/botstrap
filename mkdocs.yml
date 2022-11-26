@@ -31,6 +31,12 @@ theme:
   icon:
     logo: material/robot-happy
     repo: fontawesome/brands/github
+    admonition:
+      abstract: material/graph
+      bug: material/star-shooting-outline
+      example: material/text-box-search-outline
+      note: material/note-edit
+      quote: material/application-brackets-outline
   palette:
     - media: "(prefers-color-scheme: light)"
       scheme: default

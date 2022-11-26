@@ -393,7 +393,7 @@ class Argstrap(argparse.ArgumentParser):
 
         ??? example "Example - Deleting a saved token"
             ```{.console title="Console Session" .annotate}
-            $ python examplebot.py -t # (1)
+            $ python examplebot.py -t # (1)!
 
             examplebot: You currently have the following bot tokens saved:
               1. development ->  ~/botstrap/examples/examplebot/.botstrap_keys/.dev.*

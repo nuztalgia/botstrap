@@ -35,6 +35,10 @@
   .md-typeset pre > code {
     overflow-x: clip;
   }
+  /* Increase the width of mermaid.js diagrams to fill the available space. */
+  div.mermaid {
+    width: 720px;
+  }
 }
 
 /* Adjust some features of the layout on smaller (i.e. mobile) screens. */

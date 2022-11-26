@@ -5,6 +5,16 @@ img[src^="https://img.shields.io/"]
   vertical-align: text-top;
 }
 
+/* Hide "copy to clipboard" buttons for console I/O in "Installation" admonitions. */
+h2[id="installation"] ~ details > .language-console button.md-clipboard {
+  display: none;
+}
+
+/* Remove confusing syntax highlighting for console I/O in the "Installation" note. */
+h2[id="installation"] ~ details > .language-console code .nb {
+  color: var(--md-code-fg-color);
+}
+
 /* Fix the alignment of the annotation "+" button in the "Installation" note. */
 h2[id="installation"] ~ .note > .annotate [data-md-annotation-id]:before {
   vertical-align: revert;

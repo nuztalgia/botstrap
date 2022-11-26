@@ -1,0 +1,5 @@
+/* Change the icon in the title bar of the "Here Be Memes" admonition. */
+.md-typeset .quote > summary:before {
+  -webkit-mask-image: var(--md-admonition-icon--bug) !important;
+  mask-image: var(--md-admonition-icon--bug) !important;
+}

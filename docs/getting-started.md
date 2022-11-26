@@ -25,12 +25,12 @@ separately.
 
     ```console title=""
     $ python --version
-    Python 3.10.7
+    Python 3.10.8
     ```
 
     ```console title=""
     $ pip --version
-    pip 22.2.2 from /usr/local/lib/python3.10/site-packages/pip (python 3.10)
+    pip 22.3.1 from /usr/local/lib/python3.10/site-packages/pip (python 3.10)
     ```
 
     For reference, Botstrap supports Python versions
@@ -47,15 +47,14 @@ separately.
     To create a development installation of Botstrap in your current environment, use
     the following commands:
 
-    ```console title=""
-    $ git clone https://github.com/nuztalgia/botstrap.git
-    ```
-
     ```{.console title="" .annotate}
-    $ pip install -e botstrap # (1)
+    $ git clone https://github.com/nuztalgia/botstrap.git
+    $ cd botstrap
+    $ pip install -e . # (1)!
     ```
 
     1. Using the `-e` flag produces an [editable][9] installation.
+       (Make sure you include the `.` in the command!)
 
 [1]: https://pypi.org/project/botstrap/
 [2]: https://pypi.org/project/colorama/
@@ -64,7 +63,7 @@ separately.
 [5]: https://pip.pypa.io/en/stable/installation/
 [6]: https://pypi.org/project/pip/
 [7]: https://github.com/nuztalgia/botstrap
-[8]: https://github.com/nuztalgia/botstrap/blob/main/.github/CONTRIBUTING.md
+[8]: https://github.com/nuztalgia/botstrap/blob/main/.github/contributing.md
 [9]: https://pip.pypa.io/en/stable/topics/local-project-installs/#editable-installs
 
 <link rel="stylesheet" href="../stylesheets/getting-started.css" />

@@ -130,7 +130,7 @@ class CliColors:
     """
 
     primary: Callable[[str], str] = str
-    _: KW_ONLY = None  # type: ignore[assignment]  # (1)
+    _: KW_ONLY = None  # type: ignore[assignment]  # (1)!
     error: Callable[[str], str] = Color.red
     highlight: Callable[[str], str] = Color.cyan
     lowlight: Callable[[str], str] = Color.grey

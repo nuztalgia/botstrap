@@ -44,3 +44,5 @@ hide:
 </div>
 
 </div>
+
+<link rel="stylesheet" href="../stylesheets/internal.css" />

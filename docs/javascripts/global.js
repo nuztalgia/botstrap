@@ -5,12 +5,6 @@
  */
 
 document$.subscribe(function () {
-  // Remove the "#" comment characters preceding annotations in code blocks.
-  for (const comment of document.querySelectorAll(".annotate code span.c1")) {
-    if (comment.textContent.match(/# .*?\(\d\)$/)) {
-      comment.textContent = comment.textContent.replace(/# .*?\(/, "(");
-    }
-  }
   // Clean up headings for all functions and remove parentheses for properties.
   for (const docFunction of document.querySelectorAll(".doc-function")) {
     removeDefaultArgs(docFunction);
@@ -68,28 +62,28 @@ function processSourceCode() {
         `${getLine(lineSpans[0])}-L${getLine(lineSpans[lineSpans.length - 1])}`;
       element.querySelector("pre > :first-child").after(link);
       element.querySelector("span.filename").remove();
-      removeSourceCodeDocs(lineSpans);
+      removeSourceCodeDocstrings(lineSpans);
     }
   }
 }
 
 /** Removes redundant docstring lines in source code blocks. */
-function removeSourceCodeDocs(lineSpans) {
-  let inDocString = false;
+function removeSourceCodeDocstrings(lineSpans) {
+  let inDocstring = false;
   for (const lineSpan of lineSpans) {
     if (lineSpan.textContent.startsWith('    """')) {
       if (lineSpan.textContent.endsWith(".\n")) {
-        inDocString = true; // First line of docstring; remove subsequent lines.
+        inDocstring = true; // First line of docstring; remove subsequent lines.
       } else {
         return; // End of docstring; all unwanted lines have been removed.
       }
-    } else if (inDocString) {
+    } else if (inDocstring) {
       lineSpan.remove();
     }
   }
 }
 
-/** Removes default arguments in function signature headings. */
+/** Removes (redundant) default arguments in function signature headings. */
 function removeDefaultArgs(docFunction) {
   const heading = docFunction.querySelector(".doc-heading code");
   for (const match of heading.innerHTML.matchAll(

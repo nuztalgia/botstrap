@@ -177,7 +177,7 @@ foundation for the subsequent example, which includes code snippets and demonstr
 
         ```console title="2B) Viewing existing tokens and deleting one of them."
         $ python -m examplebot -t
-        {% include "../../botstrap/internal/argstrap.py" start="# (1)\n" end="```" %}
+        {% include "../../botstrap/internal/argstrap.py" start="# (1)!\n" end="```" %}
         ```
 
     === "CLI #3: Options"
