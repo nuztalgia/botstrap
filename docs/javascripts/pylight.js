@@ -62,11 +62,6 @@ function highlightCodeBlock(element) {
       }
     }
   }
-  // Properly color string interpolation characters in Template strings.
-  element.innerHTML = element.innerHTML.replaceAll(
-    '$</span><span class="si">{',
-    '</span><span class="si">${',
-  );
   // Recolor class names (explicitly listed below) outside of imports.
   for (const nameSpan of element.querySelectorAll("span.n")) {
     const importSpans = nameSpan.parentElement.querySelectorAll(".kn").length;

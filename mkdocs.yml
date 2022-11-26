@@ -54,7 +54,6 @@ theme:
         name: Switch to light mode
   features:
     - navigation.indexes
-    - navigation.instant
     - navigation.top
     - toc.integrate
 
@@ -105,6 +104,8 @@ plugins:
             docstring_options:
               ignore_init_summary: true
   - search
+  - social:
+      cards_dir: images/social
 
 markdown_extensions:
   - admonition

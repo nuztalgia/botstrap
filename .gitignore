@@ -5,6 +5,7 @@
 *.sw[a-p]
 *venv/
 .DS_Store
+.cache/
 .coverage
 .idea/
 .tox/
