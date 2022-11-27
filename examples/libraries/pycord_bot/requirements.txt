@@ -1,2 +1,2 @@
 botstrap==0.2.8
-py-cord==2.3.0
+py-cord==2.3.1
