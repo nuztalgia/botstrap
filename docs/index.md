@@ -1,4 +1,5 @@
 ---
+title: Botstrap
 hide:
   - footer
 ---
@@ -22,3 +23,5 @@ An easy-to-use utility toolbelt for Discord bots written in Python.
 [Get Started](getting-started){ .md-button .md-button--primary }
 
 </div>
+
+<link rel="stylesheet" href="stylesheets/index.css" />

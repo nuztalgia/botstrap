@@ -7,6 +7,7 @@
 document$.subscribe(function () {
   // Run custom logic if the url matches the pattern for a specific page.
   for (const [urlPattern, customHandler] of [
+    ["/en/latest/$", handleHomePage],
     ["/(api|internal)/$", handleReferencePage],
     ["/api/cli-strings/", handleStringsPage],
     ["/api/color/", handleColorPage],
@@ -17,6 +18,17 @@ document$.subscribe(function () {
     }
   }
 });
+
+/** Executes simple custom logic to clean things up on the home page. */
+function handleHomePage() {
+  // Reduce redundancy in the default page title ("Botstrap - Botstrap").
+  document.querySelector("html > head > title").textContent = "Botstrap";
+  // Strip text-based emoji at the beginning of each item in the feature list.
+  document.querySelectorAll(".md-content__inner ul li").forEach((liElement) => {
+    const newContent = liElement.firstChild.textContent.replace(/^[^.\w]+/, "");
+    liElement.firstChild.textContent = newContent;
+  });
+}
 
 /** Executes custom logic to complete the example on the "Color" page. */
 function handleColorPage() {
@@ -54,8 +66,8 @@ function handleOptionPage() {
 
 /** Executes custom logic on "API Reference" and "Internal Reference" pages. */
 function handleReferencePage() {
-  document // Remove all header anchor links.
-    .querySelectorAll(".md-typeset a.headerlink")
+  document // Remove all header anchor links and the "Back to top" button.
+    .querySelectorAll(":is(.md-typeset a.headerlink, a.md-top.md-icon)")
     .forEach((linkElement) => linkElement.remove());
   document // Follow the first link when a card in a clickable grid is clicked.
     .querySelectorAll(".clickable.grid :is(.card, li)")

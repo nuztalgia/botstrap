@@ -1,0 +1,63 @@
+/* Define values to be used for the logo shadow in dark mode. */
+:root {
+  --ls-radius: 0.88rem;
+  --ls-alpha: 0.64;
+}
+
+/* Define values to be used for the logo shadow in light mode. */
+[data-md-color-scheme="default"] {
+  --ls-radius: 0.44rem;
+  --ls-alpha: 0.32;
+}
+
+/* Add a shadow to the big centered Botstrap logo. */
+div[align="center"] img[src*="logo-192.png"] {
+  filter: drop-shadow(0 0 var(--ls-radius) rgba(0, 0, 0, var(--ls-alpha)));
+}
+
+/* Adjust the color of the big centered "Botstrap" text. */
+div[align="center"] h1 {
+  color: var(--md-default-fg-color);
+  opacity: 0.9;
+}
+
+/* Hide the "Back to top" dynamic navigation button. */
+.md-top.md-icon {
+  display: none;
+}
+
+/* Prepare feature list items for image-based emoji "bullet points". */
+.md-content__inner > ul > li {
+  list-style: none;
+  padding: 0.25em 0;
+}
+.md-content__inner > ul > li::before {
+  display: inline-block;
+  height: 1.125em;
+  margin-left: -0.25em;
+  margin-right: 0.75em;
+  vertical-align: text-top;
+  width: 1.125em;
+}
+@media screen and (max-width: 76.25em) {
+  .md-content__inner > ul > li::before {
+    margin-left: -1.9em;
+  }
+}
+
+/* Set the emoji image to be used for each item in the feature list. */
+.md-content__inner > ul > li:nth-child(1)::before {
+  content: url("https://twemoji.maxcdn.com/v/latest/svg/1f510.svg");
+}
+.md-content__inner > ul > li:nth-child(2)::before {
+  content: url("https://twemoji.maxcdn.com/v/latest/svg/1f939.svg");
+}
+.md-content__inner > ul > li:nth-child(3)::before {
+  content: url("https://twemoji.maxcdn.com/v/latest/svg/1f308.svg");
+}
+.md-content__inner > ul > li:nth-child(4)::before {
+  content: url("https://twemoji.maxcdn.com/v/latest/svg/1f91d.svg");
+}
+.md-content__inner > ul > li:nth-child(5)::before {
+  content: url("https://twemoji.maxcdn.com/v/latest/svg/1f331.svg");
+}
