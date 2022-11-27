@@ -1,3 +1,7 @@
+---
+description: A model for a custom option to add to the Botstrap-provided CLI.
+---
+
 <!-- prettier-ignore -->
 ::: botstrap.Option
     options:

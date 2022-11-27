@@ -1,3 +1,7 @@
+---
+description: Parses command-line args and provides a CLI framework for Discord bots.
+---
+
 ::: botstrap.internal.Argstrap
     options:
       heading_level: 1

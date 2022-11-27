@@ -1,3 +1,7 @@
+---
+description: A model for the colors used by the Botstrap-provided CLI.
+---
+
 <!-- prettier-ignore -->
 ::: botstrap.CliColors
     options:

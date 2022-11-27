@@ -1,3 +1,7 @@
+---
+description: A collection of utilities related to file, package, and program metadata.
+---
+
 ::: botstrap.internal.Metadata
     options:
       heading_level: 1

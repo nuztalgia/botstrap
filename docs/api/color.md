@@ -1,3 +1,7 @@
+---
+description: A collection of functions that add color to console-printed strings.
+---
+
 <!-- prettier-ignore -->
 ::: botstrap.Color
     options:

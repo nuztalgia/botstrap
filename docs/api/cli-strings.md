@@ -1,3 +1,7 @@
+---
+description: A model for the strings used by the Botstrap-provided CLI.
+---
+
 <!-- prettier-ignore -->
 ::: botstrap.CliStrings
     options:

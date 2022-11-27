@@ -1,3 +1,7 @@
+---
+description: Represents and handles operations for an individual Discord bot token.
+---
+
 ::: botstrap.internal.Token
     options:
       heading_level: 1

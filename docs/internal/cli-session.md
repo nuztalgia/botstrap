@@ -1,3 +1,7 @@
+---
+description: Defines UX state to ensure a consistent look/feel for a Discord bot's CLI.
+---
+
 ::: botstrap.internal.CliSession
     options:
       heading_level: 1

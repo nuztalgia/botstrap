@@ -1,4 +1,6 @@
 ---
+description:
+  Technical notes and details about classes that aren't part of Botstrap's public API.
 hide:
   - footer
   - toc

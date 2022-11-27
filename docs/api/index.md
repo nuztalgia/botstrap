@@ -1,4 +1,6 @@
 ---
+description:
+  Detailed documentation, examples, and explanations for the entire Botstrap API.
 hide:
   - footer
   - toc

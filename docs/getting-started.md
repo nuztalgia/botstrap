@@ -1,4 +1,6 @@
 ---
+description:
+  Secure your Discord bot (or spin up a new one) with just a few simple commands.
 hide:
   - footer
 ---

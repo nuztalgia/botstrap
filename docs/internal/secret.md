@@ -1,3 +1,7 @@
+---
+description: Manages I/O operations for files that contain sensitive encrypted data.
+---
+
 ::: botstrap.internal.Secret
     options:
       heading_level: 1

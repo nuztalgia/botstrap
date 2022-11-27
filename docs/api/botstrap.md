@@ -1,3 +1,8 @@
+---
+description:
+  The primary point of integration between a Discord bot and the Botstrap library.
+---
+
 <!-- prettier-ignore -->
 ::: botstrap.Botstrap
     options:
