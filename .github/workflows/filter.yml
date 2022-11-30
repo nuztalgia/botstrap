@@ -26,11 +26,13 @@ jobs:
       matches: ${{ steps.produce.outputs.matches }}
 
     steps:
-      - if: github.event_name == 'push'
-        uses: actions/checkout@v3
+      - name: Check out repository
+        if: github.event_name == 'push'
+        uses: actions/checkout@v3.1.0
 
-      - if: github.event_name == 'push' || github.event_name == 'pull_request'
-        uses: dorny/paths-filter@4512585405083f25c027a35db413c2b3b9006d50
+      - name: Run external paths-filter action
+        if: github.event_name == 'push' || github.event_name == 'pull_request'
+        uses: dorny/paths-filter@v2.11.1
         id: filter
         with:
           filters: ${{ inputs.filters }}
@@ -47,7 +49,8 @@ jobs:
               filters = re.findall(r'(?:^|\n)([\w-]+):', inputs.pop('filters'))
               outputs = [k for k, v in inputs.items() if ((k in filters) and v)]
           print(f'matches: {(outputs := outputs or [])}')
-          print(f'::set-output name=matches::{outputs}')
+          with open(os.getenv('GITHUB_OUTPUT'), 'a') as output_file:
+              output_file.write(f'matches={outputs}')
         env:
           DISPATCH: ${{ github.event_name == 'workflow_dispatch' }}
           INPUTS: ${{ toJSON(inputs) }}
