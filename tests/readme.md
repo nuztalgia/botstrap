@@ -1,6 +1,6 @@
 <h1>
 <picture>
-<img alt="Botstrap Logo" src="/docs/images/logo-48.png" width=32>
+<img alt="Botstrap Logo" src="../docs/images/logo-48.png" width=32>
 </picture>
 Testing
 </h1>

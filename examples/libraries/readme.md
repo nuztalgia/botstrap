@@ -1,15 +1,16 @@
 <h1>
 <picture>
-<img alt="Botstrap Logo" src="/docs/images/logo-48.png" width=32>
+<img alt="Botstrap Logo" src="../../docs/images/logo-48.png" width=32>
 </picture>
 Library Examples
 </h1>
 
 Botstrap is quite flexible and (in theory) can easily adapt to work alongside any
-[Discord library](https://discord.com/developers/docs/topics/community-resources#libraries)
-written in Python. Nonetheless, real examples are always helpful! This directory
-contains **"beginner bot"** templates for the libraries with which Botstrap has been
-tested and confirmed to work.
+[Discord library][1] written in Python. Nonetheless, real examples are always helpful!
+This directory contains **"beginner bot"** templates for the libraries with which
+Botstrap has been tested and confirmed to work.
+
+[1]: https://discord.com/developers/docs/topics/community-resources#libraries
 
 If you'd like to run these examples yourself, the first thing you'll want to do is clone
 this repo and navigate to this directory:
@@ -24,7 +25,7 @@ cd botstrap/examples/libraries
 After that, run the commands in the sections for the libraries you'd like to try out.
 (Using a <a href="https://docs.python.org/3/tutorial/venv.html">virtual environment</a>
 is highly recommended.)
-</summary><br>
+</summary><p>
 
 &nbsp;&thinsp;&nbsp; **Each set of commands will:**
 
@@ -34,10 +35,10 @@ is highly recommended.)
 <li>Run the Python module containing the example.</li>
 </ol></div>
 
-</details>
+</p></details>
 
 If there's another Python Discord library that you'd like to see included here, please
-don't be shy to open a [pull request](/.github/CONTRIBUTING.md#pull-requests)! 💜
+don't be shy to open a [pull request](../../.github/contributing.md)! 💜
 
 ## <a href="./discordpy_bot"><img src="https://raw.githubusercontent.com/Rapptz/discord.py/master/docs/images/discord_py_logo.ico" width=24></a> discord.py
 
