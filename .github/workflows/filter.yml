@@ -28,7 +28,7 @@ jobs:
     steps:
       - name: Check out repository
         if: github.event_name == 'push'
-        uses: actions/checkout@v3.1.0
+        uses: actions/checkout@v3.3.0
 
       - name: Run external paths-filter action
         if: github.event_name == 'push' || github.event_name == 'pull_request'
