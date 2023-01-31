@@ -1,68 +1,68 @@
 [build-system]
-requires = ["setuptools>=61.0.0", "setuptools_scm[toml]>=7.0.0"]
 build-backend = "setuptools.build_meta"
+requires = ["setuptools>=61.0.0", "setuptools_scm[toml]>=7.0.0"]
 
 [project]
-name = "botstrap"
-description = "An easy-to-use utility toolbelt for Discord bots written in Python."
-requires-python = ">=3.10"
 authors = [
-    { name = "Nuztalgia" },
-    { email = "nuztalgia@gmail.com" }
+  {name = "Nuztalgia"},
+  {email = "nuztalgia@gmail.com"}
 ]
-readme = "README.md"
-license = { text = "Apache-2.0" }
 classifiers = [
-    "Development Status :: 4 - Beta",
-    "Environment :: Console",
-    "Intended Audience :: Developers",
-    "License :: OSI Approved :: Apache Software License",
-    "Natural Language :: English",
-    "Operating System :: OS Independent",
-    "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.11",
-    "Topic :: Communications :: Chat",
-    "Topic :: Security :: Cryptography",
-    "Topic :: Software Development :: Libraries :: Python Modules",
-    "Topic :: Utilities",
-    "Typing :: Typed",
+  "Development Status :: 4 - Beta",
+  "Environment :: Console",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: Apache Software License",
+  "Natural Language :: English",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Topic :: Communications :: Chat",
+  "Topic :: Security :: Cryptography",
+  "Topic :: Software Development :: Libraries :: Python Modules",
+  "Topic :: Utilities",
+  "Typing :: Typed"
 ]
-keywords = ["bot", "cli", "discord", "encryption", "security", "token", "utilities"]
+description = "An easy-to-use utility toolbelt for Discord bots written in Python."
 dynamic = ["dependencies", "optional-dependencies", "urls", "version"]
+keywords = ["bot", "cli", "discord", "encryption", "security", "token", "utilities"]
+license = {text = "Apache-2.0"}
+name = "botstrap"
+readme = "README.md"
+requires-python = ">=3.10"
 
 [project.scripts]
 botstrap = "botstrap.cli:main"
 
 [tool.black]
-target-version = ["py310"]
+target-version = ["py311"]
 
 [tool.isort]
-profile = "black"
 extend_skip = ["examples"]
+profile = "black"
 
 [tool.pydocstyle]
-convention = "google"
 add-ignore = "D417"
+convention = "google"
 match = "botstrap/.*\\.py"
 
 [tool.pytest.ini_options]
 addopts = [
-    "--cov-config=tests/.coverage.ini",
-    "--cov-fail-under=100",
-    "--doctest-modules",
-    "--ignore=botstrap/colors.py",
-    "--ignore=botstrap/internal/clisession.py",
-    "--strict-config",
-    "--strict-markers",
+  "--cov-config=tests/.coverage.ini",
+  "--cov-fail-under=100",
+  "--doctest-modules",
+  "--ignore=botstrap/colors.py",
+  "--ignore=botstrap/internal/clisession.py",
+  "--strict-config",
+  "--strict-markers"
 ]
 filterwarnings = ["error"]
 required_plugins = ["pytest-cov", "pytest-repeat"]
 testpaths = ["botstrap", "tests"]
 
 [tool.setuptools]
-packages = ["botstrap", "botstrap.cli", "botstrap.internal"]
 include-package-data = false
+packages = ["botstrap", "botstrap.cli", "botstrap.internal"]
 
 [tool.setuptools_scm]
 local_scheme = "no-local-version"

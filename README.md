@@ -8,9 +8,9 @@
 [![Botstrap: Latest Version](https://img.shields.io/pypi/v/botstrap?label=latest%20version)](https://pypi.org/project/botstrap/)
 [![Supported Python Versions](https://img.shields.io/pypi/pyversions/botstrap)](https://pypi.org/project/botstrap/)
 <br>
-[![CodeQL Workflow](https://img.shields.io/github/workflow/status/nuztalgia/botstrap/CodeQL?label=codeQL&logo=github)](https://github.com/nuztalgia/botstrap/actions/workflows/codeql.yml)
+[![CodeQL Workflow](https://img.shields.io/github/actions/workflow/status/nuztalgia/botstrap/codeql.yml?branch=main&label=codeQL&logo=github)](https://github.com/nuztalgia/botstrap/actions/workflows/codeql.yml)
 [![Read the Docs](https://img.shields.io/readthedocs/botstrap?logo=read-the-docs&logoColor=fff)](https://readthedocs.org/projects/botstrap)
-[![Tests Workflow](https://img.shields.io/github/workflow/status/nuztalgia/botstrap/Tests?label=tests&logo=pytest&logoColor=fff&logoWidth=13)](https://github.com/nuztalgia/botstrap/actions/workflows/tests.yml)
+[![Tests Workflow](https://img.shields.io/github/actions/workflow/status/nuztalgia/botstrap/tests.yml?branch=main&label=tests&logo=pytest&logoColor=fff&logoWidth=13)](https://github.com/nuztalgia/botstrap/actions/workflows/tests.yml)
 <br>
 [![CodeFactor: Code Quality](https://img.shields.io/codefactor/grade/github/nuztalgia/botstrap?label=codefactor&logo=codefactor&logoColor=fff&logoWidth=12)](https://codefactor.io/repository/github/nuztalgia/botstrap)
 [![Codacy: Code Quality](https://img.shields.io/codacy/grade/6864639715f04899b62d3a4460eba83e?label=codacy&&logo=codacy)](https://app.codacy.com/gh/nuztalgia/botstrap)
@@ -75,7 +75,7 @@ See below for descriptions of the available hooks, and add the one(s) you like t
 
 ```yaml
 - repo: https://github.com/nuztalgia/botstrap
-  rev: 0.2.8
+  rev: 0.2.9
   hooks:
     - id: detect-discord-bot-tokens
     - id: detect-encrypted-tokens

@@ -9,11 +9,11 @@ setup(
     },
     install_requires=[
         "colorama >=0.4.6",
-        "cryptography >=38.0.3",
+        "cryptography >=39.0.0",
     ],
     extras_require={
         "tests": [
-            "pytest >=7.2.0",
+            "pytest >=7.2.1",
             "pytest-cov >=4.0.0",
             "pytest-repeat >=0.9.1",
         ],
