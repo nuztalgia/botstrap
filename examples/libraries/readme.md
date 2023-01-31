@@ -64,7 +64,7 @@ pip install -r disnake_bot/requirements.txt
 python -m disnake_bot
 ```
 
-## <a href="./hikari_bot"><img src="https://raw.githubusercontent.com/hikari-py/hikari/master/pages/logo.png" width=24></a> hikari
+## <a href="./hikari_bot"><img src="https://avatars.githubusercontent.com/u/72694042" width=24></a> hikari
 
 [![Botstrap Example](https://img.shields.io/badge/example-hikari__bot-7e56c2.svg?logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iI2ZmZiIgZD0iTTIyIDE0SDIxQzIxIDEwLjEzIDE3Ljg3IDcgMTQgN0gxM1Y1LjczQzEzLjYgNS4zOSAxNCA0Ljc0IDE0IDRDMTQgMi45IDEzLjExIDIgMTIgMlMxMCAyLjkgMTAgNEMxMCA0Ljc0IDEwLjQgNS4zOSAxMSA1LjczVjdIMTBDNi4xMyA3IDMgMTAuMTMgMyAxNEgyQzEuNDUgMTQgMSAxNC40NSAxIDE1VjE4QzEgMTguNTUgMS40NSAxOSAyIDE5SDNWMjBDMyAyMS4xMSAzLjkgMjIgNSAyMkgxOUMyMC4xMSAyMiAyMSAyMS4xMSAyMSAyMFYxOUgyMkMyMi41NSAxOSAyMyAxOC41NSAyMyAxOFYxNUMyMyAxNC40NSAyMi41NSAxNCAyMiAxNE05Ljc5IDE2LjVDOS40IDE1LjYyIDguNTMgMTUgNy41IDE1UzUuNiAxNS42MiA1LjIxIDE2LjVDNS4wOCAxNi4xOSA1IDE1Ljg2IDUgMTUuNUM1IDE0LjEyIDYuMTIgMTMgNy41IDEzUzEwIDE0LjEyIDEwIDE1LjVDMTAgMTUuODYgOS45MiAxNi4xOSA5Ljc5IDE2LjVNMTguNzkgMTYuNUMxOC40IDE1LjYyIDE3LjUgMTUgMTYuNSAxNVMxNC42IDE1LjYyIDE0LjIxIDE2LjVDMTQuMDggMTYuMTkgMTQgMTUuODYgMTQgMTUuNUMxNCAxNC4xMiAxNS4xMiAxMyAxNi41IDEzUzE5IDE0LjEyIDE5IDE1LjVDMTkgMTUuODYgMTguOTIgMTYuMTkgMTguNzkgMTYuNVoiIC8+PC9zdmc+DQo=)](./hikari_bot/__main__.py)
 [![PyPI: Latest Version](https://img.shields.io/pypi/v/hikari?logo=pypi&logoColor=fff&label=latest%20version&color=blue)](https://pypi.org/project/hikari/)

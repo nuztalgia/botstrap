@@ -8,7 +8,7 @@ Testing
 <table>
 <tr><th colspan=2>CI Status</th></tr>
 <tr align="center"><td>
-<a href="https://github.com/nuztalgia/botstrap/actions/workflows/tests.yml"><img src="https://img.shields.io/github/workflow/status/nuztalgia/botstrap/Tests?style=for-the-badge&logo=github&label=tests"></a>
+<a href="https://github.com/nuztalgia/botstrap/actions/workflows/tests.yml"><img src="https://img.shields.io/github/actions/workflow/status/nuztalgia/botstrap/tests.yml?branch=main&style=for-the-badge&logo=github&label=tests"></a>
 </td><td>
 <a href="https://app.codecov.io/github/nuztalgia/botstrap"><img src="https://img.shields.io/codecov/c/github/nuztalgia/botstrap?style=for-the-badge&logo=codecov&logoColor=fff"></a>
 </td></tr>
@@ -27,7 +27,7 @@ produced by [`pytest-cov`]. These tools are configured as follows:
 Default <a href="https://docs.pytest.org/en/7.1.x/reference/reference.html#ini-options-ref"><b>pytest
 options</b></a> are specified in <a href="/pyproject.toml"><code>pyproject.toml</code></a>.</summary>
 
-https://github.com/nuztalgia/botstrap/blob/16cca0d047da9fa85565ecfaef2d7427d138ba67/pyproject.toml#L50-L61
+https://github.com/nuztalgia/botstrap/blob/d08cefd21cd95e357ecd9cabc169715fec901216/pyproject.toml#L50-L61
 
 </details></li>
 <li><details><summary>
@@ -35,7 +35,7 @@ The <a href="https://pytest-cov.readthedocs.io/en/latest/config.html"><b>pytest-
 config</b></a> lives in <a href="./.coverage.ini"><code>tests/.coverage.ini</code></a>.
 </summary>
 
-https://github.com/nuztalgia/botstrap/blob/16cca0d047da9fa85565ecfaef2d7427d138ba67/tests/.coverage.ini#L1-L12
+https://github.com/nuztalgia/botstrap/blob/d08cefd21cd95e357ecd9cabc169715fec901216/tests/.coverage.ini#L1-L12
 
 More details about the contents of this config file can be found in the [documentation]
 for [`coverage.py`], which powers `pytest-cov`.
