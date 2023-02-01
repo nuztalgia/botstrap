@@ -1,2 +1,2 @@
-botstrap==0.2.8
+botstrap==0.2.9
 discord-py-interactions==4.3.4
