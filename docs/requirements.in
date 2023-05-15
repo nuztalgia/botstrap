@@ -6,4 +6,4 @@ mkdocs==1.4.2
 mkdocstrings[python]==0.20.0
 pillow==9.4.0
 pygments==2.14.0
-pymdown-extensions==9.9.2
+pymdown-extensions==10.0
