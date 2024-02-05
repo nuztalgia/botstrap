@@ -69,7 +69,9 @@
   display: block;
   margin: 0;
   padding: 0.8rem;
-  transition: border 0.25s, box-shadow 0.25s;
+  transition:
+    border 0.25s,
+    box-shadow 0.25s;
 }
 
 .md-typeset .grid.cards > :is(ul, ol) > li:is(:focus-within, :hover),

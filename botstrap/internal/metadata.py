@@ -1,4 +1,5 @@
 """This module contains the `Metadata` class, which provides metadata-related utils."""
+
 from __future__ import annotations
 
 import sys

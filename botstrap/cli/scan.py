@@ -1,4 +1,5 @@
 """This module contains functions used by the `botstrap scan` standalone CLI command."""
+
 from __future__ import annotations
 
 import os

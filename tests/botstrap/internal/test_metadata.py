@@ -1,4 +1,5 @@
 """Tests for the `botstrap.internal.metadata` module."""
+
 from __future__ import annotations
 
 import sys
