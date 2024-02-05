@@ -1,4 +1,5 @@
 """Tests for the `botstrap.options` module (`Option` and `Option.Results` classes)."""
+
 from __future__ import annotations
 
 from typing import Any

@@ -1,4 +1,5 @@
 """This module contains the `Secret` class, which encrypts and decrypts data files."""
+
 from __future__ import annotations
 
 import os
