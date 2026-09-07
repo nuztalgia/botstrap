@@ -1,4 +1,5 @@
 """Tests for the `botstrap.internal.tokens` module."""
+
 from __future__ import annotations
 
 import re

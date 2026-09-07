@@ -1,4 +1,5 @@
 """This module contains the `Token` class, which represents a Discord bot token."""
+
 from __future__ import annotations
 
 import re

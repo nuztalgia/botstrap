@@ -1,4 +1,5 @@
 """This module contains the `CliStrings` class, which defines text shown in the CLI."""
+
 from __future__ import annotations
 
 from collections.abc import Callable, Iterable
@@ -306,18 +307,15 @@ class CliStrings:
 
 
 @overload
-def _get_compact_value(value: str) -> str:
-    ...
+def _get_compact_value(value: str) -> str: ...
 
 
 @overload
-def _get_compact_value(value: Template) -> Template:
-    ...
+def _get_compact_value(value: Template) -> Template: ...
 
 
 @overload
-def _get_compact_value(value: tuple[str]) -> tuple[str, ...]:
-    ...
+def _get_compact_value(value: tuple[str]) -> tuple[str, ...]: ...
 
 
 def _get_compact_value(value: Any) -> str | Template | tuple[str, ...]:
