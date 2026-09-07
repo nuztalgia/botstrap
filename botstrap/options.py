@@ -1,4 +1,5 @@
 """This module contains the `Option` class, which is a model for custom CLI options."""
+
 from __future__ import annotations
 
 import argparse

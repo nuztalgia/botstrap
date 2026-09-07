@@ -1,4 +1,5 @@
 """This module contains the `CliSession` class, which facilitates command-line I/O."""
+
 from __future__ import annotations
 
 from collections.abc import Callable
