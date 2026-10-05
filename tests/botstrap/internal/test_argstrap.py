@@ -1,4 +1,5 @@
 """Tests for the `botstrap.internal.argstrap` module."""
+
 from __future__ import annotations
 
 import re

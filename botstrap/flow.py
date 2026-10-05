@@ -1,4 +1,5 @@
 """This module features the `Botstrap` class, which is the primary integration point."""
+
 from __future__ import annotations
 
 from pathlib import Path

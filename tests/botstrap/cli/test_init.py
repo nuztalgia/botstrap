@@ -1,4 +1,5 @@
 """Tests for the `botstrap.cli.init` module."""
+
 from __future__ import annotations
 
 import functools

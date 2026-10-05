@@ -1,4 +1,5 @@
 """This module contains the entry point and main menu for Botstrap's standalone CLI."""
+
 from __future__ import annotations
 
 import functools

@@ -1,4 +1,5 @@
 """This module contains the `Argstrap` class, which parses arguments for a bot's CLI."""
+
 from __future__ import annotations
 
 import argparse

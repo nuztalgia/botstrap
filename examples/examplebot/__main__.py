@@ -2,7 +2,6 @@ from botstrap import Botstrap, CliColors, Color, Option
 from discord import Activity, ActivityType, AllowedMentions
 from examplebot.extras import AlphaBot, initialize_system_logging
 
-
 botstrap = (
     Botstrap(
         name="examplebot",
