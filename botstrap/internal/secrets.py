@@ -1,4 +1,5 @@
 """This module contains the `Secret` class, which encrypts and decrypts data files."""
+
 from __future__ import annotations
 
 import os
@@ -120,7 +121,7 @@ class Secret:
 
     @staticmethod
     def _get_validator(
-        valid_pattern: str | re.Pattern | Callable[[str], Any] | None
+        valid_pattern: str | re.Pattern | Callable[[str], Any] | None,
     ) -> Callable[[str], bool]:
         """Turns `valid_pattern` into a function that takes a str and returns a bool."""
         if not valid_pattern:
