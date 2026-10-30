@@ -5,5 +5,5 @@ mkdocs-material==9.0.9
 mkdocs==1.4.2
 mkdocstrings[python]==0.20.0
 pillow==9.4.0
-pygments==2.14.0
+pygments==2.20.0
 pymdown-extensions==9.9.2
